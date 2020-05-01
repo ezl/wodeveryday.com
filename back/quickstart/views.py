@@ -57,7 +57,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
     filterset_fields = ['country', 'full_state', 'city']
 
     @action(detail=False, methods=['get'], url_path='countries')
-    def countries(self, request, *args):
+    def listDistinctCountries(self, request, *args):
 
         queryset = self.get_queryset()
         country_list = queryset.values_list('country', flat=True)\
@@ -66,7 +66,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         return Response({"countries": country_list})
 
     @action(detail=False, methods=['get'], url_path='states')
-    def states(self, request, *args):
+    def listDistinctStates(self, request, *args):
 
         country = request.query_params.get('country', '')
         queryset = self.get_queryset()
@@ -80,7 +80,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         return Response({"states": state_list})
 
     @action(detail=False, methods=['get'], url_path='cities')
-    def cities(self, request, *args):
+    def listDistinctCities(self, request, *args):
 
         country = request.query_params.get('country', '')
         if not country:
