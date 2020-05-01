@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'quickstart.apps.QuickstartConfig',
     'rest_framework',
+    'django_filters',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,7 +56,8 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 CORS_ORIGIN_ALLOW_ALL = False

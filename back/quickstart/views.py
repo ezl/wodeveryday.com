@@ -1,8 +1,11 @@
 import requests
-from rest_framework import viewsets, mixins
+from django.db.models import Q
+from rest_framework import viewsets, mixins, filters
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from quickstart.models import Affiliate
 from quickstart.serializers import AffiliateSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
@@ -50,3 +53,48 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
 
     queryset = Affiliate.objects.all()
     serializer_class = AffiliateSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['country', 'full_state', 'city']
+
+    @action(detail=False, methods=['get'], url_path='countries')
+    def countries(self, request, *args):
+
+        queryset = self.get_queryset()
+        country_list = queryset.values_list('country', flat=True)\
+                               .distinct()
+
+        return Response({"countries": country_list})
+
+    @action(detail=False, methods=['get'], url_path='states')
+    def states(self, request, *args):
+
+        country = request.query_params.get('country', '')
+        queryset = self.get_queryset()
+        state_list = queryset.filter(country=country)\
+                             .values_list('full_state', flat=True)\
+                             .distinct()
+
+        if state_list is None:
+            state_list = []
+
+        return Response({"states": state_list})
+
+    @action(detail=False, methods=['get'], url_path='cities')
+    def cities(self, request, *args):
+
+        country = request.query_params.get('country', '')
+        if not country:
+            state = request.query_params.get('state', '')
+            query = Q(full_state=state)
+        else:
+            query = Q(country=country)
+
+        queryset = self.get_queryset()
+        city_list = queryset.filter(query)\
+                            .values_list('city', flat=True)\
+                            .distinct()
+
+        if city_list is None:
+            city_list = []
+
+        return Response({"cities": city_list})
