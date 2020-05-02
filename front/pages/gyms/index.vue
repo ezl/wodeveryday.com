@@ -3,6 +3,7 @@
     :is-loading="isLoading"
     :item-list="countryList"
     :select-item="selectCountry"
+    :item-title="itemTitle"
   />
 </template>
 
@@ -15,6 +16,7 @@ export default {
   },
   data() {
     return {
+      itemTitle: "Country",
       countryList: [],
       isLoading: true,
     }
@@ -24,21 +26,26 @@ export default {
   },
   methods: {
     fetchCountries() {
-      this.isLoading = true
-      let url = `${process.env.BACKEND_URL}/affiliates/countries`
-      url = encodeURI(url)
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.countryList = response.countries
-          that.$store.commit("SET_COUNTRIES", that.countryList)
-          that.isLoading = false
-        })
-        .catch(function (error) {
-          console.log(error)
-          that.isLoading = false
-        })
+      if (this.$store.state.countries.length > 0) {
+        this.isLoading = true
+        let url = `${process.env.BACKEND_URL}/affiliates/countries`
+        url = encodeURI(url)
+        let that = this
+        this.$axios
+          .$get(url)
+          .then((response) => {
+            that.countryList = response.countries
+            that.$store.commit("SET_COUNTRIES", that.countryList)
+            that.isLoading = false
+          })
+          .catch(function (error) {
+            console.log(error)
+            that.isLoading = false
+          })
+      } else {
+        this.countries = this.$store.state.countries.length
+        this.isLoading = false
+      }
     },
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)

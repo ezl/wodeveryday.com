@@ -5,6 +5,7 @@
     :select-item="selectAffiliate"
     :item-key="'name'"
     :back-button-enabled="true"
+    :item-title="itemTitle"
   />
 </template>
 
@@ -17,6 +18,7 @@ export default {
   },
   data() {
     return {
+      itemTitle: "Gym",
       affiliateList: [],
       isLoading: false,
     }

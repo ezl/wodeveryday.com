@@ -33,9 +33,9 @@
                 color="white"
                 hide-no-data
                 hide-selected
-                label="Search for a country"
+                :label="`Search for a ${itemTitle}`"
                 placeholder="Start typing to Search"
-                prepend-icon="mdi-flag"
+                prepend-icon="mdi-dumbbell"
                 return-object
                 @change="selectItem(selectedItem)"
               />
@@ -67,6 +67,11 @@
 export default {
   name: "SearchCard",
   props: {
+    itemTitle: {
+      type: String,
+      required: false,
+      default: "item",
+    },
     itemKey: {
       type: String,
       required: false,

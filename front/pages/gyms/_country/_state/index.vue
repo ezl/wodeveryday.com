@@ -4,6 +4,7 @@
     :item-list="cityList"
     :select-item="selectCity"
     :custom-back-button-enabled="true"
+    :item-title="itemTitle"
   />
 </template>
 
@@ -16,6 +17,7 @@ export default {
   },
   data() {
     return {
+      itemTitle: "City",
       cityList: [],
       isLoading: true,
     }

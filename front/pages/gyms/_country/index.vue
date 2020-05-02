@@ -4,6 +4,7 @@
     :item-list="stateList"
     :select-item="selectState"
     :back-button-enabled="true"
+    :item-title="itemTitle"
   />
 </template>
 
@@ -16,6 +17,7 @@ export default {
   },
   data() {
     return {
+      itemTitle: "State",
       stateList: [],
       isLoading: true,
     }
