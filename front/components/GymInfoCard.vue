@@ -4,6 +4,7 @@
       <v-row>
         <v-col md6 class="d-flex justify-center align-center">
           <v-avatar size="200">
+            <!--eslint-disable-next-line vue/html-self-closing-->
             <img :src="gymLogo" />
           </v-avatar>
         </v-col>
