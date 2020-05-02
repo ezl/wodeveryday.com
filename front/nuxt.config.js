@@ -40,7 +40,16 @@ export default {
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: ["@nuxt/typescript-build", "@nuxtjs/vuetify", "@nuxtjs/dotenv"],
+  buildModules: [
+    "@nuxt/typescript-build",
+    "@nuxtjs/vuetify",
+    "@nuxtjs/dotenv",
+    "@nuxtjs/gtm",
+  ],
+  gtm: {
+    id: process.env.GTM_ID,
+    pageTracking: true,
+  },
   /*
    ** Nuxt.js modules
    */
