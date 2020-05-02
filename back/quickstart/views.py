@@ -60,7 +60,8 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
     def listDistinctCountries(self, request, *args):
 
         queryset = self.get_queryset()
-        country_list = queryset.values_list('country', flat=True)\
+        country_list = queryset.values_list('country', flat=True) \
+                               .order_by('country') \
                                .distinct()
 
         return Response({"countries": country_list})
@@ -71,10 +72,11 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         country = request.query_params.get('country', '')
         queryset = self.get_queryset()
         state_list = queryset.filter(country=country)\
-                             .values_list('full_state', flat=True)\
+                             .values_list('full_state', flat=True) \
+                             .order_by('full_state') \
                              .distinct()
 
-        if state_list is None:
+        if len(state_list) < 1 or state_list[0] is None:
             state_list = []
 
         return Response({"states": state_list})
@@ -91,10 +93,11 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
 
         queryset = self.get_queryset()
         city_list = queryset.filter(query)\
-                            .values_list('city', flat=True)\
+                            .values_list('city', flat=True) \
+                            .order_by('city') \
                             .distinct()
 
-        if city_list is None:
+        if len(city_list) < 1 or city_list[0] is None:
             city_list = []
 
         return Response({"cities": city_list})
