@@ -26,7 +26,8 @@ export default {
   },
   methods: {
     fetchCountries() {
-      if (this.$store.state.countries.length > 0) {
+      this.countryList = this.$store.state.countries
+      if (this.countryList.length === 0) {
         this.isLoading = true
         let url = `${process.env.BACKEND_URL}/affiliates/countries`
         url = encodeURI(url)
@@ -43,7 +44,6 @@ export default {
             that.isLoading = false
           })
       } else {
-        this.countries = this.$store.state.countries.length
         this.isLoading = false
       }
     },
