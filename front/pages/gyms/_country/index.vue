@@ -5,6 +5,7 @@
     :select-item="selectState"
     :back-button-enabled="true"
     :item-title="itemTitle"
+    :card-title="cardTitle"
   />
 </template>
 
@@ -17,7 +18,8 @@ export default {
   },
   data() {
     return {
-      itemTitle: "State",
+      cardTitle: this.$store.state.current_country,
+      itemTitle: "state",
       stateList: [],
       isLoading: true,
     }

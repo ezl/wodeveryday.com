@@ -16,7 +16,7 @@ export default {
   },
   data() {
     return {
-      itemTitle: "Country",
+      itemTitle: "country",
       countryList: [],
       isLoading: true,
     }

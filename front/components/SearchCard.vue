@@ -25,6 +25,15 @@
                 <!--eslint-disable-next-line vue/singleline-html-element-content-newline-->
                 <v-icon left dark> mdi-arrow-left-bold </v-icon>Back
               </v-btn>
+              <v-card-title
+                v-if="
+                  cardTitle && (backButtonEnabled || customBackButtonEnabled)
+                "
+                class="headline"
+                v-text="cardTitle"
+              >
+                United States
+              </v-card-title>
               <v-autocomplete
                 v-model="selectedItem"
                 v-bind="checkForItemKey()"
@@ -35,7 +44,6 @@
                 hide-selected
                 :label="`Search for a ${itemTitle}`"
                 placeholder="Start typing to Search"
-                prepend-icon="mdi-dumbbell"
                 return-object
                 @change="selectItem(selectedItem)"
               />
@@ -67,6 +75,11 @@
 export default {
   name: "SearchCard",
   props: {
+    cardTitle: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     itemTitle: {
       type: String,
       required: false,

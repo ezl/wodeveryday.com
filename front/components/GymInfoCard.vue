@@ -17,10 +17,11 @@
           <v-tooltip right>
             <template v-slot:activator="{ on }">
               <v-btn
+                v-if="gymPhoneNumber !== ''"
                 id="phone_field"
                 large
                 class="my-2 d-block"
-                :loading="!gymPhoneNumber"
+                :loading="gymPhoneNumber != undefined"
                 v-on="on"
                 @click="copyToClipboard()"
               >
@@ -41,7 +42,7 @@
             color="yellow accent-4"
           />
           <v-progress-circular
-            v-if="gymRating == undefined"
+            v-if="gymRating === undefined && gymRating != -1"
             style="width: 100%;"
             indeterminate
             color="amber"
