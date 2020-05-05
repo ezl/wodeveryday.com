@@ -6,6 +6,7 @@
     :item-key="'name'"
     :back-button-enabled="true"
     :item-title="itemTitle"
+    :card-title="cardTitle"
   />
 </template>
 
@@ -18,7 +19,8 @@ export default {
   },
   data() {
     return {
-      itemTitle: "Gym",
+      cardTitle: this.$store.state.current_city,
+      itemTitle: "gym",
       affiliateList: [],
       isLoading: false,
     }

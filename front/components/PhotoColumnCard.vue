@@ -9,7 +9,7 @@
         indeterminate
       />
     </v-card-text>
-    <template v-if="gymPhotos && gymPhotos.length > 0">
+    <template>
       <v-img
         v-for="(photo, index) in gymPhotos"
         :key="index"

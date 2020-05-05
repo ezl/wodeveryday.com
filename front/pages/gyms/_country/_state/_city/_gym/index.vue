@@ -44,7 +44,7 @@
 
           <gym-leaderboard-card :gym-name="gymName" />
         </v-col>
-        <v-col id="photo_column">
+        <v-col v-if="gymPhotos && gymPhotos.length > 0" id="photo_column">
           <photo-column-card :gym-photos="gymPhotos" />
         </v-col>
       </v-row>
@@ -118,11 +118,15 @@ export default {
     },
     initMap() {
       // eslint-disable-next-line no-undef
-      var sydney = new google.maps.LatLng(this.gymLat, this.gymLon)
+      var location = new google.maps.LatLng(this.gymLat, this.gymLon)
+      var coordinates = {
+        lat: parseFloat(this.gymLat),
+        lng: parseFloat(this.gymLon),
+      }
 
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
-        center: sydney,
+        center: location,
         zoom: 15,
       })
 
@@ -135,15 +139,24 @@ export default {
       this.service = new google.maps.places.PlacesService(this.map)
       let that = this
       this.service.findPlaceFromQuery(request, function (results, status) {
-        that.place_id = results[0].place_id
         // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          for (var i = 0; i < results.length; i++) {
-            that.createMarker(results[i], that.map)
-          }
-          that.map.setCenter(results[0].geometry.location)
+          that.createMarker(coordinates, that.map)
+          that.map.setCenter(coordinates)
         }
-        that.getPlaceDetails()
+
+        if (results != null) {
+          that.place_id = results[0].place_id
+          that.getPlaceDetails()
+        } else {
+          that.gymPhoneNumber = ""
+          that.gymRating = -1
+          that.gymReviews = []
+          that.gymPhotos = []
+          that.gymTimes = []
+          that.gymTimes = []
+          return
+        }
       })
     },
     getPlaceDetails() {
@@ -173,11 +186,12 @@ export default {
         }
       })
     },
-    createMarker(place, map) {
+    createMarker(coordinates, map) {
+      console.log(coordinates)
       // eslint-disable-next-line no-undef
       new google.maps.Marker({
         map: map,
-        position: place.geometry.location,
+        position: coordinates,
       })
       this.mapActive = true
     },

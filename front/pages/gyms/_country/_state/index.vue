@@ -5,6 +5,7 @@
     :select-item="selectCity"
     :custom-back-button-enabled="true"
     :item-title="itemTitle"
+    :card-title="cardTitle"
   />
 </template>
 
@@ -17,7 +18,8 @@ export default {
   },
   data() {
     return {
-      itemTitle: "City",
+      cardTitle: undefined,
+      itemTitle: "city",
       cityList: [],
       isLoading: true,
     }
@@ -32,8 +34,10 @@ export default {
       let currentState = this.$store.state.current_state
       if (currentState === "none") {
         url += `?country=${this.$store.state.current_country}`
+        this.cardTitle = this.$store.state.current_country
       } else {
         url += `?state=${currentState}`
+        this.cardTitle = this.$store.state.current_state
       }
       url = encodeURI(url)
       let that = this
