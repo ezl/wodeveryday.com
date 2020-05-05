@@ -44,7 +44,7 @@
 
           <gym-leaderboard-card :gym-name="gymName" />
         </v-col>
-        <v-col v-if="gymPhotos && gymPhotos.length > 0" id="photo_column">
+        <v-col id="photo_column">
           <photo-column-card :gym-photos="gymPhotos" />
         </v-col>
       </v-row>
@@ -138,12 +138,10 @@ export default {
       // eslint-disable-next-line no-undef
       this.service = new google.maps.places.PlacesService(this.map)
       let that = this
+      // eslint-disable-next-line no-unused-vars
       this.service.findPlaceFromQuery(request, function (results, status) {
-        // eslint-disable-next-line no-undef
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          that.createMarker(coordinates, that.map)
-          that.map.setCenter(coordinates)
-        }
+        that.createMarker(coordinates, that.map)
+        that.map.setCenter(coordinates)
 
         if (results != null) {
           that.place_id = results[0].place_id
@@ -187,7 +185,6 @@ export default {
       })
     },
     createMarker(coordinates, map) {
-      console.log(coordinates)
       // eslint-disable-next-line no-undef
       new google.maps.Marker({
         map: map,
