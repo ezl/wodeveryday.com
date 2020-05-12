@@ -118,11 +118,15 @@ export default {
     },
     initMap() {
       // eslint-disable-next-line no-undef
-      var sydney = new google.maps.LatLng(this.gymLat, this.gymLon)
+      var location = new google.maps.LatLng(this.gymLat, this.gymLon)
+      var coordinates = {
+        lat: parseFloat(this.gymLat),
+        lng: parseFloat(this.gymLon),
+      }
 
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
-        center: sydney,
+        center: location,
         zoom: 15,
       })
 
@@ -134,16 +138,23 @@ export default {
       // eslint-disable-next-line no-undef
       this.service = new google.maps.places.PlacesService(this.map)
       let that = this
+      // eslint-disable-next-line no-unused-vars
       this.service.findPlaceFromQuery(request, function (results, status) {
-        that.place_id = results[0].place_id
-        // eslint-disable-next-line no-undef
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          for (var i = 0; i < results.length; i++) {
-            that.createMarker(results[i], that.map)
-          }
-          that.map.setCenter(results[0].geometry.location)
+        that.createMarker(coordinates, that.map)
+        that.map.setCenter(coordinates)
+
+        if (results != null) {
+          that.place_id = results[0].place_id
+          that.getPlaceDetails()
+        } else {
+          that.gymPhoneNumber = ""
+          that.gymRating = -1
+          that.gymReviews = []
+          that.gymPhotos = []
+          that.gymTimes = []
+          that.gymTimes = []
+          return
         }
-        that.getPlaceDetails()
       })
     },
     getPlaceDetails() {
@@ -173,11 +184,11 @@ export default {
         }
       })
     },
-    createMarker(place, map) {
+    createMarker(coordinates, map) {
       // eslint-disable-next-line no-undef
       new google.maps.Marker({
         map: map,
-        position: place.geometry.location,
+        position: coordinates,
       })
       this.mapActive = true
     },

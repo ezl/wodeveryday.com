@@ -4,6 +4,7 @@
       <v-row>
         <v-col md6 class="d-flex justify-center align-center">
           <v-avatar size="200">
+            <!--eslint-disable-next-line vue/html-self-closing-->
             <img :src="gymLogo" />
           </v-avatar>
         </v-col>
@@ -13,13 +14,19 @@
             Visit their website
           </v-btn>
 
-          <v-tooltip right>
+          <v-tooltip
+            v-if="
+              gymPhoneNumber === undefined ||
+              (gymPhoneNumber && gymPhoneNumber.length > 0)
+            "
+            right
+          >
             <template v-slot:activator="{ on }">
               <v-btn
                 id="phone_field"
                 large
                 class="my-2 d-block"
-                :loading="!gymPhoneNumber"
+                :loading="gymPhoneNumber === undefined"
                 v-on="on"
                 @click="copyToClipboard()"
               >
@@ -40,8 +47,7 @@
             color="yellow accent-4"
           />
           <v-progress-circular
-            v-if="gymRating == undefined"
-            style="width: 100%;"
+            v-if="gymRating === undefined && gymRating != -1"
             indeterminate
             color="amber"
           />
