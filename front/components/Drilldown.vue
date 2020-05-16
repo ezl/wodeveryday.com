@@ -2,7 +2,7 @@
   <v-card class="mb-3">
     <v-card-text>
       <h3 class="text-uppercase">
-        <nuxt-link to="/gyms/">
+        <nuxt-link to="/">
           <v-btn text>
             Gyms
           </v-btn>
