@@ -30,5 +30,6 @@ class AffiliateSerializer(serializers.HyperlinkedModelSerializer):
             'country',
             'org_type',
             'aid',
-            'full_state'
+            'full_state',
+            'continent'
         ]

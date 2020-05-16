@@ -26,6 +26,7 @@ class Affiliate(models.Model):
     org_type = models.TextField(blank=True)
     aid = models.TextField(blank=True)
     full_state = models.TextField(blank=True)
+    continent = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
