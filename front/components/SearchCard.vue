@@ -1,79 +1,74 @@
 <template>
   <v-app id="inspire">
+    <navbar />
     <v-content>
-      <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
-          <v-col cols="12" sm="8" md="4">
-            <v-card class="pa-4 elevation-12">
-              <v-btn
-                v-if="backButtonEnabled"
-                class="mb-4"
-                block
-                dark
-                @click="$router.go(-1)"
+      <v-row align="center" justify="center" style="flex-direction: column;">
+        <h1 class="ma-4">
+          Find a Gym Anywhere
+        </h1>
+        <v-col cols="12" sm="8" md="4">
+          <v-card class="pa-4 elevation-12">
+            <v-autocomplete
+              v-model="selectedItem"
+              v-bind="checkForItemKey()"
+              :items="flat(Object.values(itemList))"
+              :loading="isLoading"
+              color="white"
+              hide-no-data
+              hide-selected
+              placeholder="Start typing to Search"
+              return-object
+              @change="selectItem(selectedItem)"
+            />
+          </v-card>
+        </v-col>
+        <h1 v-if="itemTitle" class="mt-4">
+          {{ $store.state["current_" + itemTitle] }}
+        </h1>
+      </v-row>
+      <v-row justify="center" class="flex-nowrap">
+        <v-col
+          v-for="(subList, index) in listOfItemLists"
+          :key="index"
+          :style="`width: ${columnWidth}%;`"
+        >
+          <!-- <v-col v-for="(subItems, item) in itemList" :key="item"> -->
+          <v-list v-for="(subItems, item) in subList" :key="item" class="ma-4">
+            <v-list-item-group color="primary">
+              <v-list-item @click="selectItem(item)">
+                <v-list-item-content>
+                  <v-list-item-title
+                    class="headline font-weight-bold"
+                    v-text="item"
+                  />
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item
+                v-for="(subItem, i) in subItems"
+                :key="i"
+                @click="selectSubitem(item, subItem)"
               >
-                <!--eslint-disable-next-line vue/singleline-html-element-content-newline-->
-                <v-icon left dark> mdi-arrow-left-bold </v-icon>Back
-              </v-btn>
-              <v-btn
-                v-if="customBackButtonEnabled"
-                class="mb-4"
-                block
-                dark
-                @click="navigateBack()"
-              >
-                <!--eslint-disable-next-line vue/singleline-html-element-content-newline-->
-                <v-icon left dark> mdi-arrow-left-bold </v-icon>Back
-              </v-btn>
-              <v-card-title
-                v-if="
-                  cardTitle && (backButtonEnabled || customBackButtonEnabled)
-                "
-                class="headline"
-                v-text="cardTitle"
-              >
-                United States
-              </v-card-title>
-              <v-autocomplete
-                v-model="selectedItem"
-                v-bind="checkForItemKey()"
-                :items="itemList"
-                :loading="isLoading"
-                color="white"
-                hide-no-data
-                hide-selected
-                :label="`Search for a ${itemTitle}`"
-                placeholder="Start typing to Search"
-                return-object
-                @change="selectItem(selectedItem)"
-              />
-              <v-card style="max-height: 400px;" class="overflow-y-auto">
-                <v-btn
-                  v-for="(item, index) in itemList"
-                  :key="index"
-                  text
-                  large
-                  @click="selectItem(item)"
-                >
-                  <span v-if="itemKey.length > 0">
-                    {{ item[itemKey] }}
-                  </span>
-                  <span v-else>
-                    {{ item }}
-                  </span>
-                </v-btn>
-              </v-card>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+                <v-list-item-content>
+                  <v-list-item-title v-text="subItem" />
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-col>
+      </v-row>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import Navbar from "~/components/Navbar.vue"
+import _ from "lodash"
+
 export default {
   name: "SearchCard",
+  components: {
+    Navbar,
+  },
   props: {
     cardTitle: {
       type: String,
@@ -83,7 +78,7 @@ export default {
     itemTitle: {
       type: String,
       required: false,
-      default: "item",
+      default: undefined,
     },
     itemKey: {
       type: String,
@@ -106,7 +101,7 @@ export default {
       default: false,
     },
     itemList: {
-      type: Array,
+      type: Object,
       required: false,
       default: undefined,
     },
@@ -114,13 +109,66 @@ export default {
       type: Function,
       default: () => {},
     },
+    selectSubitem: {
+      type: Function,
+      default: () => {},
+    },
   },
   data() {
     return {
       selectedItem: undefined,
+      windowInnerWidth: 0,
+      listOfItemLists: [],
+      columnWidth: 0,
     }
   },
+  watch: {
+    itemList: function () {
+      this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
+    },
+  },
+  created() {
+    window.addEventListener("resize", this.handleResize)
+    this.handleResize()
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.handleResize)
+  },
   methods: {
+    handleResize() {
+      this.windowInnerWidth = window.innerWidth
+      this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
+      this.columnWidth = Math.floor(100 / (this.windowInnerWidth / 250))
+    },
+    divideObjectIntoListOfObjects(obj) {
+      let divideInto = Math.floor(this.windowInnerWidth / 250)
+      let objectKeys = Object.keys(obj)
+      const objectSize = objectKeys.length
+      const listOfObjectsSize = Math.floor(objectSize / divideInto)
+      let listOfObjects = []
+      for (let i = 0; i < divideInto; i++) {
+        if (i + 1 === divideInto) {
+          let subset = _.pick(obj, objectKeys)
+          listOfObjects.unshift(subset)
+        } else {
+          let subset = _.pick(obj, objectKeys.slice(0, listOfObjectsSize))
+          listOfObjects.unshift(subset)
+          objectKeys = objectKeys.slice(listOfObjectsSize)
+        }
+      }
+      return listOfObjects
+    },
+    flat(input, depth = 1, stack = []) {
+      for (let item of input) {
+        if (item instanceof Array && depth > 0) {
+          this.flat(item, depth - 1, stack)
+        } else {
+          stack.push(item)
+        }
+      }
+
+      return stack
+    },
     checkForItemKey() {
       if (this.itemKey.length > 0) {
         return {

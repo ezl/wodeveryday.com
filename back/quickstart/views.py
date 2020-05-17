@@ -90,10 +90,16 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         countries_by_continent_dictionary = dict.fromkeys(countries_list, [])
 
         for key, value in countries_by_continent_dictionary.copy().items():
-            countries_by_continent_dictionary[key] = queryset.filter(country=key) \
-                .values_list('city', flat=True) \
-                .order_by('city') \
-                .distinct()
+            if key in ["United States", "Australia", "Canada"]:
+                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                    .values_list('full_state', flat=True) \
+                    .order_by('full_state') \
+                    .distinct()
+            else:
+                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                    .values_list('city', flat=True) \
+                    .order_by('city') \
+                    .distinct()
 
         return Response(countries_by_continent_dictionary)
 
