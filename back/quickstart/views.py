@@ -56,33 +56,76 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['country', 'full_state', 'city']
 
-    @action(detail=False, methods=['get'], url_path='countries')
-    def listDistinctCountries(self, request, *args):
+    @action(detail=False, methods=['get'], url_path='continents')
+    def listDistinctCountriesByContinent(self, request, *args):
 
         queryset = self.get_queryset()
-        country_list = queryset.values_list('country', flat=True) \
-                               .order_by('country') \
-                               .distinct()
+        country_by_continent_dictionary = {
+            "Africa": [],
+            "Asia": [],
+            "Europe": [],
+            "North America": [],
+            "South America": [],
+            "Oceania": [],
+        }
+        for key, value in country_by_continent_dictionary.copy().items():
+            country_by_continent_dictionary[key] = queryset.filter(continent=key)\
+                                   .values_list('country', flat=True) \
+                                   .order_by('country') \
+                                   .distinct()
 
-        return Response({"countries": country_list})
+        return Response(country_by_continent_dictionary)
+
+    @action(detail=False, methods=['get'], url_path='countries')
+    def listDistinctCountriesAndTheirCitiesByContinent(self, request, *args):
+
+        continent = request.query_params.get('continent', '')
+        queryset = self.get_queryset()
+
+        countries_list = queryset.filter(continent=continent) \
+            .values_list('country', flat=True) \
+            .order_by('country') \
+            .distinct()
+
+        countries_by_continent_dictionary = dict.fromkeys(countries_list, [])
+
+        for key, value in countries_by_continent_dictionary.copy().items():
+            if key in ["United States", "Australia", "Canada"]:
+                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                    .values_list('full_state', flat=True) \
+                    .order_by('full_state') \
+                    .distinct()
+            else:
+                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                    .values_list('city', flat=True) \
+                    .order_by('city') \
+                    .distinct()
+
+        return Response(countries_by_continent_dictionary)
 
     @action(detail=False, methods=['get'], url_path='states')
-    def listDistinctStates(self, request, *args):
+    def listDistinctStatesAndTheirCitiesByCountry(self, request, *args):
 
         country = request.query_params.get('country', '')
         queryset = self.get_queryset()
-        state_list = queryset.filter(country=country)\
-                             .values_list('full_state', flat=True) \
-                             .order_by('full_state') \
-                             .distinct()
 
-        if len(state_list) < 1 or state_list[0] is None:
-            state_list = []
+        state_list = queryset.filter(country=country) \
+            .values_list('full_state', flat=True) \
+            .order_by('full_state') \
+            .distinct()
 
-        return Response({"states": state_list})
+        cities_by_state_dictionary = dict.fromkeys(state_list, [])
 
-    @action(detail=False, methods=['get'], url_path='cities')
-    def listDistinctCities(self, request, *args):
+        for key, value in cities_by_state_dictionary.copy().items():
+            cities_by_state_dictionary[key] = queryset.filter(full_state=key) \
+                                                    .values_list('city', flat=True) \
+                                                    .order_by('city') \
+                                                    .distinct()
+
+        return Response(cities_by_state_dictionary)
+
+    @action(detail=False, methods=['get'], url_path='gyms')
+    def listDistinctCitiesAndTheirGymsByCountryOrState(self, request, *args):
 
         country = request.query_params.get('country', '')
         if not country:
@@ -90,14 +133,19 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
             query = Q(full_state=state)
         else:
             query = Q(country=country)
-
         queryset = self.get_queryset()
-        city_list = queryset.filter(query)\
-                            .values_list('city', flat=True) \
-                            .order_by('city') \
-                            .distinct()
 
-        if len(city_list) < 1 or city_list[0] is None:
-            city_list = []
+        city_or_state_list = queryset.filter(query) \
+            .values_list('city', flat=True) \
+            .order_by('city') \
+            .distinct()
 
-        return Response({"cities": city_list})
+        gyms_by_city_or_state_dictionary = dict.fromkeys(city_or_state_list, [])
+
+        for key, value in gyms_by_city_or_state_dictionary.copy().items():
+            gyms_by_city_or_state_dictionary[key] = queryset.filter(city=key) \
+                .values_list('name', flat=True) \
+                .order_by('name') \
+                .distinct()
+
+        return Response(gyms_by_city_or_state_dictionary)

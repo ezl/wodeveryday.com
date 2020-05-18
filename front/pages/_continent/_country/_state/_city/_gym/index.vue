@@ -1,23 +1,7 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <v-card>
-        <v-tabs v-model="currentNavTab" dark show-arrows centered>
-          <v-tabs-slider />
-
-          <v-tab
-            v-for="(tab, index) in navbarTabs"
-            :key="index"
-            :disabled="index == 3"
-          >
-            <h1 v-if="index == 3" style="color: white; opacity: 1;">
-              {{ tab }}
-            </h1>
-            <span v-if="index != 3">{{ tab }}</span>
-          </v-tab>
-        </v-tabs>
-      </v-card>
-
+      <navbar />
       <v-row class="mb-6 mt-3">
         <v-col>
           <drilldown :gym-name="gymName" />
@@ -53,6 +37,7 @@
 </template>
 
 <script>
+import Navbar from "~/components/Navbar.vue"
 import Drilldown from "~/components/Drilldown.vue"
 import GymInfoCard from "~/components/GymInfoCard.vue"
 import PhotoCarousel from "~/components/PhotoCarousel.vue"
@@ -64,6 +49,7 @@ import PhotoColumnCard from "~/components/PhotoColumnCard.vue"
 
 export default {
   components: {
+    Navbar,
     Drilldown,
     GymInfoCard,
     PhotoCarousel,
@@ -75,16 +61,6 @@ export default {
   },
   data() {
     return {
-      currentNavTab: 1,
-      navbarTabs: [
-        "Home",
-        "Find A Gym",
-        "Games",
-        "WOD EVERY DAY",
-        "About",
-        "Contact",
-        "Blog",
-      ],
       gymRating: undefined,
       gymLogo: this.$store.state.current_affiliate.photo,
       gymPhoneNumber: undefined,

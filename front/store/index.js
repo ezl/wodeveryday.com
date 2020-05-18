@@ -6,11 +6,13 @@ import Vue from "vue"
 export const state = () => {
   const s = {
     current_affiliate: {},
-    countries: [],
+    continents: {},
+    current_continent: undefined,
+    countries: {},
     current_country: undefined,
-    states: [],
+    states: {},
     current_state: undefined,
-    cities: [],
+    cities: {},
     current_city: undefined,
   }
 
@@ -24,6 +26,16 @@ export const mutations = {
   SET_CURRENT_AFFILIATE: (state, affiliate) => {
     if (affiliate) {
       Vue.set(state, "current_affiliate", affiliate)
+    }
+  },
+  SET_CONTINENTS: (state, continents) => {
+    if (continents) {
+      Vue.set(state, "continents", continents)
+    }
+  },
+  SET_CURRENT_CONTINENT: (state, current_continent) => {
+    if (current_continent) {
+      Vue.set(state, "current_continent", current_continent)
     }
   },
   SET_COUNTRIES: (state, countries) => {
