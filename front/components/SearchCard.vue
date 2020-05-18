@@ -127,16 +127,25 @@ export default {
       this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
     },
   },
+  mounted() {
+    this.handleResize()
+  },
   created() {
-    window.addEventListener("resize", this.handleResize)
+    if (process.client) {
+      window.addEventListener("resize", this.handleResize)
+    }
     this.handleResize()
   },
   destroyed() {
-    window.removeEventListener("resize", this.handleResize)
+    if (process.client) {
+      window.removeEventListener("resize", this.handleResize)
+    }
   },
   methods: {
     handleResize() {
-      this.windowInnerWidth = window.innerWidth
+      if (process.client) {
+        this.windowInnerWidth = window.innerWidth
+      }
       this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
       this.columnWidth = Math.floor(100 / (this.windowInnerWidth / 250))
     },
@@ -144,7 +153,13 @@ export default {
       let divideInto = Math.floor(this.windowInnerWidth / 250)
       let objectKeys = Object.keys(obj)
       const objectSize = objectKeys.length
-      const listOfObjectsSize = Math.floor(objectSize / divideInto)
+
+      let listOfObjectsSize = Math.floor(objectSize / divideInto)
+      while (listOfObjectsSize === 0) {
+        divideInto -= 1
+        listOfObjectsSize = Math.floor(objectSize / divideInto)
+      }
+
       let listOfObjects = []
       for (let i = 0; i < divideInto; i++) {
         if (i + 1 === divideInto) {
