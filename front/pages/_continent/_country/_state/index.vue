@@ -19,8 +19,8 @@ export default {
   data() {
     return {
       cardTitle: undefined,
-      itemTitle: "city",
-      cityList: [],
+      itemTitle: undefined,
+      cityList: {},
       isLoading: true,
     }
   },
@@ -30,21 +30,21 @@ export default {
   methods: {
     fetchCities() {
       this.isLoading = true
-      let url = `${process.env.BACKEND_URL}/affiliates/cities/`
+      let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
       let currentState = this.$store.state.current_state
       if (currentState === "none") {
         url += `?country=${this.$store.state.current_country}`
-        this.cardTitle = this.$store.state.current_country
+        this.itemTitle = "country"
       } else {
         url += `?state=${currentState}`
-        this.cardTitle = this.$store.state.current_state
+        this.itemTitle = "state"
       }
       url = encodeURI(url)
       let that = this
       this.$axios
         .$get(url)
         .then((response) => {
-          that.cityList = response.cities
+          that.cityList = response
           that.$store.commit("SET_CITIES", that.cityList)
           that.isLoading = false
         })

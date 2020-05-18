@@ -1,7 +1,7 @@
 <template>
-  <search-card
+  <gym-search-card
     :is-loading="isLoading"
-    :item-list="affiliateList"
+    :gym-list="affiliateList"
     :select-item="selectAffiliate"
     :item-key="'name'"
     :back-button-enabled="true"
@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import GymSearchCard from "~/components/GymSearchCard.vue"
 
 export default {
   components: {
-    SearchCard,
+    GymSearchCard,
   },
   data() {
     return {
@@ -30,11 +30,11 @@ export default {
   },
   methods: {
     fetchAffiliates() {
-      let url = `${process.env.BACKEND_URL}/affiliates/?country=${this.$store.state.current_country}&city=${this.$store.state.current_city}`
-      let currentState = this.$store.state.current_state
-      if (currentState) {
-        url += `&state=${currentState}`
-      }
+      let url = `${process.env.BACKEND_URL}/affiliates/?city=${this.$store.state.current_city}`
+      // let currentState = this.$store.state.current_state
+      // if (currentState) {
+      //   url += `&state=${currentState}`
+      // }
       let that = this
       this.$axios
         .$get(url)

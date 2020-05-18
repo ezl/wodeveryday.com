@@ -1,9 +1,9 @@
 <template>
   <search-card
     :is-loading="isLoading"
-    :item-list="countryList"
-    :select-item="selectCountry"
-    :item-title="itemTitle"
+    :item-list="continentObject"
+    :select-item="selectContinent"
+    :select-subitem="selectCountry"
   />
 </template>
 
@@ -16,27 +16,26 @@ export default {
   },
   data() {
     return {
-      itemTitle: "country",
-      countryList: [],
+      continentObject: {},
       isLoading: true,
     }
   },
   mounted() {
-    this.fetchCountries()
+    this.fetchContinents()
   },
   methods: {
-    fetchCountries() {
-      this.countryList = this.$store.state.countries
-      if (this.countryList.length === 0) {
+    fetchContinents() {
+      this.continentObject = this.$store.state.continents
+      if (Object.values(this.continentObject).length === 0) {
         this.isLoading = true
-        let url = `${process.env.BACKEND_URL}/affiliates/countries`
+        let url = `${process.env.BACKEND_URL}/affiliates/continents`
         url = encodeURI(url)
         let that = this
         this.$axios
           .$get(url)
           .then((response) => {
-            that.countryList = response.countries
-            that.$store.commit("SET_COUNTRIES", that.countryList)
+            that.continentObject = response
+            that.$store.commit("SET_CONTINENTS", that.continentObject)
             that.isLoading = false
           })
           .catch(function (error) {
@@ -47,9 +46,14 @@ export default {
         this.isLoading = false
       }
     },
-    selectCountry(countryName) {
+    selectContinent(continentName) {
+      this.$store.commit("SET_CURRENT_CONTINENT", continentName)
+      this.$router.push(`${continentName}/`)
+    },
+    selectCountry(continentName, countryName) {
+      this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
-      this.$router.push(`${countryName}/`)
+      this.$router.push(`${continentName}/${countryName}/`)
     },
   },
 }
