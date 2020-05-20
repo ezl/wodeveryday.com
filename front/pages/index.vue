@@ -22,8 +22,23 @@ export default {
   },
   mounted() {
     this.fetchContinents()
+    this.generateBreadcrumb()
   },
   methods: {
+    generateBreadcrumb() {
+      let pages = ["continent", "country", "state", "gym"]
+      let currentPage = pages.indexOf(this.itemTitle || "")
+      if (currentPage != -1) {
+        let breadcrumbNames = ["Home"]
+        for (let i = 0; i <= currentPage; i++) {
+          let name = this.$store.state["current_" + pages[i]]
+          if (name != "none") breadcrumbNames.push(name)
+        }
+        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", breadcrumbNames)
+      } else {
+        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", [])
+      }
+    },
     fetchContinents() {
       this.continentObject = this.$store.state.continents
       if (Object.values(this.continentObject).length === 0) {

@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <navbar />
     <v-content>
+      <breadcrumb :breadcrumb-names="$store.state.globalBreadcrumbNames" />
       <v-row align="center" justify="center" style="flex-direction: column;">
         <v-col cols="12" sm="8" md="4">
           <v-card class="pa-4 elevation-12 ma-4">
@@ -45,11 +46,13 @@
 
 <script>
 import Navbar from "~/components/Navbar.vue"
+import Breadcrumb from "~/components/Breadcrumb.vue"
 
 export default {
   name: "GymSearchCard",
   components: {
     Navbar,
+    Breadcrumb,
   },
   props: {
     cardTitle: {
