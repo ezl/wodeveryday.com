@@ -18,7 +18,7 @@
               hide-selected
               placeholder="Start typing to Search"
               return-object
-              @change="selectItem(selectedItem)"
+              @change="selectSubitem(selectedItem)"
             />
           </v-card>
         </v-col>
@@ -46,7 +46,7 @@
               <v-list-item
                 v-for="(subItem, i) in subItems"
                 :key="i"
-                @click="selectSubitem(item, subItem)"
+                @click="selectSubitem(subItem)"
               >
                 <v-list-item-content>
                   <v-list-item-title v-text="subItem" />

@@ -3,7 +3,7 @@
     :is-loading="isLoading"
     :item-list="cityList"
     :select-item="selectCity"
-    :custom-back-button-enabled="true"
+    :select-subitem="selectGym"
     :item-title="itemTitle"
     :card-title="cardTitle"
   />
@@ -28,15 +28,27 @@ export default {
     this.fetchCities()
   },
   methods: {
+    retrieveStoredPathVariable(pathVarName) {
+      let pathVariable = this.$store.state[`current_${pathVarName}`]
+      if (pathVariable === undefined) {
+        pathVariable = this.$route.params[pathVarName]
+        this.$store.commit(
+          `SET_CURRENT_${pathVarName.toUpperCase()}`,
+          pathVariable
+        )
+      }
+      return pathVariable
+    },
     fetchCities() {
       this.isLoading = true
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
-      let currentState = this.$store.state.current_state
-      if (currentState === "none") {
-        url += `?country=${this.$store.state.current_country}`
+      const state = this.retrieveStoredPathVariable("state")
+      if (state === "none") {
+        const country = this.retrieveStoredPathVariable("country")
+        url += `?country=${country}`
         this.itemTitle = "country"
       } else {
-        url += `?state=${currentState}`
+        url += `?state=${state}`
         this.itemTitle = "state"
       }
       url = encodeURI(url)
@@ -53,6 +65,20 @@ export default {
           that.isLoading = false
         })
     },
+    fetchGym(cityName, gymName) {
+      let url = `${process.env.BACKEND_URL}/affiliates/?city=${cityName}&name=${gymName}`
+      let that = this
+      this.$axios
+        .$get(url)
+        .then((response) => {
+          const selectedAffiliate = response.results[0]
+          that.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)
+          that.navigateToGym(cityName, gymName)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    },
     getStateOrCountry() {
       let currentState = this.$store.state.current_state
       if (currentState) {
@@ -61,9 +87,24 @@ export default {
         return ``
       }
     },
+    findParent(registryObject, name) {
+      registryObject = Object.entries(registryObject)
+      let parentName = registryObject.find(
+        (parent) => parent[1].indexOf(name) !== -1
+      )
+      return parentName[0]
+    },
     selectCity(cityName) {
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$router.push(`${cityName}/`)
+    },
+    selectGym(gymName) {
+      let cityName = this.findParent(this.cityList, gymName)
+      this.$store.commit("SET_CURRENT_CITY", gymName)
+      this.fetchGym(cityName, gymName)
+    },
+    navigateToGym(cityName, gymName) {
+      this.$router.push(`${cityName}/${gymName}/`)
     },
   },
 }

@@ -92,7 +92,6 @@ export default {
   },
   methods: {
     fetchLeaderboardData() {
-      // const { sortBy, sortDesc, page, itemsPerPage } = this.options
       let url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
       let parameters = {
         affiliate_name: this.gymName,
