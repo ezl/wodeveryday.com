@@ -50,10 +50,27 @@ export default {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$router.push(`${continentName}/`)
     },
-    selectCountry(continentName, countryName) {
+    findParent(registryObject, name) {
+      registryObject = Object.entries(registryObject)
+      let parentName = registryObject.find(
+        (parent) => parent[1].indexOf(name) !== -1
+      )
+      return parentName[0]
+    },
+    selectCountry(countryName) {
+      let continentName = this.findParent(this.continentObject, countryName)
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
-      this.$router.push(`${continentName}/${countryName}/`)
+      if (
+        ["United States", "Australia", "Canada"].includes(
+          this.$store.state.current_country
+        )
+      ) {
+        this.$router.push(`${continentName}/${countryName}/`)
+      } else {
+        this.$store.commit("SET_CURRENT_STATE", "none")
+        this.$router.push(`${continentName}/${countryName}/none/`)
+      }
     },
   },
 }

@@ -27,33 +27,57 @@ export default {
     this.fetchCountries()
   },
   methods: {
-    fetchCountries() {
-      this.countryList = this.$store.state.countries
-      if (Object.values(this.countryList).length === 0) {
-        this.isLoading = true
-        let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${this.$store.state.current_continent}`
-        url = encodeURI(url)
-        let that = this
-        this.$axios
-          .$get(url)
-          .then((response) => {
-            that.countryList = response
-            that.$store.commit("SET_COUNTRIES", that.countryList)
-            that.isLoading = false
-          })
-          .catch(function (error) {
-            console.log(error)
-            that.isLoading = false
-          })
-      } else {
-        this.isLoading = false
+    retrieveStoredPathVariable(pathVarName) {
+      let pathVariable = this.$store.state[`current_${pathVarName}`]
+      if (pathVariable === undefined) {
+        pathVariable = this.$route.params[pathVarName]
+        this.$store.commit(
+          `SET_CURRENT_${pathVarName.toUpperCase()}`,
+          pathVariable
+        )
       }
+      return pathVariable
+    },
+    fetchCountries() {
+      const continent = this.retrieveStoredPathVariable("continent")
+      this.isLoading = true
+      let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
+      url = encodeURI(url)
+      let that = this
+      this.$axios
+        .$get(url)
+        .then((response) => {
+          that.countryList = response
+          that.$store.commit("SET_COUNTRIES", that.countryList)
+          that.isLoading = false
+        })
+        .catch(function (error) {
+          console.log(error)
+          that.isLoading = false
+        })
     },
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
-      this.$router.push(`${countryName}/`)
+      if (
+        ["United States", "Australia", "Canada"].includes(
+          this.$store.state.current_country
+        )
+      ) {
+        this.$router.push(`${countryName}/`)
+      } else {
+        this.$store.commit("SET_CURRENT_STATE", "none")
+        this.$router.push(`${countryName}/none/`)
+      }
     },
-    selectCityOrState(countryName, cityOrStateName) {
+    findParent(registryObject, name) {
+      registryObject = Object.entries(registryObject)
+      let parentName = registryObject.find(
+        (parent) => parent[1].indexOf(name) !== -1
+      )
+      return parentName[0]
+    },
+    selectCityOrState(cityOrStateName) {
+      let countryName = this.findParent(this.countryList, cityOrStateName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
         ["United States", "Australia", "Canada"].includes(
