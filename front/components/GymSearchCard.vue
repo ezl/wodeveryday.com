@@ -4,28 +4,8 @@
     <v-content>
       <v-row align="center" justify="center" style="flex-direction: column;">
         <v-col cols="12" sm="8" md="4">
-          <v-card class="pa-4 elevation-12">
-            <v-btn
-              v-if="backButtonEnabled"
-              class="mb-4"
-              block
-              dark
-              @click="$router.go(-1)"
-            >
-              <!--eslint-disable-next-line vue/singleline-html-element-content-newline-->
-              <v-icon left dark> mdi-arrow-left-bold </v-icon>Back
-            </v-btn>
-            <v-btn
-              v-if="customBackButtonEnabled"
-              class="mb-4"
-              block
-              dark
-              @click="navigateBack()"
-            >
-              <!--eslint-disable-next-line vue/singleline-html-element-content-newline-->
-              <v-icon left dark> mdi-arrow-left-bold </v-icon>Back
-            </v-btn>
-            <h1 class="ma-4" style="text-align: center;">
+          <v-card class="pa-4 elevation-12 ma-4">
+            <h1 style="text-align: center;">
               Gyms in {{ $store.state.current_city }}
             </h1>
           </v-card>

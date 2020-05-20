@@ -54,7 +54,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
     queryset = Affiliate.objects.all()
     serializer_class = AffiliateSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['country', 'full_state', 'city']
+    filterset_fields = ['country', 'full_state', 'city', 'name']
 
     @action(detail=False, methods=['get'], url_path='continents')
     def listDistinctCountriesByContinent(self, request, *args):

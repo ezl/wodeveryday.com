@@ -29,12 +29,24 @@ export default {
     this.fetchAffiliates()
   },
   methods: {
+    retrieveStoredPathVariable(pathVarName) {
+      let pathVariable = this.$store.state[`current_${pathVarName}`]
+      if (pathVariable === undefined) {
+        pathVariable = this.$route.params[pathVarName]
+        this.$store.commit(
+          `SET_CURRENT_${pathVarName.toUpperCase()}`,
+          pathVariable
+        )
+      }
+      return pathVariable
+    },
     fetchAffiliates() {
-      let url = `${process.env.BACKEND_URL}/affiliates/?city=${this.$store.state.current_city}`
-      // let currentState = this.$store.state.current_state
-      // if (currentState) {
-      //   url += `&state=${currentState}`
-      // }
+      const country = this.retrieveStoredPathVariable("country")
+      const state = this.retrieveStoredPathVariable("state")
+      const city = this.retrieveStoredPathVariable("city")
+      let url = `${process.env.BACKEND_URL}/affiliates/?city=${city}&country=${country}`
+      if (state != "none") url += `&state=${state}`
+      url = encodeURI(url)
       let that = this
       this.$axios
         .$get(url)
