@@ -43,7 +43,7 @@ export default {
         this.$route.params
       )
       let url = `${process.env.BACKEND_URL}/affiliates/?city=${city}&country=${country}`
-      if (state != "none") url += `&state=${state}`
+      if (state != this.$store.state.constants.NOSTATE) url += `&state=${state}`
       url = encodeURI(url)
       let that = this
       this.$axios

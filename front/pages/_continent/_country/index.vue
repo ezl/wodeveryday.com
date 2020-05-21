@@ -55,10 +55,16 @@ export default {
             that.isLoading = false
           })
       } else {
-        if (this.$store.state.current_state === "none") {
+        if (
+          this.$store.state.current_state ===
+          this.$store.state.constants.NOSTATE
+        ) {
           this.$router.go(-1)
         } else {
-          this.$store.commit("SET_CURRENT_STATE", "none")
+          this.$store.commit(
+            "SET_CURRENT_STATE",
+            this.$store.state.constants.NOSTATE
+          )
           this.$router.push(`${this.$store.state.current_state}/`)
         }
       }

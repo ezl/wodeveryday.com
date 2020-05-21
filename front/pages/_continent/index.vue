@@ -58,8 +58,13 @@ export default {
       ) {
         this.$router.push(`${countryName}/`)
       } else {
-        this.$store.commit("SET_CURRENT_STATE", "none")
-        this.$router.push(`${countryName}/none/`)
+        this.$store.commit(
+          "SET_CURRENT_STATE",
+          this.$store.state.constants.NOSTATE
+        )
+        this.$router.push(
+          `${countryName}/${this.$store.state.constants.NOSTATE}/`
+        )
       }
     },
     selectCityOrState(cityOrStateName) {
@@ -74,7 +79,9 @@ export default {
         this.$router.push(`${countryName}/${cityOrStateName}/`)
       } else {
         this.$store.commit("SET_CURRENT_CITY", cityOrStateName)
-        this.$router.push(`${countryName}/none/${cityOrStateName}/`)
+        this.$router.push(
+          `${countryName}/${this.$store.state.constants.NOSTATE}/${cityOrStateName}/`
+        )
       }
     },
   },

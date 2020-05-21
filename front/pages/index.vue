@@ -62,8 +62,13 @@ export default {
       ) {
         this.$router.push(`${continentName}/${countryName}/`)
       } else {
-        this.$store.commit("SET_CURRENT_STATE", "none")
-        this.$router.push(`${continentName}/${countryName}/none/`)
+        this.$store.commit(
+          "SET_CURRENT_STATE",
+          this.$store.state.constants.NOSTATE
+        )
+        this.$router.push(
+          `${continentName}/${countryName}/${this.$store.state.constants.NOSTATE}/`
+        )
       }
     },
   },

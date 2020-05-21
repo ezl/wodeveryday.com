@@ -35,7 +35,7 @@ export default {
         this.$store,
         this.$route.params
       )
-      if (state === "none") {
+      if (state === this.$store.state.constants.NOSTATE) {
         const country = this.$retrieveStoredPathVariable(
           "country",
           this.$store,
