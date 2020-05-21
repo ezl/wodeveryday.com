@@ -5,7 +5,6 @@
     :select-item="selectCity"
     :select-subitem="selectGym"
     :item-title="itemTitle"
-    :card-title="cardTitle"
   />
 </template>
 
@@ -18,7 +17,6 @@ export default {
   },
   data() {
     return {
-      cardTitle: undefined,
       itemTitle: undefined,
       cityList: {},
       isLoading: true,
@@ -26,40 +24,23 @@ export default {
   },
   mounted() {
     this.fetchCities()
-    this.generateBreadcrumb()
+    this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
-    generateBreadcrumb() {
-      let pages = ["continent", "country", "state", "gym"]
-      let currentPage = pages.indexOf(this.itemTitle || "")
-      if (currentPage != -1) {
-        let breadcrumbNames = ["Home"]
-        for (let i = 0; i <= currentPage; i++) {
-          let name = this.$store.state["current_" + pages[i]]
-          if (name != "none") breadcrumbNames.push(name)
-        }
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", breadcrumbNames)
-      } else {
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", [])
-      }
-    },
-    retrieveStoredPathVariable(pathVarName) {
-      let pathVariable = this.$store.state[`current_${pathVarName}`]
-      if (pathVariable === undefined) {
-        pathVariable = this.$route.params[pathVarName]
-        this.$store.commit(
-          `SET_CURRENT_${pathVarName.toUpperCase()}`,
-          pathVariable
-        )
-      }
-      return pathVariable
-    },
     fetchCities() {
       this.isLoading = true
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
-      const state = this.retrieveStoredPathVariable("state")
+      const state = this.$retrieveStoredPathVariable(
+        "state",
+        this.$store,
+        this.$route.params
+      )
       if (state === "none") {
-        const country = this.retrieveStoredPathVariable("country")
+        const country = this.$retrieveStoredPathVariable(
+          "country",
+          this.$store,
+          this.$route.params
+        )
         url += `?country=${country}`
         this.itemTitle = "country"
       } else {
@@ -94,27 +75,12 @@ export default {
           console.log(error)
         })
     },
-    getStateOrCountry() {
-      let currentState = this.$store.state.current_state
-      if (currentState) {
-        return `${this.$store.state.current_country}/${currentState}`
-      } else {
-        return ``
-      }
-    },
-    findParent(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentName = registryObject.find(
-        (parent) => parent[1].indexOf(name) !== -1
-      )
-      return parentName[0]
-    },
     selectCity(cityName) {
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$router.push(`${cityName}/`)
     },
     selectGym(gymName) {
-      let cityName = this.findParent(this.cityList, gymName)
+      let cityName = this.$findParent(this.cityList, gymName)
       this.$store.commit("SET_CURRENT_CITY", gymName)
       this.fetchGym(cityName, gymName)
     },

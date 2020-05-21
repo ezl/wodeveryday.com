@@ -3,10 +3,7 @@
     :is-loading="isLoading"
     :gym-list="affiliateList"
     :select-item="selectAffiliate"
-    :item-key="'name'"
-    :back-button-enabled="true"
     :item-title="itemTitle"
-    :card-title="cardTitle"
   />
 </template>
 
@@ -19,7 +16,6 @@ export default {
   },
   data() {
     return {
-      cardTitle: this.$store.state.current_city,
       itemTitle: "city",
       affiliateList: [],
       isLoading: false,
@@ -27,38 +23,25 @@ export default {
   },
   mounted() {
     this.fetchAffiliates()
-    this.generateBreadcrumb()
+    this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
-    generateBreadcrumb() {
-      let pages = ["continent", "country", "state", "city"]
-      let currentPage = pages.indexOf(this.itemTitle || "")
-      if (currentPage != -1) {
-        let breadcrumbNames = ["Home"]
-        for (let i = 0; i <= currentPage; i++) {
-          let name = this.$store.state["current_" + pages[i]]
-          if (name != "none") breadcrumbNames.push(name)
-        }
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", breadcrumbNames)
-      } else {
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", [])
-      }
-    },
-    retrieveStoredPathVariable(pathVarName) {
-      let pathVariable = this.$store.state[`current_${pathVarName}`]
-      if (pathVariable === undefined) {
-        pathVariable = this.$route.params[pathVarName]
-        this.$store.commit(
-          `SET_CURRENT_${pathVarName.toUpperCase()}`,
-          pathVariable
-        )
-      }
-      return pathVariable
-    },
     fetchAffiliates() {
-      const country = this.retrieveStoredPathVariable("country")
-      const state = this.retrieveStoredPathVariable("state")
-      const city = this.retrieveStoredPathVariable("city")
+      const country = this.$retrieveStoredPathVariable(
+        "country",
+        this.$store,
+        this.$route.params
+      )
+      const state = this.$retrieveStoredPathVariable(
+        "state",
+        this.$store,
+        this.$route.params
+      )
+      const city = this.$retrieveStoredPathVariable(
+        "city",
+        this.$store,
+        this.$route.params
+      )
       let url = `${process.env.BACKEND_URL}/affiliates/?city=${city}&country=${country}`
       if (state != "none") url += `&state=${state}`
       url = encodeURI(url)
@@ -73,14 +56,6 @@ export default {
           console.log(error)
           that.isLoading = false
         })
-    },
-    getStateOrCountry() {
-      let currentState = this.$store.state.current_state
-      if (currentState) {
-        return `${this.$store.state.current_country}/${currentState}`
-      } else {
-        return `${this.$store.state.current_country}/none`
-      }
     },
     selectAffiliate(selectedAffiliate) {
       this.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)

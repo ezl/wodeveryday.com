@@ -22,23 +22,9 @@ export default {
   },
   mounted() {
     this.fetchContinents()
-    this.generateBreadcrumb()
+    this.$generateBreadcrumb(this.$store)
   },
   methods: {
-    generateBreadcrumb() {
-      let pages = ["continent", "country", "state", "gym"]
-      let currentPage = pages.indexOf(this.itemTitle || "")
-      if (currentPage != -1) {
-        let breadcrumbNames = ["Home"]
-        for (let i = 0; i <= currentPage; i++) {
-          let name = this.$store.state["current_" + pages[i]]
-          if (name != "none") breadcrumbNames.push(name)
-        }
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", breadcrumbNames)
-      } else {
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", [])
-      }
-    },
     fetchContinents() {
       this.continentObject = this.$store.state.continents
       if (Object.values(this.continentObject).length === 0) {
@@ -65,15 +51,8 @@ export default {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$router.push(`${continentName}/`)
     },
-    findParent(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentName = registryObject.find(
-        (parent) => parent[1].indexOf(name) !== -1
-      )
-      return parentName[0]
-    },
     selectCountry(countryName) {
-      let continentName = this.findParent(this.continentObject, countryName)
+      let continentName = this.$findParent(this.continentObject, countryName)
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (

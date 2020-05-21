@@ -4,7 +4,6 @@
     :item-list="countryList"
     :select-item="selectCountry"
     :select-subitem="selectCityOrState"
-    :back-button-enabled="true"
     :item-title="itemTitle"
   />
 </template>
@@ -25,36 +24,15 @@ export default {
   },
   mounted() {
     this.fetchCountries()
-    this.generateBreadcrumb()
+    this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
-    generateBreadcrumb() {
-      let pages = ["continent", "country", "state", "gym"]
-      let currentPage = pages.indexOf(this.itemTitle || "")
-      if (currentPage != -1) {
-        let breadcrumbNames = ["Home"]
-        for (let i = 0; i <= currentPage; i++) {
-          let name = this.$store.state["current_" + pages[i]]
-          if (name != "none") breadcrumbNames.push(name)
-        }
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", breadcrumbNames)
-      } else {
-        this.$store.commit("SET_GLOBAL_BREADCRUMB_NAMES", [])
-      }
-    },
-    retrieveStoredPathVariable(pathVarName) {
-      let pathVariable = this.$store.state[`current_${pathVarName}`]
-      if (pathVariable === undefined) {
-        pathVariable = this.$route.params[pathVarName]
-        this.$store.commit(
-          `SET_CURRENT_${pathVarName.toUpperCase()}`,
-          pathVariable
-        )
-      }
-      return pathVariable
-    },
     fetchCountries() {
-      const continent = this.retrieveStoredPathVariable("continent")
+      const continent = this.$retrieveStoredPathVariable(
+        "continent",
+        this.$store,
+        this.$route.params
+      )
       this.isLoading = true
       let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
       url = encodeURI(url)
@@ -84,15 +62,8 @@ export default {
         this.$router.push(`${countryName}/none/`)
       }
     },
-    findParent(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentName = registryObject.find(
-        (parent) => parent[1].indexOf(name) !== -1
-      )
-      return parentName[0]
-    },
     selectCityOrState(cityOrStateName) {
-      let countryName = this.findParent(this.countryList, cityOrStateName)
+      let countryName = this.$findParent(this.countryList, cityOrStateName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
         ["United States", "Australia", "Canada"].includes(

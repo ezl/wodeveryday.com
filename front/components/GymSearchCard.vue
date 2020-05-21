@@ -55,35 +55,15 @@ export default {
     Breadcrumb,
   },
   props: {
-    cardTitle: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     itemTitle: {
       type: String,
       required: false,
       default: undefined,
     },
-    itemKey: {
-      type: String,
-      required: false,
-      default: "",
-    },
     isLoading: {
       type: Boolean,
       required: false,
       default: true,
-    },
-    backButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    customBackButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     gymList: {
       type: Array,
@@ -115,21 +95,6 @@ export default {
       }
 
       return stack
-    },
-    checkForItemKey() {
-      if (this.itemKey.length > 0) {
-        return {
-          itemText: this.itemKey,
-        }
-      }
-      return []
-    },
-    navigateBack() {
-      if (this.$store.state.current_state === "none") {
-        this.$router.go(-2)
-      } else {
-        this.$router.go(-1)
-      }
     },
   },
 }
