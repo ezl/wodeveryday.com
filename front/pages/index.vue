@@ -22,6 +22,7 @@ export default {
   },
   mounted() {
     this.fetchContinents()
+    this.$generateBreadcrumb(this.$store)
   },
   methods: {
     fetchContinents() {
@@ -50,15 +51,8 @@ export default {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$router.push(`${continentName}/`)
     },
-    findParent(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentName = registryObject.find(
-        (parent) => parent[1].indexOf(name) !== -1
-      )
-      return parentName[0]
-    },
     selectCountry(countryName) {
-      let continentName = this.findParent(this.continentObject, countryName)
+      let continentName = this.$findParent(this.continentObject, countryName)
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
@@ -68,8 +62,13 @@ export default {
       ) {
         this.$router.push(`${continentName}/${countryName}/`)
       } else {
-        this.$store.commit("SET_CURRENT_STATE", "none")
-        this.$router.push(`${continentName}/${countryName}/none/`)
+        this.$store.commit(
+          "SET_CURRENT_STATE",
+          this.$store.state.constants.NOSTATE
+        )
+        this.$router.push(
+          `${continentName}/${countryName}/${this.$store.state.constants.NOSTATE}/`
+        )
       }
     },
   },

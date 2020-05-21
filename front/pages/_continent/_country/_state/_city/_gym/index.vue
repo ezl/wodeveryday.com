@@ -4,7 +4,12 @@
       <navbar />
       <v-row class="mb-6 mt-3">
         <v-col>
-          <drilldown :gym-name="gymName" />
+          <v-card class="mb-3">
+            <breadcrumb
+              :breadcrumb-names="breadcrumbNames"
+              :breadcrumb-paths="breadcrumbPaths"
+            />
+          </v-card>
 
           <gym-info-card
             :gym-logo="gymLogo"
@@ -38,7 +43,7 @@
 
 <script>
 import Navbar from "~/components/Navbar.vue"
-import Drilldown from "~/components/Drilldown.vue"
+import Breadcrumb from "~/components/Breadcrumb.vue"
 import GymInfoCard from "~/components/GymInfoCard.vue"
 import PhotoCarousel from "~/components/PhotoCarousel.vue"
 import MapCard from "~/components/MapCard.vue"
@@ -50,7 +55,7 @@ import PhotoColumnCard from "~/components/PhotoColumnCard.vue"
 export default {
   components: {
     Navbar,
-    Drilldown,
+    Breadcrumb,
     GymInfoCard,
     PhotoCarousel,
     MapCard,
@@ -77,6 +82,12 @@ export default {
       map: undefined,
       mapActive: false,
       service: undefined,
+      breadcrumbNames: [
+        "Gyms",
+        this.$store.state.current_affiliate.city,
+        this.$store.state.current_affiliate.name,
+      ],
+      breadcrumbPaths: ["/", "", ""],
     }
   },
   mounted() {

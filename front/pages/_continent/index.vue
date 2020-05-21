@@ -4,7 +4,6 @@
     :item-list="countryList"
     :select-item="selectCountry"
     :select-subitem="selectCityOrState"
-    :back-button-enabled="true"
     :item-title="itemTitle"
   />
 </template>
@@ -25,21 +24,15 @@ export default {
   },
   mounted() {
     this.fetchCountries()
+    this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
-    retrieveStoredPathVariable(pathVarName) {
-      let pathVariable = this.$store.state[`current_${pathVarName}`]
-      if (pathVariable === undefined) {
-        pathVariable = this.$route.params[pathVarName]
-        this.$store.commit(
-          `SET_CURRENT_${pathVarName.toUpperCase()}`,
-          pathVariable
-        )
-      }
-      return pathVariable
-    },
     fetchCountries() {
-      const continent = this.retrieveStoredPathVariable("continent")
+      const continent = this.$retrieveStoredPathVariable(
+        "continent",
+        this.$store,
+        this.$route.params
+      )
       this.isLoading = true
       let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
       url = encodeURI(url)
@@ -65,19 +58,17 @@ export default {
       ) {
         this.$router.push(`${countryName}/`)
       } else {
-        this.$store.commit("SET_CURRENT_STATE", "none")
-        this.$router.push(`${countryName}/none/`)
+        this.$store.commit(
+          "SET_CURRENT_STATE",
+          this.$store.state.constants.NOSTATE
+        )
+        this.$router.push(
+          `${countryName}/${this.$store.state.constants.NOSTATE}/`
+        )
       }
     },
-    findParent(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentName = registryObject.find(
-        (parent) => parent[1].indexOf(name) !== -1
-      )
-      return parentName[0]
-    },
     selectCityOrState(cityOrStateName) {
-      let countryName = this.findParent(this.countryList, cityOrStateName)
+      let countryName = this.$findParent(this.countryList, cityOrStateName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
         ["United States", "Australia", "Canada"].includes(
@@ -88,7 +79,9 @@ export default {
         this.$router.push(`${countryName}/${cityOrStateName}/`)
       } else {
         this.$store.commit("SET_CURRENT_CITY", cityOrStateName)
-        this.$router.push(`${countryName}/none/${cityOrStateName}/`)
+        this.$router.push(
+          `${countryName}/${this.$store.state.constants.NOSTATE}/${cityOrStateName}/`
+        )
       }
     },
   },
