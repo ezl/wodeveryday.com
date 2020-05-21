@@ -14,6 +14,7 @@ export const state = () => {
     current_state: undefined,
     cities: {},
     current_city: undefined,
+    globalBreadcrumbNames: [],
   }
 
   return s
@@ -23,6 +24,11 @@ export const state = () => {
 // Mutations
 // =================================================
 export const mutations = {
+  SET_GLOBAL_BREADCRUMB_NAMES: (state, globalBreadcrumbNames) => {
+    if (globalBreadcrumbNames) {
+      Vue.set(state, "globalBreadcrumbNames", globalBreadcrumbNames)
+    }
+  },
   SET_CURRENT_AFFILIATE: (state, affiliate) => {
     if (affiliate) {
       Vue.set(state, "current_affiliate", affiliate)

@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <navbar />
     <v-content>
+      <breadcrumb :breadcrumb-names="$store.state.globalBreadcrumbNames" />
       <v-row align="center" justify="center" style="flex-direction: column;">
         <v-col cols="12" sm="8" md="4">
           <v-card class="pa-4 elevation-12 ma-4">
@@ -45,42 +46,24 @@
 
 <script>
 import Navbar from "~/components/Navbar.vue"
+import Breadcrumb from "~/components/Breadcrumb.vue"
 
 export default {
   name: "GymSearchCard",
   components: {
     Navbar,
+    Breadcrumb,
   },
   props: {
-    cardTitle: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     itemTitle: {
       type: String,
       required: false,
       default: undefined,
     },
-    itemKey: {
-      type: String,
-      required: false,
-      default: "",
-    },
     isLoading: {
       type: Boolean,
       required: false,
       default: true,
-    },
-    backButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    customBackButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     gymList: {
       type: Array,
@@ -112,21 +95,6 @@ export default {
       }
 
       return stack
-    },
-    checkForItemKey() {
-      if (this.itemKey.length > 0) {
-        return {
-          itemText: this.itemKey,
-        }
-      }
-      return []
-    },
-    navigateBack() {
-      if (this.$store.state.current_state === "none") {
-        this.$router.go(-2)
-      } else {
-        this.$router.go(-1)
-      }
     },
   },
 }

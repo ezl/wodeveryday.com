@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <navbar />
     <v-content>
+      <breadcrumb :breadcrumb-names="$store.state.globalBreadcrumbNames" />
       <v-row align="center" justify="center" style="flex-direction: column;">
         <h1 class="ma-4">
           Find a Gym Anywhere
@@ -10,7 +11,6 @@
           <v-card class="pa-4 elevation-12">
             <v-autocomplete
               v-model="selectedItem"
-              v-bind="checkForItemKey()"
               :items="flat(Object.values(itemList))"
               :loading="isLoading"
               color="white"
@@ -32,7 +32,6 @@
           :key="index"
           :style="`width: ${columnWidth}%;`"
         >
-          <!-- <v-col v-for="(subItems, item) in itemList" :key="item"> -->
           <v-list v-for="(subItems, item) in subList" :key="item" class="ma-4">
             <v-list-item-group color="primary">
               <v-list-item @click="selectItem(item)">
@@ -62,43 +61,25 @@
 
 <script>
 import Navbar from "~/components/Navbar.vue"
+import Breadcrumb from "~/components/Breadcrumb.vue"
 import _ from "lodash"
 
 export default {
   name: "SearchCard",
   components: {
     Navbar,
+    Breadcrumb,
   },
   props: {
-    cardTitle: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     itemTitle: {
       type: String,
       required: false,
       default: undefined,
     },
-    itemKey: {
-      type: String,
-      required: false,
-      default: "",
-    },
     isLoading: {
       type: Boolean,
       required: false,
       default: true,
-    },
-    backButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    customBackButtonEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     itemList: {
       type: Object,
@@ -120,6 +101,7 @@ export default {
       windowInnerWidth: 0,
       listOfItemLists: [],
       columnWidth: 0,
+      breadcrumbNames: undefined,
     }
   },
   watch: {
@@ -183,21 +165,6 @@ export default {
       }
 
       return stack
-    },
-    checkForItemKey() {
-      if (this.itemKey.length > 0) {
-        return {
-          itemText: this.itemKey,
-        }
-      }
-      return []
-    },
-    navigateBack() {
-      if (this.$store.state.current_state === "none") {
-        this.$router.go(-2)
-      } else {
-        this.$router.go(-1)
-      }
     },
   },
 }
