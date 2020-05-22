@@ -12,7 +12,7 @@
             <v-autocomplete
               v-model="selectedItem"
               :items="flat(Object.values(itemList))"
-              :loading="isLoading"
+              :loading="isLoading()"
               color="white"
               hide-no-data
               hide-selected
@@ -22,7 +22,7 @@
             />
           </v-card>
         </v-col>
-        <h1 v-if="itemTitle" class="mt-4">
+        <h1 v-if="itemTitle" class="mt-4 text-capitalize">
           {{ $store.state["current_" + itemTitle] }}
         </h1>
       </v-row>
@@ -76,11 +76,6 @@ export default {
       required: false,
       default: undefined,
     },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
     itemList: {
       type: Object,
       required: false,
@@ -124,6 +119,11 @@ export default {
     }
   },
   methods: {
+    isLoading() {
+      return (
+        this.itemList === undefined || Object.values(this.itemList).length === 0
+      )
+    },
     handleResize() {
       if (process.client) {
         this.windowInnerWidth = window.innerWidth

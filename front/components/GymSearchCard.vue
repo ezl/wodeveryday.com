@@ -60,11 +60,6 @@ export default {
       required: false,
       default: undefined,
     },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
     gymList: {
       type: Array,
       required: false,
