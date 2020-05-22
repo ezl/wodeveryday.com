@@ -1,6 +1,5 @@
 <template>
   <search-card
-    :is-loading="isLoading"
     :item-list="cityList"
     :select-item="selectCity"
     :select-subitem="selectGym"
@@ -17,35 +16,25 @@ export default {
   },
   data() {
     return {
-      itemTitle: undefined,
+      itemTitle: "state",
       cityList: {},
-      isLoading: true,
     }
   },
   mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCities()
     this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
     fetchCities() {
-      this.isLoading = true
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
-      const state = this.$retrieveStoredPathVariable(
-        "state",
-        this.$store,
-        this.$route.params
-      )
+      const state = this.$store.state[`current_${this.itemTitle}`]
       if (state === this.$store.state.constants.NOSTATE) {
-        const country = this.$retrieveStoredPathVariable(
-          "country",
-          this.$store,
-          this.$route.params
-        )
-        url += `?country=${country}`
         this.itemTitle = "country"
+        const country = this.$store.state[`current_${this.itemTitle}`]
+        url += `?country=${country}`
       } else {
         url += `?state=${state}`
-        this.itemTitle = "state"
       }
       url = encodeURI(url)
       let that = this
@@ -54,11 +43,9 @@ export default {
         .then((response) => {
           that.cityList = response
           that.$store.commit("SET_CITIES", that.cityList)
-          that.isLoading = false
         })
         .catch(function (error) {
           console.log(error)
-          that.isLoading = false
         })
     },
     fetchGym(cityName, gymName) {
@@ -77,7 +64,7 @@ export default {
     },
     selectCity(cityName) {
       this.$store.commit("SET_CURRENT_CITY", cityName)
-      this.$router.push(`${cityName}/`)
+      this.$pushCleanedRoute(this.$router, `${cityName}/`)
     },
     selectGym(gymName) {
       let cityName = this.$findParent(this.cityList, gymName)
@@ -85,7 +72,7 @@ export default {
       this.fetchGym(cityName, gymName)
     },
     navigateToGym(cityName, gymName) {
-      this.$router.push(`${cityName}/${gymName}/`)
+      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
     },
   },
 }

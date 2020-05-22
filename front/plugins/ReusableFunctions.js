@@ -15,17 +15,12 @@ Vue.prototype.$generateBreadcrumb = (store, itemTitle = "") => {
   }
 }
 
-Vue.prototype.$retrieveStoredPathVariable = (
-  pathVarName,
-  store,
-  routeParams
-) => {
-  let pathVariable = store.state[`current_${pathVarName}`]
-  if (pathVariable === undefined) {
-    pathVariable = routeParams[pathVarName]
-    store.commit(`SET_CURRENT_${pathVarName.toUpperCase()}`, pathVariable)
+Vue.prototype.$retrievePathVariables = (store, routeParams) => {
+  for (var [key, value] of Object.entries(routeParams)) {
+    if (store.state[`current_${key}`] != undefined) continue
+    let preparedPathVar = value.replace(/-/gi, " ")
+    store.commit(`SET_CURRENT_${key.toUpperCase()}`, preparedPathVar)
   }
-  return pathVariable
 }
 
 Vue.prototype.$findParent = (registryObject, name) => {
@@ -34,4 +29,9 @@ Vue.prototype.$findParent = (registryObject, name) => {
     (parent) => parent[1].indexOf(name) !== -1
   )
   return parentName[0]
+}
+
+Vue.prototype.$pushCleanedRoute = ($router, route) => {
+  const cleanedRoute = encodeURI(route.toLowerCase().replace(/ /gi, "-"))
+  $router.push(cleanedRoute)
 }

@@ -1,6 +1,5 @@
 <template>
   <search-card
-    :is-loading="isLoading"
     :item-list="stateList"
     :select-item="selectState"
     :select-subitem="selectCity"
@@ -19,11 +18,11 @@ export default {
     return {
       itemTitle: "country",
       stateList: {},
-      isLoading: true,
     }
   },
   mounted() {
     this.stateList = this.$store.state.states
+    this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchStates()
     this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
@@ -34,12 +33,7 @@ export default {
           this.$store.state.current_country
         )
       ) {
-        const country = this.$retrieveStoredPathVariable(
-          "country",
-          this.$store,
-          this.$route.params
-        )
-        this.isLoading = true
+        const country = this.$store.state[`current_${this.itemTitle}`]
         let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
         url = encodeURI(url)
 
@@ -47,12 +41,10 @@ export default {
         this.$axios
           .$get(url)
           .then((response) => {
-            that.isLoading = false
             that.stateList = response
           })
           .catch(function (error) {
             console.log(error)
-            that.isLoading = false
           })
       } else {
         if (
@@ -65,18 +57,21 @@ export default {
             "SET_CURRENT_STATE",
             this.$store.state.constants.NOSTATE
           )
-          this.$router.push(`${this.$store.state.current_state}/`)
+          this.$pushCleanedRoute(
+            this.$router,
+            `${this.$store.state.current_state}/`
+          )
         }
       }
     },
     selectState(stateName) {
       this.$store.commit("SET_CURRENT_STATE", stateName)
-      this.$router.push(`${stateName}/`)
+      this.$pushCleanedRoute(this.$router, `${stateName}/`)
     },
     selectCity(cityName) {
       let stateName = this.$findParent(this.stateList, cityName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
-      this.$router.push(`${stateName}/${cityName}/`)
+      this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
     },
   },
 }
