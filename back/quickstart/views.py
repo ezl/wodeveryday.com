@@ -69,7 +69,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
             "Oceania": [],
         }
         for key, value in country_by_continent_dictionary.copy().items():
-            country_by_continent_dictionary[key] = queryset.filter(continent=key)\
+            country_by_continent_dictionary[key] = queryset.filter(continent__iexact=key)\
                                    .values_list('country', flat=True) \
                                    .order_by('country') \
                                    .distinct()
@@ -82,7 +82,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         continent = request.query_params.get('continent', '')
         queryset = self.get_queryset()
 
-        countries_list = queryset.filter(continent=continent) \
+        countries_list = queryset.filter(continent__iexact=continent) \
             .values_list('country', flat=True) \
             .order_by('country') \
             .distinct()
@@ -91,12 +91,12 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
 
         for key, value in countries_by_continent_dictionary.copy().items():
             if key in ["United States", "Australia", "Canada"]:
-                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                countries_by_continent_dictionary[key] = queryset.filter(country__iexact=key) \
                     .values_list('full_state', flat=True) \
                     .order_by('full_state') \
                     .distinct()
             else:
-                countries_by_continent_dictionary[key] = queryset.filter(country=key) \
+                countries_by_continent_dictionary[key] = queryset.filter(country__iexact=key) \
                     .values_list('city', flat=True) \
                     .order_by('city') \
                     .distinct()
@@ -109,7 +109,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         country = request.query_params.get('country', '')
         queryset = self.get_queryset()
 
-        state_list = queryset.filter(country=country) \
+        state_list = queryset.filter(country__iexact=country) \
             .values_list('full_state', flat=True) \
             .order_by('full_state') \
             .distinct()
@@ -117,7 +117,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         cities_by_state_dictionary = dict.fromkeys(state_list, [])
 
         for key, value in cities_by_state_dictionary.copy().items():
-            cities_by_state_dictionary[key] = queryset.filter(full_state=key) \
+            cities_by_state_dictionary[key] = queryset.filter(full_state__iexact=key) \
                                                     .values_list('city', flat=True) \
                                                     .order_by('city') \
                                                     .distinct()
@@ -130,9 +130,9 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         country = request.query_params.get('country', '')
         if not country:
             state = request.query_params.get('state', '')
-            query = Q(full_state=state)
+            query = Q(full_state__iexact=state)
         else:
-            query = Q(country=country)
+            query = Q(country__iexact=country)
         queryset = self.get_queryset()
 
         city_or_state_list = queryset.filter(query) \
@@ -143,7 +143,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         gyms_by_city_or_state_dictionary = dict.fromkeys(city_or_state_list, [])
 
         for key, value in gyms_by_city_or_state_dictionary.copy().items():
-            gyms_by_city_or_state_dictionary[key] = queryset.filter(city=key) \
+            gyms_by_city_or_state_dictionary[key] = queryset.filter(city__iexact=key) \
                 .values_list('name', flat=True) \
                 .order_by('name') \
                 .distinct()

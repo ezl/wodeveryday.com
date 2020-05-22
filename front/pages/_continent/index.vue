@@ -1,6 +1,5 @@
 <template>
   <search-card
-    :is-loading="isLoading"
     :item-list="countryList"
     :select-item="selectCountry"
     :select-subitem="selectCityOrState"
@@ -19,21 +18,16 @@ export default {
     return {
       itemTitle: "continent",
       countryList: {},
-      isLoading: true,
     }
   },
   mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCountries()
     this.$generateBreadcrumb(this.$store, this.itemTitle)
   },
   methods: {
     fetchCountries() {
-      const continent = this.$retrieveStoredPathVariable(
-        "continent",
-        this.$store,
-        this.$route.params
-      )
-      this.isLoading = true
+      const continent = this.$store.state[`current_${this.itemTitle}`]
       let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
       url = encodeURI(url)
       let that = this
@@ -42,11 +36,9 @@ export default {
         .then((response) => {
           that.countryList = response
           that.$store.commit("SET_COUNTRIES", that.countryList)
-          that.isLoading = false
         })
         .catch(function (error) {
           console.log(error)
-          that.isLoading = false
         })
     },
     selectCountry(countryName) {
@@ -56,13 +48,14 @@ export default {
           this.$store.state.current_country
         )
       ) {
-        this.$router.push(`${countryName}/`)
+        this.$pushCleanedRoute(this.$router, `${countryName}/`)
       } else {
         this.$store.commit(
           "SET_CURRENT_STATE",
           this.$store.state.constants.NOSTATE
         )
-        this.$router.push(
+        this.$pushCleanedRoute(
+          this.$router,
           `${countryName}/${this.$store.state.constants.NOSTATE}/`
         )
       }
@@ -76,10 +69,14 @@ export default {
         )
       ) {
         this.$store.commit("SET_CURRENT_STATE", cityOrStateName)
-        this.$router.push(`${countryName}/${cityOrStateName}/`)
+        this.$pushCleanedRoute(
+          this.$router,
+          `${countryName}/${cityOrStateName}/`
+        )
       } else {
         this.$store.commit("SET_CURRENT_CITY", cityOrStateName)
-        this.$router.push(
+        this.$pushCleanedRoute(
+          this.$router,
           `${countryName}/${this.$store.state.constants.NOSTATE}/${cityOrStateName}/`
         )
       }
