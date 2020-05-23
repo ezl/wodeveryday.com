@@ -23,7 +23,7 @@ export default {
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCities()
-    this.$generateBreadcrumb(this.$store, this.itemTitle)
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
   },
   methods: {
     fetchCities() {
@@ -49,7 +49,7 @@ export default {
         })
     },
     fetchGym(cityName, gymName) {
-      let url = `${process.env.BACKEND_URL}/affiliates/?city=${cityName}&name=${gymName}`
+      let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
       let that = this
       this.$axios
         .$get(url)

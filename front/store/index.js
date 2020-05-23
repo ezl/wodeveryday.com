@@ -5,6 +5,8 @@ import Vue from "vue"
 // =================================================
 export const state = () => {
   const s = {
+    globalBreadcrumbNames: [],
+    globalBreadcrumbPaths: [],
     current_affiliate: {},
     continents: {},
     current_continent: undefined,
@@ -14,7 +16,7 @@ export const state = () => {
     current_state: undefined,
     cities: {},
     current_city: undefined,
-    globalBreadcrumbNames: [],
+    current_gym: undefined,
   }
 
   return s
@@ -27,6 +29,11 @@ export const mutations = {
   SET_GLOBAL_BREADCRUMB_NAMES: (state, globalBreadcrumbNames) => {
     if (globalBreadcrumbNames) {
       Vue.set(state, "globalBreadcrumbNames", globalBreadcrumbNames)
+    }
+  },
+  SET_GLOBAL_BREADCRUMB_PATHS: (state, globalBreadcrumbPaths) => {
+    if (globalBreadcrumbPaths) {
+      Vue.set(state, "globalBreadcrumbPaths", globalBreadcrumbPaths)
     }
   },
   SET_CURRENT_AFFILIATE: (state, affiliate) => {
@@ -72,6 +79,11 @@ export const mutations = {
   SET_CURRENT_CITY: (state, current_city) => {
     if (current_city) {
       Vue.set(state, "current_city", current_city)
+    }
+  },
+  SET_CURRENT_GYM: (state, current_gym) => {
+    if (current_gym) {
+      Vue.set(state, "current_gym", current_gym)
     }
   },
 }

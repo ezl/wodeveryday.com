@@ -2,7 +2,10 @@
   <v-app id="inspire">
     <navbar />
     <v-content>
-      <breadcrumb :breadcrumb-names="$store.state.globalBreadcrumbNames" />
+      <breadcrumb
+        :breadcrumb-names="$store.state.globalBreadcrumbNames"
+        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+      />
       <v-row align="center" justify="center" style="flex-direction: column;">
         <h1 class="ma-4">
           Find a Gym Anywhere
