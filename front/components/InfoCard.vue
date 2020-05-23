@@ -8,35 +8,14 @@
             <img :src="gymLogo" />
           </v-avatar>
         </v-col>
-        <v-col md6>
+        <v-col md6 class="d-flex flex-column justify-center">
           <h1>{{ gymName }}</h1>
-          <v-btn large class="mt-2" :href="gymWebsite" target="_blank">
-            Visit their website
-          </v-btn>
-
-          <v-tooltip v-if="phoneNumberVisible()" right>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                id="phone_field"
-                large
-                class="my-2 d-block"
-                :loading="gymPhoneNumber === undefined"
-                v-on="on"
-                @click="copyToClipboard()"
-              >
-                {{ gymPhoneNumber
-                }}<v-icon right>
-                  mdi-content-copy
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>Click to copy</span>
-          </v-tooltip>
 
           <v-rating
             v-if="gymRating && gymRating != -1"
             v-model="gymRating"
             readonly
+            class="mt-2"
             background-color="yellow"
             color="yellow accent-4"
           />
@@ -53,7 +32,7 @@
 
 <script>
 export default {
-  name: "GymInfoCard",
+  name: "InfoCard",
   props: {
     gymLogo: {
       type: String,

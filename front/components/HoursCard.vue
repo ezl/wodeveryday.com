@@ -5,7 +5,7 @@
     </v-card-text>
     <template v-if="gymTimes && gymTimes.length > 0">
       <v-card-text>
-        <h3>{{ gymName }} Operating Hours</h3>
+        <h3>Hours</h3>
       </v-card-text>
       <v-divider />
       <v-list>
@@ -25,7 +25,7 @@
 
 <script>
 export default {
-  name: "GymHoursCard",
+  name: "HoursCard",
   props: {
     gymTimes: {
       type: Array,

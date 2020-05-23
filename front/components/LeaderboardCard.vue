@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: "GymLeaderboardCard",
+  name: "LeaderboardCard",
   props: {
     gymName: {
       type: String,
@@ -99,6 +99,12 @@ export default {
       let that = this
       this.leaderboardItems = []
       if (this.leaderboardData.leaderboardRows === undefined) return
+
+      if (this.$store.state["gymNavbarOptions"].indexOf("Leaderboard") === -1) {
+        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Leaderboard")
+        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
+      }
+
       this.leaderboardData.leaderboardRows.forEach((dataRow) => {
         let leaderboardItem = {
           rank: dataRow.overallRank,
