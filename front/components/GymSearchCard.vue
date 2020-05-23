@@ -2,7 +2,10 @@
   <v-app id="inspire">
     <navbar />
     <v-content>
-      <breadcrumb :breadcrumb-names="$store.state.globalBreadcrumbNames" />
+      <breadcrumb
+        :breadcrumb-names="$store.state.globalBreadcrumbNames"
+        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+      />
       <v-row align="center" justify="center" style="flex-direction: column;">
         <v-col cols="12" sm="8" md="4">
           <v-card class="pa-4 elevation-12 ma-4">

@@ -23,7 +23,7 @@ export default {
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCities()
-    this.$generateBreadcrumb(this.$store, this.itemTitle)
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
   },
   methods: {
     fetchCities() {

@@ -20,7 +20,7 @@ export default {
   },
   mounted() {
     this.fetchContinents()
-    this.$generateBreadcrumb(this.$store)
+    this.$generateBreadcrumb(this.$store, this.$route.params)
   },
   methods: {
     fetchContinents() {

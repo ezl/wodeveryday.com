@@ -59,38 +59,13 @@ export default {
   watch: {
     options: {
       handler() {
-        let that = this
         this.fetchLeaderboardData()
-          .then((response) => {
-            that.leaderboardData = response
-            if (response.pagination !== undefined)
-              that.leaderboardTotalItems = response.pagination.totalCompetitors
-            that.formatLeaderboardData()
-            that.tableLoading = false
-          })
-          .catch(function (error) {
-            console.log(error)
-            that.leaderboardData = []
-            that.leaderboardItems = []
-          })
       },
       deep: true,
     },
   },
   mounted() {
-    let that = this
     this.fetchLeaderboardData()
-      .then((response) => {
-        that.leaderboardData = response
-        if (response.pagination !== undefined)
-          that.leaderboardTotalItems = response.pagination.totalCompetitors
-        that.formatLeaderboardData()
-      })
-      .catch(function (error) {
-        console.log(error)
-        that.leaderboardData = []
-        that.leaderboardItems = []
-      })
   },
   methods: {
     fetchLeaderboardData() {
@@ -100,7 +75,22 @@ export default {
         page: this.options.page,
       }
       this.tableLoading = true
-      return this.$axios.$get(url, { params: parameters })
+      let that = this
+      return this.$axios
+        .$get(url, { params: parameters })
+        .then((response) => {
+          that.leaderboardData = response
+          if (response.pagination !== undefined)
+            that.leaderboardTotalItems = response.pagination.totalCompetitors
+          that.formatLeaderboardData()
+          that.tableLoading = false
+        })
+        .catch(function (error) {
+          console.log(error)
+          that.leaderboardData = []
+          that.leaderboardItems = []
+          that.tableLoading = false
+        })
     },
     formatLeaderboardData() {
       let that = this
