@@ -67,13 +67,13 @@ export default {
   data() {
     return {
       gymRating: undefined,
-      gymLogo: this.$store.state.current_affiliate.photo,
+      gymLogo: undefined,
       gymPhoneNumber: undefined,
-      gymName: this.$store.state.current_affiliate.name,
-      gymWebsite: this.$store.state.current_affiliate.website,
-      gymAddress: this.getAddress(),
-      gymLat: this.$store.state.current_affiliate.lat,
-      gymLon: this.$store.state.current_affiliate.lon,
+      gymName: undefined,
+      gymWebsite: undefined,
+      gymAddress: undefined,
+      gymLat: undefined,
+      gymLon: undefined,
       gymReviews: undefined,
       gymPhotos: undefined,
       gymTimes: undefined,
@@ -82,18 +82,60 @@ export default {
       map: undefined,
       mapActive: false,
       service: undefined,
-      breadcrumbNames: [
-        "Gyms",
-        this.$store.state.current_affiliate.city,
-        this.$store.state.current_affiliate.name,
-      ],
-      breadcrumbPaths: ["/", "", ""],
+      breadcrumbNames: [],
+      breadcrumbPaths: [],
     }
   },
   mounted() {
-    this.initMap()
+    this.maybeLoadGym()
   },
   methods: {
+    maybeLoadGym() {
+      if (this.$store.state.current_affiliate.name === undefined) {
+        this.$retrievePathVariables(this.$store, this.$route.params)
+        let that = this
+        this.refreshStoredGym()
+          .then((response) => {
+            that.$store.commit("SET_CURRENT_AFFILIATE", response.results[0])
+            this.initGymPage()
+            return
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      }
+      this.initGymPage()
+    },
+    refreshStoredGym() {
+      const country = this.$store.state["current_country"]
+      const state = this.$store.state["current_state"]
+      const city = this.$store.state[`current_city`]
+      const gymName = this.$store.state[`current_gym`]
+      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
+      if (state != this.$store.state.constants.NOSTATE)
+        url += `&full_state__iexact=${state}`
+
+      url = encodeURI(url)
+      return this.$axios.$get(url)
+    },
+    initGymPage() {
+      this.setGymAttributes()
+      this.initMap()
+    },
+    setGymAttributes() {
+      this.gymLogo = this.$store.state.current_affiliate.photo
+      this.gymName = this.$store.state.current_affiliate.name
+      this.gymWebsite = this.$store.state.current_affiliate.website
+      this.gymLat = this.$store.state.current_affiliate.lat
+      this.gymLon = this.$store.state.current_affiliate.lon
+      this.gymAddress = this.getAddress()
+      this.breadcrumbNames = [
+        "Gyms",
+        this.$store.state.current_affiliate.city,
+        this.$store.state.current_affiliate.name,
+      ]
+      this.breadcrumbPaths = ["/", "", ""]
+    },
     getCurrentDayOfTheWeek() {
       let currentDay = new Date().getDay()
       if (currentDay == 0) {

@@ -14,13 +14,7 @@
             Visit their website
           </v-btn>
 
-          <v-tooltip
-            v-if="
-              gymPhoneNumber === undefined ||
-              (gymPhoneNumber && gymPhoneNumber.length > 0)
-            "
-            right
-          >
+          <v-tooltip v-if="phoneNumberVisible()" right>
             <template v-slot:activator="{ on }">
               <v-btn
                 id="phone_field"
@@ -88,6 +82,12 @@ export default {
     },
   },
   methods: {
+    phoneNumberVisible() {
+      return (
+        this.gymPhoneNumber === undefined ||
+        (this.gymPhoneNumber && this.gymPhoneNumber.length > 0)
+      )
+    },
     copyToClipboard() {
       navigator.clipboard.writeText(this.gymPhoneNumber)
     },

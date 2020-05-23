@@ -16,7 +16,7 @@
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title v-html="review.author_name" />
+              <v-list-item-title>{{ review.author_name }}</v-list-item-title>
               <v-card-actions class="pl-0">
                 <v-rating
                   v-model="review.rating"
@@ -30,7 +30,7 @@
                   ({{ review.relative_time_description }})
                 </span>
               </v-card-actions>
-              <v-list-item-subtitle v-html="review.text" />
+              <v-list-item-subtitle>{{ review.text }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </template>

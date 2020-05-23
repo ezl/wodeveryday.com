@@ -70,6 +70,7 @@ export default {
     },
     selectCity(cityName) {
       let stateName = this.$findParent(this.stateList, cityName)
+      this.$store.commit("SET_CURRENT_STATE", stateName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
     },
