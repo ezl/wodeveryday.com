@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-3">
+  <v-card>
     <v-card-text v-if="!gymReviews" class="text-center">
       <v-progress-circular :size="70" :width="7" color="white" indeterminate />
     </v-card-text>
@@ -41,7 +41,7 @@
 
 <script>
 export default {
-  name: "GymReviewsCard",
+  name: "ReviewsCard",
   props: {
     gymReviews: {
       type: Array,

@@ -8,7 +8,6 @@
       cycle
       height="600"
       hide-delimiters
-      show-arrows-on-hover
     >
       <v-carousel-item v-for="(photo, index) in gymPhotos" :key="index">
         <v-sheet height="100%">

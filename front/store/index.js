@@ -5,6 +5,8 @@ import Vue from "vue"
 // =================================================
 export const state = () => {
   const s = {
+    gymNavbarOptions: [],
+    gymNavbarGotoElements: [],
     globalBreadcrumbNames: [],
     globalBreadcrumbPaths: [],
     current_affiliate: {},
@@ -32,6 +34,22 @@ export const mutations = {
     Object.keys(s).forEach((key) => {
       state[key] = s[key]
     })
+  },
+  PUSHTO_GYM_NAVBAR_OPTIONS: (state, gymNavbarOption) => {
+    state["gymNavbarOptions"].push(gymNavbarOption)
+  },
+  SET_GYM_NAVBAR_OPTIONS: (state, gymNavbarOptions) => {
+    if (gymNavbarOptions) {
+      Vue.set(state, "gymNavbarOptions", gymNavbarOptions)
+    }
+  },
+  PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElement) => {
+    state["gymNavbarGotoElements"].push(gymNavbarGotoElement)
+  },
+  SET_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElements) => {
+    if (gymNavbarGotoElements) {
+      Vue.set(state, "gymNavbarGotoElements", gymNavbarGotoElements)
+    }
   },
   SET_GLOBAL_BREADCRUMB_NAMES: (state, globalBreadcrumbNames) => {
     if (globalBreadcrumbNames) {
