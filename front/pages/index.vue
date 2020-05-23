@@ -19,6 +19,12 @@ export default {
     }
   },
   mounted() {
+    // ToDo: remove this line when the routing structure is improved.
+    // It is a temporary fix that resolves an issue where navigating to a state
+    // country after navigating to a nostate country isn't possible due to the
+    // convoluted routing structure
+    this.$store.commit("RESET_STATE")
+
     this.fetchContinents()
     this.$generateBreadcrumb(this.$store, this.$route.params)
   },
