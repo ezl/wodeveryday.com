@@ -21,11 +21,18 @@ export const state = () => {
 
   return s
 }
+export const initialState = state
 
 // =================================================
 // Mutations
 // =================================================
 export const mutations = {
+  RESET_STATE: (state) => {
+    const s = initialState()
+    Object.keys(s).forEach((key) => {
+      state[key] = s[key]
+    })
+  },
   SET_GLOBAL_BREADCRUMB_NAMES: (state, globalBreadcrumbNames) => {
     if (globalBreadcrumbNames) {
       Vue.set(state, "globalBreadcrumbNames", globalBreadcrumbNames)

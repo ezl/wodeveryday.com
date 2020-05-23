@@ -63,9 +63,12 @@ export default {
       },
       deep: true,
     },
-  },
-  mounted() {
-    this.fetchLeaderboardData()
+    gymName: {
+      handler() {
+        this.fetchLeaderboardData()
+      },
+      deep: true,
+    },
   },
   methods: {
     fetchLeaderboardData() {
