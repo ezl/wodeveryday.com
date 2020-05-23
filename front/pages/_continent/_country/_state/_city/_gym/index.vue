@@ -2,39 +2,81 @@
   <div id="app">
     <v-app id="inspire">
       <navbar />
-      <v-row class="mb-6 mt-3">
+      <breadcrumb
+        :breadcrumb-names="$store.state.globalBreadcrumbNames"
+        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+      />
+      <gym-navbar
+        :navbar-active="navbarActive"
+        :goto-elements="$store.state.gymNavbarGotoElements"
+        :navbar-options="$store.state.gymNavbarOptions"
+      />
+      <v-row id="infoAndReviewsDesktop">
         <v-col>
-          <v-card class="mb-3">
-            <breadcrumb
-              :breadcrumb-names="breadcrumbNames"
-              :breadcrumb-paths="breadcrumbPaths"
-            />
-          </v-card>
-
-          <gym-info-card
+          <info-card
             :gym-logo="gymLogo"
             :gym-name="gymName"
             :gym-website="gymWebsite"
             :gym-phone-number="gymPhoneNumber"
             :gym-rating="gymRating"
           />
-
-          <photo-carousel :gym-photos="gymPhotos" />
-
-          <map-card :map-active="mapActive" :gym-address="gymAddress" />
-
-          <gym-hours-card
+          <reviews-card
+            id="reviews"
+            :gym-reviews="gymReviews"
+            :gym-name="gymName"
+          />
+        </v-col>
+        <v-col id="keyInfo">
+          <contact-info-card
+            :gym-website="gymWebsite"
+            :gym-phone-number="gymPhoneNumber"
+          />
+          <hours-card
+            class="mt-3"
             :gym-times="gymTimes"
             :gym-name="gymName"
             :current-day-of-the-week="currentDayOfTheWeek"
           />
-
-          <gym-reviews-card :gym-reviews="gymReviews" :gym-name="gymName" />
-
-          <gym-leaderboard-card :gym-name="gymName" />
+          <address-card class="mb-3" :gym-address="gymAddress" />
         </v-col>
-        <v-col id="photo_column">
-          <photo-column-card :gym-photos="gymPhotos" />
+      </v-row>
+
+      <v-row id="infoAndReviewsMobile">
+        <v-col>
+          <info-card
+            :gym-logo="gymLogo"
+            :gym-name="gymName"
+            :gym-website="gymWebsite"
+            :gym-phone-number="gymPhoneNumber"
+            :gym-rating="gymRating"
+          />
+          <contact-info-card
+            :gym-website="gymWebsite"
+            :gym-phone-number="gymPhoneNumber"
+          />
+          <hours-card
+            class="mt-3"
+            :gym-times="gymTimes"
+            :gym-name="gymName"
+            :current-day-of-the-week="currentDayOfTheWeek"
+          />
+          <address-card class="mb-3" :gym-address="gymAddress" />
+          <reviews-card
+            id="reviews"
+            :gym-reviews="gymReviews"
+            :gym-name="gymName"
+          />
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <span id="photos">
+            <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
+            <photo-carousel :gym-photos="gymPhotos" />
+          </span>
+          <leaderboard-card id="leaderboard" :gym-name="gymName" />
+          <map-card :map-active="mapActive" :gym-address="gymAddress" />
         </v-col>
       </v-row>
     </v-app>
@@ -44,25 +86,31 @@
 <script>
 import Navbar from "~/components/Navbar.vue"
 import Breadcrumb from "~/components/Breadcrumb.vue"
-import GymInfoCard from "~/components/GymInfoCard.vue"
+import InfoCard from "~/components/InfoCard.vue"
 import PhotoCarousel from "~/components/PhotoCarousel.vue"
 import MapCard from "~/components/MapCard.vue"
-import GymHoursCard from "~/components/GymHoursCard.vue"
-import GymReviewsCard from "~/components/GymReviewsCard.vue"
-import GymLeaderboardCard from "~/components/GymLeaderboardCard.vue"
-import PhotoColumnCard from "~/components/PhotoColumnCard.vue"
+import HoursCard from "~/components/HoursCard.vue"
+import ReviewsCard from "~/components/ReviewsCard.vue"
+import LeaderboardCard from "~/components/LeaderboardCard.vue"
+import PhotoGrid from "~/components/PhotoGrid.vue"
+import ContactInfoCard from "~/components/ContactInfoCard.vue"
+import AddressCard from "~/components/AddressCard.vue"
+import GymNavbar from "~/components/GymNavbar.vue"
 
 export default {
   components: {
     Navbar,
     Breadcrumb,
-    GymInfoCard,
+    InfoCard,
+    ContactInfoCard,
+    AddressCard,
+    PhotoGrid,
     PhotoCarousel,
     MapCard,
-    GymHoursCard,
-    GymReviewsCard,
-    GymLeaderboardCard,
-    PhotoColumnCard,
+    HoursCard,
+    ReviewsCard,
+    LeaderboardCard,
+    GymNavbar,
   },
   data() {
     return {
@@ -84,12 +132,39 @@ export default {
       service: undefined,
       breadcrumbNames: [],
       breadcrumbPaths: [],
+      navbarOptions: ["Key Info"],
+      gotoElements: ["#keyInfo"],
+      navbarActive: false,
     }
   },
   mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
+    this.$generateBreadcrumb(this.$store, this.$route.params, "gym")
     this.maybeLoadGym()
   },
   methods: {
+    fillGymNavbar() {
+      let navbarOptions = ["Key Info"]
+      let gotoElements = ["#keyInfo"]
+
+      if (this.gymReviews && this.gymReviews.length > 0) {
+        navbarOptions.push("Reviews")
+        gotoElements.push("#reviews")
+      }
+
+      navbarOptions.push("Map")
+      gotoElements.push("#map")
+
+      if (this.gymReviews && this.gymPhotos.length > 0) {
+        navbarOptions.push("Photos")
+        gotoElements.push("#photos")
+      }
+
+      this.$store.commit("SET_GYM_NAVBAR_OPTIONS", navbarOptions)
+      this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", gotoElements)
+
+      this.navbarActive = true
+    },
     maybeLoadGym() {
       if (this.$store.state.current_affiliate.name === undefined) {
         this.$retrievePathVariables(this.$store, this.$route.params)
@@ -182,7 +257,7 @@ export default {
           that.gymPhotos = []
           that.gymTimes = []
           that.gymTimes = []
-          return
+          that.fillGymNavbar()
         }
       })
     },
@@ -204,12 +279,13 @@ export default {
       this.service.getDetails(request, function (place, status) {
         // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          that.gymPhoneNumber = place.formatted_phone_number
+          that.gymPhoneNumber = place.formatted_phone_number || ""
           that.gymRating = place.rating || -1
           that.gymReviews = place.reviews || []
-          that.gymPhotos = place.photos || []
+          that.gymPhotos = place.photos.slice(0, 9) || []
           that.gymTimes = place.opening_hours || []
           that.gymTimes = that.gymTimes.weekday_text || []
+          that.fillGymNavbar()
         }
       })
     },
@@ -236,6 +312,22 @@ export default {
 #photo_column {
   @media (max-width: 960px) {
     display: none;
+  }
+}
+#photoGrid {
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+#infoAndReviewsDesktop {
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+#infoAndReviewsMobile {
+  display: none;
+  @media (max-width: 960px) {
+    display: block;
   }
 }
 ::-webkit-scrollbar {
