@@ -19,7 +19,6 @@ Vue.prototype.$retrievePathVariables = (store, routeParams) => {
   for (var [key, value] of Object.entries(routeParams)) {
     if (store.state[`current_${key}`] != undefined) continue
     let preparedPathVar = value.replace(/-/gi, " ")
-    console.log(key, value)
     store.commit(`SET_CURRENT_${key.toUpperCase()}`, preparedPathVar)
   }
 }
