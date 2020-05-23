@@ -1,3 +1,4 @@
+import django_filters
 import requests
 from django.db.models import Q
 from rest_framework import viewsets, mixins, filters
@@ -6,6 +7,7 @@ from rest_framework.response import Response
 from quickstart.models import Affiliate
 from quickstart.serializers import AffiliateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from app.constants import GET_AFFILIATE_URL, GET_AFFILIATE_LEADERBOARD_URL
 
 
 class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
@@ -20,8 +22,10 @@ class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet)
         return Response(affiliate_leaderboard_data)
 
     def get_affiliate_leaderboard_data(self, affiliate_name, page):
-        url = "https://games.crossfit.com/competitions/api/v1/competitions/open/2020/leaderboards/"
         affiliate_id = self.get_affiliate_id(affiliate_name)
+        if not affiliate_id:
+            return []
+
         parameters = {
             "affiliate": affiliate_id,
             "division": 1,
@@ -29,19 +33,20 @@ class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet)
             "page": page
         }
 
-        r = requests.get(url=url, params=parameters)
+        r = requests.get(url=GET_AFFILIATE_URL, params=parameters)
         affiliate_leaderboard_data = r.json()
 
         return affiliate_leaderboard_data
 
     def get_affiliate_id(self, affiliate_name):
-        url = "https://games.crossfit.com/competitions/api/v1/competitions/open/2020/affiliates"
         parameters = {
             "term": affiliate_name,
         }
 
-        r = requests.get(url=url, params=parameters)
+        r = requests.get(url=GET_AFFILIATE_LEADERBOARD_URL, params=parameters)
         data = r.json()
+        if len(data) == 0:
+            return None
         affiliate_id = data[0].get('id')
 
         return affiliate_id
@@ -54,7 +59,12 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
     queryset = Affiliate.objects.all()
     serializer_class = AffiliateSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['country', 'full_state', 'city', 'name']
+    filterset_fields = {
+            'country': ['iexact'],
+            'full_state': ['iexact'],
+            'city': ['iexact'],
+            'name': ['iexact']
+        }
 
     @action(detail=False, methods=['get'], url_path='continents')
     def listDistinctCountriesByContinent(self, request, *args):

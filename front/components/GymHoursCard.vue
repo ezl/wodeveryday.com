@@ -12,7 +12,9 @@
         <v-list-item-group v-model="currentDayOfTheWeek">
           <v-list-item v-for="(time, index) in gymTimes" :key="index" disabled>
             <v-list-item-content>
-              <v-list-item-title :key="index" v-html="time" />
+              <v-list-item-title :key="index">
+                {{ time }}
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>

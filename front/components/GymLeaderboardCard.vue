@@ -63,7 +63,8 @@ export default {
         this.fetchLeaderboardData()
           .then((response) => {
             that.leaderboardData = response
-            that.leaderboardTotalItems = response.pagination.totalCompetitors
+            if (response.pagination !== undefined)
+              that.leaderboardTotalItems = response.pagination.totalCompetitors
             that.formatLeaderboardData()
             that.tableLoading = false
           })
@@ -81,7 +82,8 @@ export default {
     this.fetchLeaderboardData()
       .then((response) => {
         that.leaderboardData = response
-        that.leaderboardTotalItems = response.pagination.totalCompetitors
+        if (response.pagination !== undefined)
+          that.leaderboardTotalItems = response.pagination.totalCompetitors
         that.formatLeaderboardData()
       })
       .catch(function (error) {
@@ -103,6 +105,7 @@ export default {
     formatLeaderboardData() {
       let that = this
       this.leaderboardItems = []
+      if (this.leaderboardData.leaderboardRows === undefined) return
       this.leaderboardData.leaderboardRows.forEach((dataRow) => {
         let leaderboardItem = {
           rank: dataRow.overallRank,

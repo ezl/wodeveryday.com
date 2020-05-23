@@ -5,6 +5,7 @@ import Vue from "vue"
 // =================================================
 export const state = () => {
   const s = {
+    current_gym: undefined,
     current_affiliate: {},
     continents: {},
     current_continent: undefined,
@@ -72,6 +73,11 @@ export const mutations = {
   SET_CURRENT_CITY: (state, current_city) => {
     if (current_city) {
       Vue.set(state, "current_city", current_city)
+    }
+  },
+  SET_CURRENT_GYM: (state, current_gym) => {
+    if (current_gym) {
+      Vue.set(state, "current_gym", current_gym)
     }
   },
 }

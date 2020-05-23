@@ -29,8 +29,9 @@ export default {
       const country = this.$store.state["current_country"]
       const state = this.$store.state["current_state"]
       const city = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/?city=${city}&country=${country}`
-      if (state != this.$store.state.constants.NOSTATE) url += `&state=${state}`
+      let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
+      if (state != this.$store.state.constants.NOSTATE)
+        url += `&full_state__iexact=${state}`
       url = encodeURI(url)
       let that = this
       this.$axios
