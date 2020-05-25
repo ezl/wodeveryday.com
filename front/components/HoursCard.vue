@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-3">
+  <v-card>
     <v-card-text v-if="!gymTimes" class="text-center">
       <v-progress-circular :size="70" :width="7" color="white" indeterminate />
     </v-card-text>
