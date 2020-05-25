@@ -35,16 +35,30 @@ export const mutations = {
       state[key] = s[key]
     })
   },
-  PUSHTO_GYM_NAVBAR_OPTIONS: (state, gymNavbarOption) => {
+  PUSH_TO_GYM_NAVBAR_OPTIONS: (state, gymNavbarOption) => {
     state["gymNavbarOptions"].push(gymNavbarOption)
+  },
+  UNSHIFT_TO_GYM_NAVBAR_OPTIONS: (state, gymNavbarOption) => {
+    if (typeof gymNavbarOption === "object") {
+      state["gymNavbarOptions"].unshift(...gymNavbarOption)
+    } else {
+      state["gymNavbarOptions"].unshift(gymNavbarOption)
+    }
   },
   SET_GYM_NAVBAR_OPTIONS: (state, gymNavbarOptions) => {
     if (gymNavbarOptions) {
       Vue.set(state, "gymNavbarOptions", gymNavbarOptions)
     }
   },
-  PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElement) => {
+  PUSH_TO_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElement) => {
     state["gymNavbarGotoElements"].push(gymNavbarGotoElement)
+  },
+  UNSHIFT_TO_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElement) => {
+    if (typeof gymNavbarGotoElement === "object") {
+      state["gymNavbarGotoElements"].unshift(...gymNavbarGotoElement)
+    } else {
+      state["gymNavbarGotoElements"].unshift(gymNavbarGotoElement)
+    }
   },
   SET_GYM_NAVBAR_GOTO_ELEMENTS: (state, gymNavbarGotoElements) => {
     if (gymNavbarGotoElements) {

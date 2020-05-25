@@ -101,8 +101,8 @@ export default {
       if (this.leaderboardData.leaderboardRows === undefined) return
 
       if (this.$store.state["gymNavbarOptions"].indexOf("Leaderboard") === -1) {
-        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Leaderboard")
-        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
+        this.$store.commit("PUSH_TO_GYM_NAVBAR_OPTIONS", "Leaderboard")
+        this.$store.commit("PUSH_TO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
       }
 
       this.leaderboardData.leaderboardRows.forEach((dataRow) => {

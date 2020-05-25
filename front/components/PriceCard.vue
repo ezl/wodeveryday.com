@@ -6,18 +6,11 @@
     <v-divider />
     <v-card-text> Drop-in: ${{ dropInPrice }} </v-card-text>
     <v-card-text> Monthly: ${{ monthlyPrice }} </v-card-text>
-    <v-btn
-      text
-      small
-      color="error"
-      class="ma-2 text-lowercase"
-      :href="gymWebsite"
-      target="_blank"
-    >
+    <v-card-text class="ma-2 red--text">
       We don't have pricing info for this gym yet, please visit
       <a :href="gymWebsite" target="_blank">their website</a>
       for more information
-    </v-btn>
+    </v-card-text>
   </v-card>
 </template>
 
