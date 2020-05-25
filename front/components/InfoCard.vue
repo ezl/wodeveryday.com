@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-2 mb-3" tile>
+  <v-card class="pa-2" tile>
     <v-container>
       <v-row>
         <v-col md6 class="d-flex justify-center align-center">

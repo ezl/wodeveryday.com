@@ -14,6 +14,7 @@
       <v-row id="infoAndReviewsDesktop">
         <v-col>
           <info-card
+            class="mb-3"
             :gym-logo="gymLogo"
             :gym-name="gymName"
             :gym-website="gymWebsite"
@@ -22,21 +23,24 @@
           />
           <reviews-card
             id="reviews"
+            class="mb-3"
             :gym-reviews="gymReviews"
             :gym-name="gymName"
           />
         </v-col>
         <v-col id="keyInfo">
           <contact-info-card
+            class="mb-3"
             :gym-website="gymWebsite"
             :gym-phone-number="gymPhoneNumber"
           />
           <hours-card
-            class="mt-3"
+            class="mb-3"
             :gym-times="gymTimes"
             :gym-name="gymName"
             :current-day-of-the-week="currentDayOfTheWeek"
           />
+          <price-card class="mb-3" :gym-website="gymWebsite" />
           <address-card class="mb-3" :gym-address="gymAddress" />
         </v-col>
       </v-row>
@@ -44,6 +48,7 @@
       <v-row id="infoAndReviewsMobile">
         <v-col>
           <info-card
+            class="mb-3"
             :gym-logo="gymLogo"
             :gym-name="gymName"
             :gym-website="gymWebsite"
@@ -51,15 +56,17 @@
             :gym-rating="gymRating"
           />
           <contact-info-card
+            class="mb-3"
             :gym-website="gymWebsite"
             :gym-phone-number="gymPhoneNumber"
           />
           <hours-card
-            class="mt-3"
+            class="mb-3"
             :gym-times="gymTimes"
             :gym-name="gymName"
             :current-day-of-the-week="currentDayOfTheWeek"
           />
+          <price-card class="mb-3" :gym-website="gymWebsite" />
           <address-card class="mb-3" :gym-address="gymAddress" />
           <reviews-card
             id="reviews"
@@ -96,6 +103,7 @@ import PhotoGrid from "~/components/PhotoGrid.vue"
 import ContactInfoCard from "~/components/ContactInfoCard.vue"
 import AddressCard from "~/components/AddressCard.vue"
 import GymNavbar from "~/components/GymNavbar.vue"
+import PriceCard from "~/components/PriceCard.vue"
 
 export default {
   components: {
@@ -111,6 +119,7 @@ export default {
     ReviewsCard,
     LeaderboardCard,
     GymNavbar,
+    PriceCard,
   },
   data() {
     return {
@@ -130,8 +139,6 @@ export default {
       map: undefined,
       mapActive: false,
       service: undefined,
-      breadcrumbNames: [],
-      breadcrumbPaths: [],
       navbarOptions: ["Key Info"],
       gotoElements: ["#keyInfo"],
       navbarActive: false,
@@ -140,28 +147,27 @@ export default {
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.$generateBreadcrumb(this.$store, this.$route.params, "gym")
+    this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
+    this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
     this.maybeLoadGym()
   },
   methods: {
     fillGymNavbar() {
-      let navbarOptions = ["Key Info"]
-      let gotoElements = ["#keyInfo"]
+      this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Key Info")
+      this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#keyInfo")
 
       if (this.gymReviews && this.gymReviews.length > 0) {
-        navbarOptions.push("Reviews")
-        gotoElements.push("#reviews")
+        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Reviews")
+        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#reviews")
       }
 
-      navbarOptions.push("Map")
-      gotoElements.push("#map")
+      this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Map")
+      this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#map")
 
       if (this.gymReviews && this.gymPhotos.length > 0) {
-        navbarOptions.push("Photos")
-        gotoElements.push("#photos")
+        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Photos")
+        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#photos")
       }
-
-      this.$store.commit("SET_GYM_NAVBAR_OPTIONS", navbarOptions)
-      this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", gotoElements)
 
       this.navbarActive = true
     },
@@ -178,8 +184,9 @@ export default {
           .catch(function (error) {
             console.log(error)
           })
+      } else {
+        this.initGymPage()
       }
-      this.initGymPage()
     },
     refreshStoredGym() {
       const country = this.$store.state["current_country"]
@@ -204,12 +211,6 @@ export default {
       this.gymLat = this.$store.state.current_affiliate.lat
       this.gymLon = this.$store.state.current_affiliate.lon
       this.gymAddress = this.getAddress()
-      this.breadcrumbNames = [
-        "Gyms",
-        this.$store.state.current_affiliate.city,
-        this.$store.state.current_affiliate.name,
-      ]
-      this.breadcrumbPaths = ["/", "", ""]
     },
     getCurrentDayOfTheWeek() {
       let currentDay = new Date().getDay()
