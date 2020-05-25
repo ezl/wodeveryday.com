@@ -68,7 +68,7 @@ export default {
     },
     selectGym(gymName) {
       let cityName = this.$findParent(this.cityList, gymName)
-      this.$store.commit("SET_CURRENT_CITY", gymName)
+      this.$store.commit("SET_CURRENT_CITY", cityName)
       this.fetchGym(cityName, gymName)
     },
     navigateToGym(cityName, gymName) {
