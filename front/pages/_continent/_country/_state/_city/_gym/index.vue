@@ -11,8 +11,8 @@
         :goto-elements="$store.state.gymNavbarGotoElements"
         :navbar-options="$store.state.gymNavbarOptions"
       />
-      <v-row id="infoAndReviewsDesktop">
-        <v-col>
+      <v-row>
+        <v-col v-if="windowInnerWidth > 540">
           <info-card
             class="mb-3"
             :gym-logo="gymLogo"
@@ -29,25 +29,8 @@
           />
         </v-col>
         <v-col id="keyInfo">
-          <contact-info-card
-            class="mb-3"
-            :gym-website="gymWebsite"
-            :gym-phone-number="gymPhoneNumber"
-          />
-          <hours-card
-            class="mb-3"
-            :gym-times="gymTimes"
-            :gym-name="gymName"
-            :current-day-of-the-week="currentDayOfTheWeek"
-          />
-          <price-card class="mb-3" :gym-website="gymWebsite" />
-          <address-card class="mb-3" :gym-address="gymAddress" />
-        </v-col>
-      </v-row>
-
-      <v-row id="infoAndReviewsMobile">
-        <v-col>
           <info-card
+            v-if="windowInnerWidth <= 540"
             class="mb-3"
             :gym-logo="gymLogo"
             :gym-name="gymName"
@@ -69,13 +52,14 @@
           <price-card class="mb-3" :gym-website="gymWebsite" />
           <address-card class="mb-3" :gym-address="gymAddress" />
           <reviews-card
+            v-if="windowInnerWidth <= 540"
             id="reviews"
+            class="mb-3"
             :gym-reviews="gymReviews"
             :gym-name="gymName"
           />
         </v-col>
       </v-row>
-
       <v-row>
         <v-col>
           <span id="photos">
@@ -142,32 +126,49 @@ export default {
       navbarOptions: ["Key Info"],
       gotoElements: ["#keyInfo"],
       navbarActive: false,
+      windowInnerWidth: 0,
     }
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.$generateBreadcrumb(this.$store, this.$route.params, "gym")
+
+    // empty navbar for refill
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
+
     this.maybeLoadGym()
   },
+  created() {
+    if (process.client) window.addEventListener("resize", this.handleResize)
+    this.handleResize()
+  },
+  destroyed() {
+    if (process.client) window.removeEventListener("resize", this.handleResize)
+  },
   methods: {
+    handleResize() {
+      if (process.client) this.windowInnerWidth = window.innerWidth
+    },
     fillGymNavbar() {
-      this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Key Info")
-      this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#keyInfo")
+      let navbarOptions = ["Key Info"]
+      let gotoElements = ["#keyInfo"]
 
       if (this.gymReviews && this.gymReviews.length > 0) {
-        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Reviews")
-        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#reviews")
+        navbarOptions.push("Reviews")
+        gotoElements.push("#reviews")
       }
 
-      this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Map")
-      this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#map")
+      navbarOptions.push("Map")
+      gotoElements.push("#map")
 
       if (this.gymReviews && this.gymPhotos.length > 0) {
-        this.$store.commit("PUSHTO_GYM_NAVBAR_OPTIONS", "Photos")
-        this.$store.commit("PUSHTO_GYM_NAVBAR_GOTO_ELEMENTS", "#photos")
+        navbarOptions.push("Photos")
+        gotoElements.push("#photos")
       }
+
+      this.$store.commit("UNSHIFT_TO_GYM_NAVBAR_OPTIONS", navbarOptions)
+      this.$store.commit("UNSHIFT_TO_GYM_NAVBAR_GOTO_ELEMENTS", gotoElements)
 
       this.navbarActive = true
     },
@@ -228,7 +229,6 @@ export default {
         lat: parseFloat(this.gymLat),
         lng: parseFloat(this.gymLon),
       }
-
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: location,
@@ -283,7 +283,8 @@ export default {
           that.gymPhoneNumber = place.formatted_phone_number || ""
           that.gymRating = place.rating || -1
           that.gymReviews = place.reviews || []
-          that.gymPhotos = place.photos.slice(0, 9) || []
+          that.gymPhotos = place.photos || []
+          that.gymPhotos = that.gymPhotos.slice(0, 9)
           that.gymTimes = place.opening_hours || []
           that.gymTimes = that.gymTimes.weekday_text || []
           that.fillGymNavbar()
@@ -320,16 +321,9 @@ export default {
     display: none;
   }
 }
-#infoAndReviewsDesktop {
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-#infoAndReviewsMobile {
-  display: none;
-  @media (max-width: 960px) {
-    display: block;
-  }
+.col {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 ::-webkit-scrollbar {
   width: 10px;

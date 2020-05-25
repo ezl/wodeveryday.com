@@ -8,7 +8,7 @@
         <h3>{{ gymName }} Reviews</h3>
       </v-card-text>
       <v-list three-line>
-        <template v-for="(review, index) in gymReviews">
+        <template v-for="(review, index) in getGymReviews()">
           <v-divider :key="index" />
           <v-list-item :key="review.author_name">
             <v-list-item-avatar>
@@ -30,10 +30,26 @@
                   ({{ review.relative_time_description }})
                 </span>
               </v-card-actions>
-              <v-list-item-subtitle>{{ review.text }}</v-list-item-subtitle>
+              <v-card-text>{{ review.text }}</v-card-text>
             </v-list-item-content>
           </v-list-item>
         </template>
+        <v-list-item v-if="moreReviewsVisible">
+          <v-btn
+            class="mx-auto"
+            @click="moreReviewsVisible = !moreReviewsVisible"
+          >
+            See less reviews
+          </v-btn>
+        </v-list-item>
+        <v-list-item v-else>
+          <v-btn
+            class="mx-auto"
+            @click="moreReviewsVisible = !moreReviewsVisible"
+          >
+            See more reviews
+          </v-btn>
+        </v-list-item>
       </v-list>
     </template>
   </v-card>
@@ -52,6 +68,17 @@ export default {
       type: String,
       required: false,
       default: undefined,
+    },
+  },
+  data() {
+    return {
+      moreReviewsVisible: false,
+    }
+  },
+  methods: {
+    getGymReviews() {
+      if (this.moreReviewsVisible) return this.gymReviews
+      return this.gymReviews.slice(0, 3)
     },
   },
 }

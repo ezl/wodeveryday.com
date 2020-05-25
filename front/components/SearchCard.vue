@@ -111,15 +111,11 @@ export default {
     this.handleResize()
   },
   created() {
-    if (process.client) {
-      window.addEventListener("resize", this.handleResize)
-    }
+    if (process.client) window.addEventListener("resize", this.handleResize)
     this.handleResize()
   },
   destroyed() {
-    if (process.client) {
-      window.removeEventListener("resize", this.handleResize)
-    }
+    if (process.client) window.removeEventListener("resize", this.handleResize)
   },
   methods: {
     isLoading() {
@@ -128,9 +124,7 @@ export default {
       )
     },
     handleResize() {
-      if (process.client) {
-        this.windowInnerWidth = window.innerWidth
-      }
+      if (process.client) this.windowInnerWidth = window.innerWidth
       this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
       this.columnWidth = Math.floor(100 / (this.windowInnerWidth / 250))
     },
