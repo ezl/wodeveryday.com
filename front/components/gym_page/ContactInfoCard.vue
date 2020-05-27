@@ -7,7 +7,7 @@
     <v-btn large class="ma-2" :href="gymWebsite" target="_blank">
       Visit their website
     </v-btn>
-    <v-tooltip v-if="phoneNumberVisible()" right>
+    <v-tooltip v-if="phoneNumberVisible" right>
       <template v-slot:activator="{ on }">
         <v-btn
           id="phone_field"

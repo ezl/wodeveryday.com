@@ -20,7 +20,7 @@ export default {
     }
   },
   computed: {
-    fetchGymsURL: () => {
+    fetchGymsURL: function () {
       const country = this.$store.state["current_country"]
       const state = this.$store.state["current_state"]
       const city = this.$store.state[`current_${this.itemTitle}`]

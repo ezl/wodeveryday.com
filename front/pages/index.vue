@@ -19,7 +19,7 @@ export default {
     }
   },
   computed: {
-    fetchContinentURL: () => {
+    fetchContinentURL: function () {
       let url = `${process.env.BACKEND_URL}/affiliates/continents`
       url = encodeURI(url)
       return url

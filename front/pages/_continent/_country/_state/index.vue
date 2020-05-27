@@ -20,8 +20,13 @@ export default {
       cityList: {},
     }
   },
-  computed: {
-    fetchCitiesURL: () => {
+  mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
+    this.fetchCities()
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+  },
+  methods: {
+    fetchCitiesURL() {
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
       const state = this.$store.state[`current_${this.itemTitle}`]
       if (state === this.$store.state.constants.NOSTATE) {
@@ -34,15 +39,8 @@ export default {
       url = encodeURI(url)
       return url
     },
-  },
-  mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchCities()
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
-  },
-  methods: {
     fetchCities() {
-      const url = this.fetchCitiesURL
+      const url = this.fetchCitiesURL()
       let that = this
       this.$axios
         .$get(url)

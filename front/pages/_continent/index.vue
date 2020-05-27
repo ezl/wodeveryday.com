@@ -21,7 +21,7 @@ export default {
     }
   },
   computed: {
-    fetchCountriesURL: () => {
+    fetchCountriesURL: function () {
       const continent = this.$store.state[`current_${this.itemTitle}`]
       let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
       url = encodeURI(url)

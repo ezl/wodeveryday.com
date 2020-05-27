@@ -1,65 +1,63 @@
 <template>
-  <v-app id="inspire">
+  <v-content>
     <navbar />
-    <v-content>
-      <breadcrumb
-        :breadcrumb-names="$store.state.globalBreadcrumbNames"
-        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
-      />
-      <v-row align="center" justify="center" style="flex-direction: column;">
-        <h1 class="ma-4">
-          Find a Gym Anywhere
-        </h1>
-        <v-col cols="12" sm="8" md="4">
-          <v-card class="pa-4 elevation-12">
-            <v-autocomplete
-              v-model="selectedItem"
-              :items="flat(Object.values(itemList))"
-              :loading="isLoading()"
-              color="white"
-              hide-no-data
-              hide-selected
-              placeholder="Start typing to Search"
-              return-object
-              @change="selectSubitem(selectedItem)"
-            />
-          </v-card>
-        </v-col>
-        <h1 v-if="itemTitle" class="mt-4 text-capitalize">
-          {{ $store.state["current_" + itemTitle] }}
-        </h1>
-      </v-row>
-      <v-row justify="center" class="flex-nowrap">
-        <v-col
-          v-for="(subList, index) in listOfItemLists"
-          :key="index"
-          :style="`width: ${columnWidth}%;`"
-        >
-          <v-list v-for="(subItems, item) in subList" :key="item" class="ma-4">
-            <v-list-item-group color="primary">
-              <v-list-item @click="selectItem(item)">
-                <v-list-item-content>
-                  <v-list-item-title
-                    class="headline font-weight-bold"
-                    v-text="item"
-                  />
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item
-                v-for="(subItem, i) in subItems"
-                :key="i"
-                @click="selectSubitem(subItem)"
-              >
-                <v-list-item-content>
-                  <v-list-item-title v-text="subItem" />
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-col>
-      </v-row>
-    </v-content>
-  </v-app>
+    <breadcrumb
+      :breadcrumb-names="$store.state.globalBreadcrumbNames"
+      :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+    />
+    <v-row align="center" justify="center" style="flex-direction: column;">
+      <h1 class="ma-4">
+        Find a Gym Anywhere
+      </h1>
+      <v-col cols="12" sm="8" md="4">
+        <v-card class="pa-4 elevation-12">
+          <v-autocomplete
+            v-model="selectedItem"
+            :items="flat(Object.values(itemList))"
+            :loading="isLoading()"
+            color="white"
+            hide-no-data
+            hide-selected
+            placeholder="Start typing to Search"
+            return-object
+            @change="selectSubitem(selectedItem)"
+          />
+        </v-card>
+      </v-col>
+      <h1 v-if="itemTitle" class="mt-4 text-capitalize">
+        {{ $store.state["current_" + itemTitle] }}
+      </h1>
+    </v-row>
+    <v-row justify="center" class="flex-nowrap">
+      <v-col
+        v-for="(subList, index) in listOfItemLists"
+        :key="index"
+        :style="`width: ${columnWidth}%;`"
+      >
+        <v-list v-for="(subItems, item) in subList" :key="item" class="ma-4">
+          <v-list-item-group color="primary">
+            <v-list-item @click="selectItem(item)">
+              <v-list-item-content>
+                <v-list-item-title
+                  class="headline font-weight-bold"
+                  v-text="item"
+                />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-for="(subItem, i) in subItems"
+              :key="i"
+              @click="selectSubitem(subItem)"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-text="subItem" />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-col>
+    </v-row>
+  </v-content>
 </template>
 
 <script>
