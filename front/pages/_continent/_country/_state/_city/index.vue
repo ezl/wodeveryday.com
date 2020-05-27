@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import GymSearchCard from "~/components/GymSearchCard.vue"
+import GymSearchCard from "~/components/navigation/GymSearchCard.vue"
 
 export default {
   components: {
@@ -19,13 +19,8 @@ export default {
       affiliateList: [],
     }
   },
-  mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchAffiliates()
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
-  },
-  methods: {
-    fetchAffiliates() {
+  computed: {
+    fetchGymsURL: () => {
       const country = this.$store.state["current_country"]
       const state = this.$store.state["current_state"]
       const city = this.$store.state[`current_${this.itemTitle}`]
@@ -33,6 +28,17 @@ export default {
       if (state != this.$store.state.constants.NOSTATE)
         url += `&full_state__iexact=${state}`
       url = encodeURI(url)
+      return url
+    },
+  },
+  mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
+    this.fetchAffiliates()
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+  },
+  methods: {
+    fetchAffiliates() {
+      const url = this.fetchGymsURL
       let that = this
       this.$axios
         .$get(url)

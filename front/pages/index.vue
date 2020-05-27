@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import SearchCard from "~/components/navigation/SearchCard.vue"
 
 export default {
   components: {
@@ -17,6 +17,13 @@ export default {
     return {
       continentObject: {},
     }
+  },
+  computed: {
+    fetchContinentURL: () => {
+      let url = `${process.env.BACKEND_URL}/affiliates/continents`
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     // ToDo: remove this line when the routing structure is improved.
@@ -32,8 +39,7 @@ export default {
     fetchContinents() {
       this.continentObject = this.$store.state.continents
       if (Object.values(this.continentObject).length === 0) {
-        let url = `${process.env.BACKEND_URL}/affiliates/continents`
-        url = encodeURI(url)
+        const url = this.fetchContinentURL
         let that = this
         this.$axios
           .$get(url)
@@ -55,7 +61,7 @@ export default {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {

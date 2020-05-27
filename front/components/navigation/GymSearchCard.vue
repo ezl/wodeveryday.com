@@ -15,41 +15,43 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row justify="center" class="ma-4">
-        <v-col
-          v-for="(gymObject, index) in gymList"
-          :key="index"
-          cols="12"
-          xs="12"
-          sm="4"
-          md="4"
-          lg="3"
-        >
-          <v-item
-            v-slot:default="{ active, toggle }"
-            @change="selectItem(gymObject)"
+      <v-item-group>
+        <v-row justify="center" class="ma-4">
+          <v-col
+            v-for="(gymObject, index) in gymList"
+            :key="index"
+            cols="12"
+            xs="12"
+            sm="4"
+            md="4"
+            lg="3"
           >
-            <v-card
-              class="mx-auto"
-              max-width="344"
-              :color="active ? 'primary' : ''"
-              @click="toggle"
+            <v-item
+              v-slot:default="{ active, toggle }"
+              @change="selectItem(gymObject)"
             >
-              <v-img :src="gymObject.photo" height="200px" />
-              <v-card-title>
-                {{ gymObject.name }}
-              </v-card-title>
-            </v-card>
-          </v-item>
-        </v-col>
-      </v-row>
+              <v-card
+                class="mx-auto"
+                max-width="344"
+                :color="active ? 'primary' : ''"
+                @click="toggle"
+              >
+                <v-img :src="gymObject.photo" height="200px" />
+                <v-card-title>
+                  {{ gymObject.name }}
+                </v-card-title>
+              </v-card>
+            </v-item>
+          </v-col>
+        </v-row>
+      </v-item-group>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Navbar from "~/components/Navbar.vue"
-import Breadcrumb from "~/components/Breadcrumb.vue"
+import Navbar from "~/components/global/Navbar.vue"
+import Breadcrumb from "~/components/global/Breadcrumb.vue"
 
 export default {
   name: "GymSearchCard",
@@ -81,19 +83,6 @@ export default {
     return {
       selectedItem: undefined,
     }
-  },
-  methods: {
-    flat(input, depth = 1, stack = []) {
-      for (let item of input) {
-        if (item instanceof Array && depth > 0) {
-          this.flat(item, depth - 1, stack)
-        } else {
-          stack.push(item)
-        }
-      }
-
-      return stack
-    },
   },
 }
 </script>

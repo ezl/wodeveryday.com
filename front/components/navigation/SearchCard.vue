@@ -63,8 +63,8 @@
 </template>
 
 <script>
-import Navbar from "~/components/Navbar.vue"
-import Breadcrumb from "~/components/Breadcrumb.vue"
+import Navbar from "~/components/global/Navbar.vue"
+import Breadcrumb from "~/components/global/Breadcrumb.vue"
 import _ from "lodash"
 
 export default {
@@ -152,16 +152,17 @@ export default {
       }
       return listOfObjects
     },
-    flat(input, depth = 1, stack = []) {
+    flat(input, depth = 1, stack) {
+      const validStack = stack || []
       for (let item of input) {
         if (item instanceof Array && depth > 0) {
-          this.flat(item, depth - 1, stack)
+          this.flat(item, depth - 1, validStack)
         } else {
-          stack.push(item)
+          validStack.push(item)
         }
       }
 
-      return stack
+      return validStack
     },
   },
 }

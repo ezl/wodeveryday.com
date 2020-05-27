@@ -72,8 +72,8 @@ export default {
   },
   methods: {
     fetchLeaderboardData() {
-      let url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
-      let parameters = {
+      const url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
+      const parameters = {
         affiliate_name: this.gymName,
         page: this.options.page,
       }
@@ -106,28 +106,30 @@ export default {
       }
 
       this.leaderboardData.leaderboardRows.forEach((dataRow) => {
-        let leaderboardItem = {
-          rank: dataRow.overallRank,
-          name: dataRow.entrant.competitorName,
-          points: dataRow.overallScore,
-          "20.1": `${this.getRank(dataRow.scores[0].rank)} (${this.getScore(
-            dataRow.scores[0].scoreDisplay
-          )}`,
-          "20.2": `${this.getRank(dataRow.scores[1].rank)} (${this.getScore(
-            dataRow.scores[1].scoreDisplay
-          )})`,
-          "20.3": `${this.getRank(dataRow.scores[2].rank)} (${this.getScore(
-            dataRow.scores[2].scoreDisplay
-          )})`,
-          "20.4": `${this.getRank(dataRow.scores[3].rank)} (${this.getScore(
-            dataRow.scores[3].scoreDisplay
-          )})`,
-          "20.5": `${this.getRank(dataRow.scores[4].rank)} (${this.getScore(
-            dataRow.scores[4].scoreDisplay
-          )})`,
-        }
-        that.leaderboardItems.push(leaderboardItem)
+        that.leaderboardItems.push(this.createLeaderBoardItemObject(dataRow))
       })
+    },
+    createLeaderBoardItemObject(dataRow) {
+      return {
+        rank: dataRow.overallRank,
+        name: dataRow.entrant.competitorName,
+        points: dataRow.overallScore,
+        "20.1": `${this.getRank(dataRow.scores[0].rank)} (${this.getScore(
+          dataRow.scores[0].scoreDisplay
+        )}`,
+        "20.2": `${this.getRank(dataRow.scores[1].rank)} (${this.getScore(
+          dataRow.scores[1].scoreDisplay
+        )})`,
+        "20.3": `${this.getRank(dataRow.scores[2].rank)} (${this.getScore(
+          dataRow.scores[2].scoreDisplay
+        )})`,
+        "20.4": `${this.getRank(dataRow.scores[3].rank)} (${this.getScore(
+          dataRow.scores[3].scoreDisplay
+        )})`,
+        "20.5": `${this.getRank(dataRow.scores[4].rank)} (${this.getScore(
+          dataRow.scores[4].scoreDisplay
+        )})`,
+      }
     },
     getRank(rankNumber) {
       if (rankNumber > 3) {

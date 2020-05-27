@@ -75,19 +75,19 @@
 </template>
 
 <script>
-import Navbar from "~/components/Navbar.vue"
-import Breadcrumb from "~/components/Breadcrumb.vue"
-import InfoCard from "~/components/InfoCard.vue"
-import PhotoCarousel from "~/components/PhotoCarousel.vue"
-import MapCard from "~/components/MapCard.vue"
-import HoursCard from "~/components/HoursCard.vue"
-import ReviewsCard from "~/components/ReviewsCard.vue"
-import LeaderboardCard from "~/components/LeaderboardCard.vue"
-import PhotoGrid from "~/components/PhotoGrid.vue"
-import ContactInfoCard from "~/components/ContactInfoCard.vue"
-import AddressCard from "~/components/AddressCard.vue"
-import GymNavbar from "~/components/GymNavbar.vue"
-import PriceCard from "~/components/PriceCard.vue"
+import Navbar from "~/components/global/Navbar.vue"
+import Breadcrumb from "~/components/global/Breadcrumb.vue"
+import InfoCard from "~/components/gym_page/InfoCard.vue"
+import PhotoCarousel from "~/components/gym_page/PhotoCarousel.vue"
+import MapCard from "~/components/gym_page/MapCard.vue"
+import HoursCard from "~/components/gym_page/HoursCard.vue"
+import ReviewsCard from "~/components/gym_page/ReviewsCard.vue"
+import LeaderboardCard from "~/components/gym_page/LeaderboardCard.vue"
+import PhotoGrid from "~/components/gym_page/PhotoGrid.vue"
+import ContactInfoCard from "~/components/gym_page/ContactInfoCard.vue"
+import AddressCard from "~/components/gym_page/AddressCard.vue"
+import GymNavbar from "~/components/gym_page/GymNavbar.vue"
+import PriceCard from "~/components/gym_page/PriceCard.vue"
 
 export default {
   components: {
@@ -139,6 +139,18 @@ export default {
         this.$store.state.current_affiliate.country
       return query
     },
+    fetchGymURL: () => {
+      const country = this.$store.state["current_country"]
+      const state = this.$store.state["current_state"]
+      const city = this.$store.state[`current_city`]
+      const gymName = this.$store.state[`current_gym`]
+      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
+      if (state != this.$store.state.constants.NOSTATE)
+        url += `&full_state__iexact=${state}`
+
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -186,8 +198,10 @@ export default {
     maybeLoadGym() {
       if (this.$store.state.current_affiliate.name === undefined) {
         this.$retrievePathVariables(this.$store, this.$route.params)
+        const url = this.fetchGymURL
         let that = this
-        this.refreshStoredGym()
+        this.$axios
+          .$get(url)
           .then((response) => {
             that.$store.commit("SET_CURRENT_AFFILIATE", response.results[0])
             this.initGymPage()
@@ -199,18 +213,6 @@ export default {
       } else {
         this.initGymPage()
       }
-    },
-    refreshStoredGym() {
-      const country = this.$store.state["current_country"]
-      const state = this.$store.state["current_state"]
-      const city = this.$store.state[`current_city`]
-      const gymName = this.$store.state[`current_gym`]
-      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
-      if (state != this.$store.state.constants.NOSTATE)
-        url += `&full_state__iexact=${state}`
-
-      url = encodeURI(url)
-      return this.$axios.$get(url)
     },
     initGymPage() {
       this.setGymAttributes()

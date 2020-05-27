@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import SearchCard from "~/components/navigation/SearchCard.vue"
 
 export default {
   components: {
@@ -20,6 +20,14 @@ export default {
       countryList: {},
     }
   },
+  computed: {
+    fetchCountriesURL: () => {
+      const continent = this.$store.state[`current_${this.itemTitle}`]
+      let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
+      url = encodeURI(url)
+      return url
+    },
+  },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCountries()
@@ -27,9 +35,7 @@ export default {
   },
   methods: {
     fetchCountries() {
-      const continent = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
-      url = encodeURI(url)
+      const url = this.fetchCountriesURL
       let that = this
       this.$axios
         .$get(url)
@@ -44,7 +50,7 @@ export default {
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {
@@ -64,7 +70,7 @@ export default {
       let countryName = this.$findParent(this.countryList, cityOrStateName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import SearchCard from "~/components/navigation/SearchCard.vue"
 
 export default {
   components: {
@@ -19,6 +19,14 @@ export default {
       itemTitle: "country",
       stateList: {},
     }
+  },
+  computed: {
+    fetchStatesURL: () => {
+      const country = this.$store.state[`current_${this.itemTitle}`]
+      let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     this.determineIfCountryHasStates()
@@ -34,7 +42,7 @@ export default {
       ) {
         this.$router.go(-1)
       } else if (
-        !["United States", "Australia", "Canada"].includes(
+        !this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {
@@ -49,10 +57,7 @@ export default {
       }
     },
     fetchStates() {
-      const country = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
-      url = encodeURI(url)
-
+      const url = this.fetchStatesURL
       let that = this
       this.$axios
         .$get(url)

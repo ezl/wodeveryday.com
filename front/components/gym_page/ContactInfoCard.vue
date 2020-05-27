@@ -60,13 +60,15 @@ export default {
       default: undefined,
     },
   },
-  methods: {
-    phoneNumberVisible() {
+  computed: {
+    phoneNumberVisible: function () {
       return (
         this.gymPhoneNumber === undefined ||
         (this.gymPhoneNumber && this.gymPhoneNumber.length > 0)
       )
     },
+  },
+  methods: {
     copyToClipboard() {
       navigator.clipboard.writeText(this.gymPhoneNumber)
     },

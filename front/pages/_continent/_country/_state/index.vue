@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import SearchCard from "~/components/navigation/SearchCard.vue"
 
 export default {
   components: {
@@ -20,13 +20,8 @@ export default {
       cityList: {},
     }
   },
-  mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchCities()
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
-  },
-  methods: {
-    fetchCities() {
+  computed: {
+    fetchCitiesURL: () => {
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
       const state = this.$store.state[`current_${this.itemTitle}`]
       if (state === this.$store.state.constants.NOSTATE) {
@@ -37,6 +32,17 @@ export default {
         url += `?state=${state}`
       }
       url = encodeURI(url)
+      return url
+    },
+  },
+  mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
+    this.fetchCities()
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+  },
+  methods: {
+    fetchCities() {
+      const url = this.fetchCitiesURL
       let that = this
       this.$axios
         .$get(url)
@@ -49,7 +55,7 @@ export default {
         })
     },
     fetchGym(cityName, gymName) {
-      let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
+      const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
       let that = this
       this.$axios
         .$get(url)

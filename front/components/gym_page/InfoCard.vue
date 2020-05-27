@@ -61,12 +61,6 @@ export default {
     },
   },
   methods: {
-    phoneNumberVisible() {
-      return (
-        this.gymPhoneNumber === undefined ||
-        (this.gymPhoneNumber && this.gymPhoneNumber.length > 0)
-      )
-    },
     copyToClipboard() {
       navigator.clipboard.writeText(this.gymPhoneNumber)
     },
