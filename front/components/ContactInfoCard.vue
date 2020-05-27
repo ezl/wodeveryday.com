@@ -7,26 +7,41 @@
     <v-btn large class="ma-2" :href="gymWebsite" target="_blank">
       Visit their website
     </v-btn>
-    <span>
-      <v-tooltip v-if="phoneNumberVisible()" right>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            id="phone_field"
-            large
-            class="ml-2 d-block"
-            :loading="gymPhoneNumber === undefined"
-            v-on="on"
-            @click="copyToClipboard()"
-          >
-            {{ gymPhoneNumber
-            }}<v-icon right>
-              mdi-content-copy
-            </v-icon>
-          </v-btn>
-        </template>
-        <span>Click to copy</span>
-      </v-tooltip>
-    </span>
+    <v-tooltip v-if="phoneNumberVisible()" right>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          id="phone_field"
+          large
+          class="ml-2 d-block"
+          :loading="gymPhoneNumber === undefined"
+          v-on="on"
+          @click="copyToClipboard()"
+        >
+          {{ gymPhoneNumber
+          }}<v-icon right>
+            mdi-content-copy
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Click to copy</span>
+    </v-tooltip>
+    <v-tooltip v-if="$store.state.current_affiliate.email" right>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          id="phone_field"
+          large
+          class="ml-2 d-block"
+          v-on="on"
+          @click="copyToClipboard()"
+        >
+          {{ $store.state.current_affiliate.email
+          }}<v-icon right>
+            mdi-content-copy
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Click to copy</span>
+    </v-tooltip>
   </v-card>
 </template>
 
