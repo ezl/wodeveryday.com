@@ -4,9 +4,16 @@
       <h3>Price Info</h3>
     </v-card-text>
     <v-divider />
-    <v-card-text> Drop-in: ${{ dropInPrice }} </v-card-text>
-    <v-card-text> Monthly: ${{ monthlyPrice }} </v-card-text>
-    <v-card-text class="ma-2 red--text">
+    <v-card-text v-if="dropInPrice !== '??.??'">
+      Drop-in: ${{ dropInPrice }}
+    </v-card-text>
+    <v-card-text v-if="monthlyPrice !== '??.??'">
+      Monthly: ${{ monthlyPrice }}
+    </v-card-text>
+    <v-card-text
+      v-if="dropInPrice === '??.??' && monthlyPrice === '??.??'"
+      class="ma-2 red--text"
+    >
       We don't have pricing info for this gym yet, please visit
       <a :href="gymWebsite" target="_blank">their website</a>
       for more information

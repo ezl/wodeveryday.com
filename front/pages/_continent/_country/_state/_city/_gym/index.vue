@@ -129,6 +129,17 @@ export default {
       windowInnerWidth: 0,
     }
   },
+  computed: {
+    fetchGymSearchQuery: function () {
+      const query =
+        this.$store.state.current_affiliate.name +
+        " " +
+        this.$store.state.current_affiliate.city +
+        " " +
+        this.$store.state.current_affiliate.country
+      return query
+    },
+  },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.$generateBreadcrumb(this.$store, this.$route.params, "gym")
@@ -236,7 +247,7 @@ export default {
       })
 
       var request = {
-        query: this.gymName + " " + this.gymAddress,
+        query: this.fetchGymSearchQuery,
         fields: ["name", "place_id", "geometry"],
       }
 
@@ -302,7 +313,8 @@ export default {
     getAddress() {
       let gymFullAddress = this.$store.state.current_affiliate.address
       gymFullAddress += ", " + this.$store.state.current_affiliate.city
-      gymFullAddress += ", " + this.$store.state.current_affiliate.full_state
+      if (this.$store.state.current_affiliate.full_state)
+        gymFullAddress += ", " + this.$store.state.current_affiliate.full_state
       gymFullAddress += " " + this.$store.state.current_affiliate.zip
       return gymFullAddress
     },
