@@ -1,76 +1,74 @@
 <template>
-  <div id="app">
-    <v-app id="inspire">
-      <navbar />
-      <breadcrumb
-        :breadcrumb-names="$store.state.globalBreadcrumbNames"
-        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
-      />
-      <gym-navbar
-        :navbar-active="navbarActive"
-        :goto-elements="$store.state.gymNavbarGotoElements"
-        :navbar-options="$store.state.gymNavbarOptions"
-      />
-      <v-row>
-        <v-col v-if="windowInnerWidth > 540">
-          <info-card
-            class="mb-3"
-            :gym-logo="gymLogo"
-            :gym-name="gymName"
-            :gym-website="gymWebsite"
-            :gym-phone-number="gymPhoneNumber"
-            :gym-rating="gymRating"
-          />
-          <reviews-card
-            id="reviews"
-            class="mb-3"
-            :gym-reviews="gymReviews"
-            :gym-name="gymName"
-          />
-        </v-col>
-        <v-col id="keyInfo">
-          <info-card
-            v-if="windowInnerWidth <= 540"
-            class="mb-3"
-            :gym-logo="gymLogo"
-            :gym-name="gymName"
-            :gym-website="gymWebsite"
-            :gym-phone-number="gymPhoneNumber"
-            :gym-rating="gymRating"
-          />
-          <contact-info-card
-            class="mb-3"
-            :gym-website="gymWebsite"
-            :gym-phone-number="gymPhoneNumber"
-          />
-          <hours-card
-            class="mb-3"
-            :gym-times="gymTimes"
-            :gym-name="gymName"
-            :current-day-of-the-week="currentDayOfTheWeek"
-          />
-          <price-card class="mb-3" :gym-website="gymWebsite" />
-          <address-card class="mb-3" :gym-address="gymAddress" />
-          <reviews-card
-            v-if="windowInnerWidth <= 540"
-            id="reviews"
-            class="mb-3"
-            :gym-reviews="gymReviews"
-            :gym-name="gymName"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <span id="photos">
-            <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
-            <photo-carousel :gym-photos="gymPhotos" />
-          </span>
-          <leaderboard-card id="leaderboard" :gym-name="gymName" />
-          <map-card :map-active="mapActive" :gym-address="gymAddress" />
-        </v-col>
-      </v-row>
-    </v-app>
+  <div>
+    <navbar />
+    <breadcrumb
+      :breadcrumb-names="$store.state.globalBreadcrumbNames"
+      :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+    />
+    <gym-navbar
+      :navbar-active="navbarActive"
+      :goto-elements="$store.state.gymNavbarGotoElements"
+      :navbar-options="$store.state.gymNavbarOptions"
+    />
+    <v-row>
+      <v-col v-show="windowInnerWidth > 540">
+        <info-card
+          class="mb-3"
+          :gym-logo="gymLogo"
+          :gym-name="gymName"
+          :gym-website="gymWebsite"
+          :gym-phone-number="gymPhoneNumber"
+          :gym-rating="gymRating"
+        />
+        <reviews-card
+          :id="windowInnerWidth > 540 ? 'reviews' : ''"
+          class="mb-3"
+          :gym-reviews="gymReviews"
+          :gym-name="gymName"
+        />
+      </v-col>
+      <v-col id="keyInfo">
+        <info-card
+          v-show="windowInnerWidth <= 540"
+          class="mb-3"
+          :gym-logo="gymLogo"
+          :gym-name="gymName"
+          :gym-website="gymWebsite"
+          :gym-phone-number="gymPhoneNumber"
+          :gym-rating="gymRating"
+        />
+        <contact-info-card
+          class="mb-3"
+          :gym-website="gymWebsite"
+          :gym-phone-number="gymPhoneNumber"
+        />
+        <hours-card
+          class="mb-3"
+          :gym-times="gymTimes"
+          :gym-name="gymName"
+          :current-day-of-the-week="currentDayOfTheWeek"
+        />
+        <price-card class="mb-3" :gym-website="gymWebsite" />
+        <address-card class="mb-3" :gym-address="gymAddress" />
+        <reviews-card
+          v-show="windowInnerWidth <= 540"
+          :id="windowInnerWidth <= 540 ? 'reviews' : ''"
+          class="mb-3"
+          :gym-reviews="gymReviews"
+          :gym-name="gymName"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <span id="photos">
+          <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
+          <photo-carousel :gym-photos="gymPhotos" />
+        </span>
+        <leaderboard-card id="leaderboard" :gym-name="gymName" />
+        <map-card :map-active="mapActive" :gym-address="gymAddress" />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
