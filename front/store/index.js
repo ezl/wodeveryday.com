@@ -9,7 +9,8 @@ export const state = () => {
     gymNavbarGotoElements: [],
     globalBreadcrumbNames: [],
     globalBreadcrumbPaths: [],
-    current_affiliate: {},
+    current_gym: {},
+    gyms: {},
     continents: {},
     current_continent: undefined,
     countries: {},
@@ -18,7 +19,6 @@ export const state = () => {
     current_state: undefined,
     cities: {},
     current_city: undefined,
-    current_gym: undefined,
   }
 
   return s
@@ -75,9 +75,14 @@ export const mutations = {
       Vue.set(state, "globalBreadcrumbPaths", globalBreadcrumbPaths)
     }
   },
-  SET_CURRENT_AFFILIATE: (state, affiliate) => {
-    if (affiliate) {
-      Vue.set(state, "current_affiliate", affiliate)
+  SET_GYMS: (state, gyms) => {
+    if (gyms) {
+      Vue.set(state, "gyms", gyms)
+    }
+  },
+  SET_CURRENT_GYM: (state, current_gym) => {
+    if (current_gym) {
+      Vue.set(state, "current_gym", current_gym)
     }
   },
   SET_CONTINENTS: (state, continents) => {
@@ -118,11 +123,6 @@ export const mutations = {
   SET_CURRENT_CITY: (state, current_city) => {
     if (current_city) {
       Vue.set(state, "current_city", current_city)
-    }
-  },
-  SET_CURRENT_GYM: (state, current_gym) => {
-    if (current_gym) {
-      Vue.set(state, "current_gym", current_gym)
     }
   },
 }

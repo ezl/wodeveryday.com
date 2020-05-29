@@ -14,9 +14,6 @@
       <v-col v-show="windowInnerWidth > 540">
         <info-card
           class="mb-3"
-          :gym-logo="gymLogo"
-          :gym-name="gymName"
-          :gym-website="gymWebsite"
           :gym-phone-number="gymPhoneNumber"
           :gym-rating="gymRating"
         />
@@ -24,38 +21,28 @@
           :id="windowInnerWidth > 540 ? 'reviews' : ''"
           class="mb-3"
           :gym-reviews="gymReviews"
-          :gym-name="gymName"
         />
       </v-col>
       <v-col id="keyInfo">
         <info-card
           v-show="windowInnerWidth <= 540"
           class="mb-3"
-          :gym-logo="gymLogo"
-          :gym-name="gymName"
-          :gym-website="gymWebsite"
           :gym-phone-number="gymPhoneNumber"
           :gym-rating="gymRating"
         />
-        <contact-info-card
-          class="mb-3"
-          :gym-website="gymWebsite"
-          :gym-phone-number="gymPhoneNumber"
-        />
+        <contact-info-card class="mb-3" :gym-phone-number="gymPhoneNumber" />
         <hours-card
           class="mb-3"
           :gym-times="gymTimes"
-          :gym-name="gymName"
           :current-day-of-the-week="currentDayOfTheWeek"
         />
-        <price-card class="mb-3" :gym-website="gymWebsite" />
+        <price-card class="mb-3" />
         <address-card class="mb-3" :gym-address="gymAddress" />
         <reviews-card
           v-show="windowInnerWidth <= 540"
           :id="windowInnerWidth <= 540 ? 'reviews' : ''"
           class="mb-3"
           :gym-reviews="gymReviews"
-          :gym-name="gymName"
         />
       </v-col>
     </v-row>
@@ -65,7 +52,7 @@
           <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
           <photo-carousel :gym-photos="gymPhotos" />
         </span>
-        <leaderboard-card id="leaderboard" :gym-name="gymName" />
+        <leaderboard-card id="leaderboard" />
         <map-card :map-active="mapActive" :gym-address="gymAddress" />
       </v-col>
     </v-row>
@@ -86,6 +73,7 @@ import ContactInfoCard from "~/components/gym_page/ContactInfoCard.vue"
 import AddressCard from "~/components/gym_page/AddressCard.vue"
 import GymNavbar from "~/components/gym_page/GymNavbar.vue"
 import PriceCard from "~/components/gym_page/PriceCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
@@ -106,13 +94,8 @@ export default {
   data() {
     return {
       gymRating: undefined,
-      gymLogo: undefined,
       gymPhoneNumber: undefined,
-      gymName: undefined,
-      gymWebsite: undefined,
       gymAddress: undefined,
-      gymLat: undefined,
-      gymLon: undefined,
       gymReviews: undefined,
       gymPhotos: undefined,
       gymTimes: undefined,
@@ -130,11 +113,11 @@ export default {
   computed: {
     fetchGymSearchQuery: function () {
       const query =
-        this.$store.state.current_affiliate.name +
+        this.$store.state.current_gym.name +
         " " +
-        this.$store.state.current_affiliate.city +
+        this.$store.state.current_gym.city +
         " " +
-        this.$store.state.current_affiliate.country
+        this.$store.state.current_gym.country
       return query
     },
     fetchGymURL: function () {
@@ -194,35 +177,20 @@ export default {
       this.navbarActive = true
     },
     maybeLoadGym() {
-      if (this.$store.state.current_affiliate.name === undefined) {
+      if (this.$store.state.current_gym.name === undefined) {
         this.$retrievePathVariables(this.$store, this.$route.params)
         const url = this.fetchGymURL
-        let that = this
-        this.$axios
-          .$get(url)
-          .then((response) => {
-            that.$store.commit("SET_CURRENT_AFFILIATE", response.results[0])
-            this.initGymPage()
-            return
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
+        actions.retrieveGym(url, this.$store).then(() => {
+          this.initGymPage()
+          return
+        })
       } else {
         this.initGymPage()
       }
     },
     initGymPage() {
-      this.setGymAttributes()
-      this.initMap()
-    },
-    setGymAttributes() {
-      this.gymLogo = this.$store.state.current_affiliate.photo
-      this.gymName = this.$store.state.current_affiliate.name
-      this.gymWebsite = this.$store.state.current_affiliate.website
-      this.gymLat = this.$store.state.current_affiliate.lat
-      this.gymLon = this.$store.state.current_affiliate.lon
       this.gymAddress = this.getAddress()
+      this.initMap()
     },
     getCurrentDayOfTheWeek() {
       let currentDay = new Date().getDay()
@@ -235,10 +203,13 @@ export default {
     },
     initMap() {
       // eslint-disable-next-line no-undef
-      var location = new google.maps.LatLng(this.gymLat, this.gymLon)
+      var location = new google.maps.LatLng(
+        this.$store.state.current_gym.lat,
+        this.$store.state.current_gym.lon
+      )
       var coordinates = {
-        lat: parseFloat(this.gymLat),
-        lng: parseFloat(this.gymLon),
+        lat: parseFloat(this.$store.state.current_gym.lat),
+        lng: parseFloat(this.$store.state.current_gym.lon),
       }
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
@@ -311,11 +282,11 @@ export default {
       this.mapActive = true
     },
     getAddress() {
-      let gymFullAddress = this.$store.state.current_affiliate.address
-      gymFullAddress += ", " + this.$store.state.current_affiliate.city
-      if (this.$store.state.current_affiliate.full_state)
-        gymFullAddress += ", " + this.$store.state.current_affiliate.full_state
-      gymFullAddress += " " + this.$store.state.current_affiliate.zip
+      let gymFullAddress = this.$store.state.current_gym.address
+      gymFullAddress += ", " + this.$store.state.current_gym.city
+      if (this.$store.state.current_gym.full_state)
+        gymFullAddress += ", " + this.$store.state.current_gym.full_state
+      gymFullAddress += " " + this.$store.state.current_gym.zip
       return gymFullAddress
     },
   },

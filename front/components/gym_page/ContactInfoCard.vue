@@ -4,7 +4,12 @@
       <h3>Contact Info</h3>
     </v-card-text>
     <v-divider />
-    <v-btn large class="ma-2" :href="gymWebsite" target="_blank">
+    <v-btn
+      large
+      class="ma-2"
+      :href="$store.state.current_gym.website"
+      target="_blank"
+    >
       Visit their website
     </v-btn>
     <v-tooltip v-if="phoneNumberVisible" right>
@@ -25,7 +30,7 @@
       </template>
       <span>Click to copy</span>
     </v-tooltip>
-    <v-tooltip v-if="$store.state.current_affiliate.email" right>
+    <v-tooltip v-if="$store.state.current_gym.email" right>
       <template v-slot:activator="{ on }">
         <v-btn
           id="phone_field"
@@ -34,7 +39,7 @@
           v-on="on"
           @click="copyToClipboard()"
         >
-          {{ $store.state.current_affiliate.email
+          {{ $store.state.current_gym.email
           }}<v-icon right>
             mdi-content-copy
           </v-icon>
@@ -49,11 +54,6 @@
 export default {
   name: "ContactInfoCard",
   props: {
-    gymWebsite: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     gymPhoneNumber: {
       type: String,
       required: false,

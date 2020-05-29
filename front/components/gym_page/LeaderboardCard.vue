@@ -28,13 +28,6 @@
 <script>
 export default {
   name: "LeaderboardCard",
-  props: {
-    gymName: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-  },
   data() {
     return {
       leaderboardData: [],
@@ -56,6 +49,11 @@ export default {
       tableLoading: true,
     }
   },
+  computed: {
+    gymName: function () {
+      return this.$store.state.current_gym.name
+    },
+  },
   watch: {
     options: {
       handler() {
@@ -74,7 +72,7 @@ export default {
     fetchLeaderboardData() {
       const url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
       const parameters = {
-        affiliate_name: this.gymName,
+        affiliate_name: this.$store.state.current_gym.name,
         page: this.options.page,
       }
       this.tableLoading = true

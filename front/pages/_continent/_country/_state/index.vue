@@ -1,6 +1,6 @@
 <template>
   <search-card
-    :item-list="cityList"
+    :item-list="$store.state.cities"
     :select-item="selectCity"
     :select-subitem="selectGym"
     :item-title="itemTitle"
@@ -9,6 +9,7 @@
 
 <script>
 import SearchCard from "~/components/navigation/SearchCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
@@ -41,42 +42,25 @@ export default {
     },
     fetchCities() {
       const url = this.fetchCitiesURL()
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.cityList = response
-          that.$store.commit("SET_CITIES", that.cityList)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      actions.retrieveCities(url, this.$store)
     },
     fetchGym(cityName, gymName) {
       const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          const selectedAffiliate = response.results[0]
-          that.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)
-          that.navigateToGym(cityName, gymName)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      actions.retrieveGym(url, this.$store).then(() => {
+        this.navigateToGym(cityName, gymName)
+      })
+    },
+    navigateToGym(cityName, gymName) {
+      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
     },
     selectCity(cityName) {
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${cityName}/`)
     },
     selectGym(gymName) {
-      let cityName = this.$findParent(this.cityList, gymName)
+      let cityName = this.$findParent(this.$store.state.cities, gymName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.fetchGym(cityName, gymName)
-    },
-    navigateToGym(cityName, gymName) {
-      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
     },
   },
 }

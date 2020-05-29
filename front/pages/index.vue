@@ -1,6 +1,6 @@
 <template>
   <search-card
-    :item-list="continentObject"
+    :item-list="$store.state.continents"
     :select-item="selectContinent"
     :select-subitem="selectCountry"
   />
@@ -8,15 +8,11 @@
 
 <script>
 import SearchCard from "~/components/navigation/SearchCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
     SearchCard,
-  },
-  data() {
-    return {
-      continentObject: {},
-    }
   },
   computed: {
     fetchContinentURL: function () {
@@ -37,19 +33,9 @@ export default {
   },
   methods: {
     fetchContinents() {
-      this.continentObject = this.$store.state.continents
-      if (Object.values(this.continentObject).length === 0) {
+      if (Object.values(this.$store.state.continents).length === 0) {
         const url = this.fetchContinentURL
-        let that = this
-        this.$axios
-          .$get(url)
-          .then((response) => {
-            that.continentObject = response
-            that.$store.commit("SET_CONTINENTS", that.continentObject)
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
+        actions.retrieveContinents(url, this.$store)
       }
     },
     selectContinent(continentName) {
@@ -57,7 +43,10 @@ export default {
       this.$pushCleanedRoute(this.$router, `${continentName}/`)
     },
     selectCountry(countryName) {
-      let continentName = this.$findParent(this.continentObject, countryName)
+      const continentName = this.$findParent(
+        this.$store.state.continents,
+        countryName
+      )
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (

@@ -1,13 +1,14 @@
 <template>
   <gym-search-card
-    :gym-list="affiliateList"
-    :select-item="selectAffiliate"
+    :gym-list="$store.state.gyms"
+    :select-item="selectGym"
     :item-title="itemTitle"
   />
 </template>
 
 <script>
 import GymSearchCard from "~/components/navigation/GymSearchCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
@@ -16,7 +17,6 @@ export default {
   data() {
     return {
       itemTitle: "city",
-      affiliateList: [],
     }
   },
   computed: {
@@ -33,25 +33,17 @@ export default {
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchAffiliates()
+    this.fetchGyms()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
   },
   methods: {
-    fetchAffiliates() {
+    fetchGyms() {
       const url = this.fetchGymsURL
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.affiliateList = response.results
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      actions.retrieveGyms(url, this.$store)
     },
-    selectAffiliate(selectedAffiliate) {
-      this.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)
-      this.$pushCleanedRoute(this.$router, `${selectedAffiliate.name}/`)
+    selectGym(selectedGym) {
+      this.$store.commit("SET_CURRENT_GYM", selectedGym)
+      this.$pushCleanedRoute(this.$router, `${selectedGym.name}/`)
     },
   },
 }

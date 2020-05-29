@@ -12,7 +12,8 @@
     </v-card-text>
     <v-card-text v-if="pricingUnavailableMessageVisible" class="ma-2 red--text">
       We don't have pricing info for this gym yet, please visit
-      <a :href="gymWebsite" target="_blank">their website</a>
+      <!-- eslint-disable-next-line prettier/prettier -->
+      <a :href="$store.state.current_gym.website || '#'" target="_blank">their website</a>
       for more information
     </v-card-text>
   </v-card>
@@ -31,11 +32,6 @@ export default {
       type: String,
       required: false,
       default: "??.??",
-    },
-    gymWebsite: {
-      type: String,
-      required: false,
-      default: "#",
     },
   },
   computed: {

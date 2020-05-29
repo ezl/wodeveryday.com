@@ -1,6 +1,6 @@
 <template>
   <search-card
-    :item-list="stateList"
+    :item-list="$store.state.states"
     :select-item="selectState"
     :select-subitem="selectCity"
     :item-title="itemTitle"
@@ -9,6 +9,7 @@
 
 <script>
 import SearchCard from "~/components/navigation/SearchCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
@@ -17,7 +18,6 @@ export default {
   data() {
     return {
       itemTitle: "country",
-      stateList: {},
     }
   },
   computed: {
@@ -30,7 +30,6 @@ export default {
   },
   mounted() {
     this.determineIfCountryHasStates()
-    this.stateList = this.$store.state.states
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchStates()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
@@ -58,22 +57,14 @@ export default {
     },
     fetchStates() {
       const url = this.fetchStatesURL
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.stateList = response
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      actions.retrieveStates(url, this.$store)
     },
     selectState(stateName) {
       this.$store.commit("SET_CURRENT_STATE", stateName)
       this.$pushCleanedRoute(this.$router, `${stateName}/`)
     },
     selectCity(cityName) {
-      let stateName = this.$findParent(this.stateList, cityName)
+      let stateName = this.$findParent(this.$store.state.states, cityName)
       this.$store.commit("SET_CURRENT_STATE", stateName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)

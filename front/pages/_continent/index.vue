@@ -1,6 +1,6 @@
 <template>
   <search-card
-    :item-list="countryList"
+    :item-list="$store.state.countries"
     :select-item="selectCountry"
     :select-subitem="selectCityOrState"
     :item-title="itemTitle"
@@ -9,6 +9,7 @@
 
 <script>
 import SearchCard from "~/components/navigation/SearchCard.vue"
+import actions from "~/store/actions.js"
 
 export default {
   components: {
@@ -17,7 +18,6 @@ export default {
   data() {
     return {
       itemTitle: "continent",
-      countryList: {},
     }
   },
   computed: {
@@ -36,16 +36,7 @@ export default {
   methods: {
     fetchCountries() {
       const url = this.fetchCountriesURL
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.countryList = response
-          that.$store.commit("SET_COUNTRIES", that.countryList)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      actions.retrieveCountries(url, this.$store)
     },
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
@@ -67,7 +58,10 @@ export default {
       }
     },
     selectCityOrState(cityOrStateName) {
-      let countryName = this.$findParent(this.countryList, cityOrStateName)
+      let countryName = this.$findParent(
+        this.$store.state.countries,
+        cityOrStateName
+      )
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
         this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
