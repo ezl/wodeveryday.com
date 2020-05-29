@@ -5,7 +5,7 @@
     </v-card-text>
     <template v-if="gymReviews && gymReviews.length > 0">
       <v-card-text>
-        <h3>{{ $store.state.current_gym.name }} Reviews</h3>
+        <h3>{{ $store.state.gym_object.name }} Reviews</h3>
       </v-card-text>
       <v-list three-line>
         <template v-for="(review, index) in getGymReviews()">

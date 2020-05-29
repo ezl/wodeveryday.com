@@ -113,11 +113,11 @@ export default {
   computed: {
     fetchGymSearchQuery: function () {
       const query =
-        this.$store.state.current_gym.name +
+        this.$store.state.gym_object.name +
         " " +
-        this.$store.state.current_gym.city +
+        this.$store.state.gym_object.city +
         " " +
-        this.$store.state.current_gym.country
+        this.$store.state.gym_object.country
       return query
     },
     fetchGymURL: function () {
@@ -177,7 +177,7 @@ export default {
       this.navbarActive = true
     },
     maybeLoadGym() {
-      if (this.$store.state.current_gym.name === undefined) {
+      if (this.$store.state.gym_object.name === undefined) {
         this.$retrievePathVariables(this.$store, this.$route.params)
         const url = this.fetchGymURL
         actions.retrieveGym(url, this.$store).then(() => {
@@ -204,12 +204,12 @@ export default {
     initMap() {
       // eslint-disable-next-line no-undef
       var location = new google.maps.LatLng(
-        this.$store.state.current_gym.lat,
-        this.$store.state.current_gym.lon
+        this.$store.state.gym_object.lat,
+        this.$store.state.gym_object.lon
       )
       var coordinates = {
-        lat: parseFloat(this.$store.state.current_gym.lat),
-        lng: parseFloat(this.$store.state.current_gym.lon),
+        lat: parseFloat(this.$store.state.gym_object.lat),
+        lng: parseFloat(this.$store.state.gym_object.lon),
       }
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
@@ -282,11 +282,11 @@ export default {
       this.mapActive = true
     },
     getAddress() {
-      let gymFullAddress = this.$store.state.current_gym.address
-      gymFullAddress += ", " + this.$store.state.current_gym.city
-      if (this.$store.state.current_gym.full_state)
-        gymFullAddress += ", " + this.$store.state.current_gym.full_state
-      gymFullAddress += " " + this.$store.state.current_gym.zip
+      let gymFullAddress = this.$store.state.gym_object.address
+      gymFullAddress += ", " + this.$store.state.gym_object.city
+      if (this.$store.state.gym_object.full_state)
+        gymFullAddress += ", " + this.$store.state.gym_object.full_state
+      gymFullAddress += " " + this.$store.state.gym_object.zip
       return gymFullAddress
     },
   },

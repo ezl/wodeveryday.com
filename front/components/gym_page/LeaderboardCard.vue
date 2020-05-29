@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import actions from "~/store/actions.js"
+
 export default {
   name: "LeaderboardCard",
   data() {
@@ -51,7 +53,7 @@ export default {
   },
   computed: {
     gymName: function () {
-      return this.$store.state.current_gym.name
+      return this.$store.state.gym_object.name
     },
   },
   watch: {
@@ -72,25 +74,24 @@ export default {
     fetchLeaderboardData() {
       const url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
       const parameters = {
-        affiliate_name: this.$store.state.current_gym.name,
+        affiliate_name: this.$store.state.gym_object.name,
         page: this.options.page,
       }
       this.tableLoading = true
-      let that = this
-      return this.$axios
-        .$get(url, { params: parameters })
-        .then((response) => {
-          that.leaderboardData = response
-          if (response.pagination !== undefined)
-            that.leaderboardTotalItems = response.pagination.totalCompetitors
-          that.formatLeaderboardData()
-          that.tableLoading = false
+      actions
+        .retrieveLeaderboardData(url, parameters)
+        .then((data) => {
+          this.leaderboardData = data
+          if (data.pagination !== undefined)
+            this.leaderboardTotalItems = data.pagination.totalCompetitors
+          this.formatLeaderboardData()
+          this.tableLoading = false
         })
         .catch(function (error) {
           console.log(error)
-          that.leaderboardData = []
-          that.leaderboardItems = []
-          that.tableLoading = false
+          this.leaderboardData = []
+          this.leaderboardItems = []
+          this.tableLoading = false
         })
     },
     formatLeaderboardData() {

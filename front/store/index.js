@@ -9,8 +9,9 @@ export const state = () => {
     gymNavbarGotoElements: [],
     globalBreadcrumbNames: [],
     globalBreadcrumbPaths: [],
-    current_gym: {},
-    gyms: {},
+    gym_object: {},
+    gyms: [],
+    current_gym: undefined,
     continents: {},
     current_continent: undefined,
     countries: {},
@@ -73,6 +74,11 @@ export const mutations = {
   SET_GLOBAL_BREADCRUMB_PATHS: (state, globalBreadcrumbPaths) => {
     if (globalBreadcrumbPaths) {
       Vue.set(state, "globalBreadcrumbPaths", globalBreadcrumbPaths)
+    }
+  },
+  SET_GYM_OBJECT: (state, gym_object) => {
+    if (gym_object) {
+      Vue.set(state, "gym_object", gym_object)
     }
   },
   SET_GYMS: (state, gyms) => {

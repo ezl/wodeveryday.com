@@ -1,6 +1,6 @@
 <template>
   <gym-search-card
-    :gym-list="$store.state.gyms"
+    :gym-list="fetchGymList"
     :select-item="selectGym"
     :item-title="itemTitle"
   />
@@ -20,6 +20,10 @@ export default {
     }
   },
   computed: {
+    fetchGymList: function () {
+      if (this.$store.state.gyms !== {}) return this.$store.state.gyms
+      return []
+    },
     fetchGymsURL: function () {
       const country = this.$store.state["current_country"]
       const state = this.$store.state["current_state"]
@@ -42,7 +46,7 @@ export default {
       actions.retrieveGyms(url, this.$store)
     },
     selectGym(selectedGym) {
-      this.$store.commit("SET_CURRENT_GYM", selectedGym)
+      this.$store.commit("SET_GYM_OBJECT", selectedGym)
       this.$pushCleanedRoute(this.$router, `${selectedGym.name}/`)
     },
   },

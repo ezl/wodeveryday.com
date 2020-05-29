@@ -5,9 +5,10 @@
     </v-card-text>
     <v-divider />
     <v-btn
+      v-show="$store.state.gym_object.website"
       large
       class="ma-2"
-      :href="$store.state.current_gym.website"
+      :href="$store.state.gym_object.website"
       target="_blank"
     >
       Visit their website
@@ -30,7 +31,7 @@
       </template>
       <span>Click to copy</span>
     </v-tooltip>
-    <v-tooltip v-if="$store.state.current_gym.email" right>
+    <v-tooltip v-if="$store.state.gym_object.email" right>
       <template v-slot:activator="{ on }">
         <v-btn
           id="phone_field"
@@ -39,7 +40,7 @@
           v-on="on"
           @click="copyToClipboard()"
         >
-          {{ $store.state.current_gym.email
+          {{ $store.state.gym_object.email
           }}<v-icon right>
             mdi-content-copy
           </v-icon>

@@ -3,13 +3,13 @@
     <v-container>
       <v-row>
         <v-col md6 class="d-flex justify-center align-center">
-          <v-avatar size="200">
+          <v-avatar v-show="$store.state.gym_object.photo" size="200">
             <!--eslint-disable-next-line vue/html-self-closing-->
-            <img :src="$store.state.current_gym.photo" />
+            <img :src="$store.state.gym_object.photo" />
           </v-avatar>
         </v-col>
         <v-col md6 class="d-flex flex-column justify-center">
-          <h1>{{ $store.state.current_gym.name }}</h1>
+          <h1>{{ $store.state.gym_object.name }}</h1>
 
           <v-rating
             v-if="gymRating && gymRating != -1"
