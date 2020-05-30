@@ -1,20 +1,20 @@
 <template>
-  <v-app id="inspire">
+  <v-content>
     <navbar />
-    <v-content>
-      <breadcrumb
-        :breadcrumb-names="$store.state.globalBreadcrumbNames"
-        :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
-      />
-      <v-row align="center" justify="center" style="flex-direction: column;">
-        <v-col cols="12" sm="8" md="4">
-          <v-card class="pa-4 elevation-12 ma-4">
-            <h1 style="text-align: center;">
-              Gyms in {{ $store.state.current_city }}
-            </h1>
-          </v-card>
-        </v-col>
-      </v-row>
+    <breadcrumb
+      :breadcrumb-names="$store.state.global_bread_crumb_names"
+      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
+    />
+    <v-row align="center" justify="center" style="flex-direction: column;">
+      <v-col cols="12" sm="8" md="4">
+        <v-card class="pa-4 elevation-12 ma-4">
+          <h1 style="text-align: center;">
+            Gyms in {{ $store.state.current_city }}
+          </h1>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-item-group>
       <v-row justify="center" class="ma-4">
         <v-col
           v-for="(gymObject, index) in gymList"
@@ -43,16 +43,16 @@
           </v-item>
         </v-col>
       </v-row>
-    </v-content>
-  </v-app>
+    </v-item-group>
+  </v-content>
 </template>
 
 <script>
-import Navbar from "~/components/Navbar.vue"
-import Breadcrumb from "~/components/Breadcrumb.vue"
+import Navbar from "~/components/global/Navbar.vue"
+import Breadcrumb from "~/components/global/Breadcrumb.vue"
 
 export default {
-  name: "GymSearchCard",
+  name: "GymSearchPage",
   components: {
     Navbar,
     Breadcrumb,
@@ -81,19 +81,6 @@ export default {
     return {
       selectedItem: undefined,
     }
-  },
-  methods: {
-    flat(input, depth = 1, stack = []) {
-      for (let item of input) {
-        if (item instanceof Array && depth > 0) {
-          this.flat(item, depth - 1, stack)
-        } else {
-          stack.push(item)
-        }
-      }
-
-      return stack
-    },
   },
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <search-card
-    :item-list="cityList"
+  <geography-search-page
+    :item-list="$store.state.cities"
     :select-item="selectCity"
     :select-subitem="selectGym"
     :item-title="itemTitle"
@@ -8,11 +8,12 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
   data() {
     return {
@@ -26,7 +27,7 @@ export default {
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
   },
   methods: {
-    fetchCities() {
+    fetchCitiesURL() {
       let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
       const state = this.$store.state[`current_${this.itemTitle}`]
       if (state === this.$store.state.constants.NOSTATE) {
@@ -37,42 +38,29 @@ export default {
         url += `?state=${state}`
       }
       url = encodeURI(url)
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.cityList = response
-          that.$store.commit("SET_CITIES", that.cityList)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      return url
+    },
+    fetchCities() {
+      const url = this.fetchCitiesURL()
+      apiLibrary.retrieveCities(url, this.$store)
     },
     fetchGym(cityName, gymName) {
-      let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          const selectedAffiliate = response.results[0]
-          that.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)
-          that.navigateToGym(cityName, gymName)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
+      apiLibrary.retrieveGym(url, this.$store).then(() => {
+        this.navigateToGym(cityName, gymName)
+      })
+    },
+    navigateToGym(cityName, gymName) {
+      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
     },
     selectCity(cityName) {
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${cityName}/`)
     },
     selectGym(gymName) {
-      let cityName = this.$findParent(this.cityList, gymName)
+      const cityName = this.$findParent(this.$store.state.cities, gymName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.fetchGym(cityName, gymName)
-    },
-    navigateToGym(cityName, gymName) {
-      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
     },
   },
 }

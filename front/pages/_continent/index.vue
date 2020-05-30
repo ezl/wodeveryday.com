@@ -1,6 +1,6 @@
 <template>
-  <search-card
-    :item-list="countryList"
+  <geography-search-page
+    :item-list="$store.state.countries"
     :select-item="selectCountry"
     :select-subitem="selectCityOrState"
     :item-title="itemTitle"
@@ -8,17 +8,25 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
   data() {
     return {
       itemTitle: "continent",
-      countryList: {},
     }
+  },
+  computed: {
+    fetchCountriesURL: function () {
+      const continent = this.$store.state[`current_${this.itemTitle}`]
+      let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -27,24 +35,13 @@ export default {
   },
   methods: {
     fetchCountries() {
-      const continent = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
-      url = encodeURI(url)
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.countryList = response
-          that.$store.commit("SET_COUNTRIES", that.countryList)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      const url = this.fetchCountriesURL
+      apiLibrary.retrieveCountries(url, this.$store)
     },
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {
@@ -61,10 +58,13 @@ export default {
       }
     },
     selectCityOrState(cityOrStateName) {
-      let countryName = this.$findParent(this.countryList, cityOrStateName)
+      const countryName = this.$findParent(
+        this.$store.state.countries,
+        cityOrStateName
+      )
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {

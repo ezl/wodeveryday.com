@@ -7,8 +7,8 @@ Vue.prototype.$generateBreadcrumb = (store, routeParams, itemTitle = "") => {
     return
   }
 
-  let pages = Object.keys(routeParams)
-  let currentPage = pages.indexOf(itemTitle)
+  const pages = Object.keys(routeParams)
+  const currentPage = pages.indexOf(itemTitle)
   let breadcrumbNames = ["Home"]
   let breadcrumbPaths = ["/"]
   let path = "/"
@@ -38,14 +38,14 @@ Vue.prototype.$generateBreadcrumb = (store, routeParams, itemTitle = "") => {
 Vue.prototype.$retrievePathVariables = (store, routeParams) => {
   for (var [key, value] of Object.entries(routeParams)) {
     if (store.state[`current_${key}`] != undefined) continue
-    let preparedPathVar = value.replace(/-/gi, " ")
+    const preparedPathVar = value.replace(/-/gi, " ")
     store.commit(`SET_CURRENT_${key.toUpperCase()}`, preparedPathVar)
   }
 }
 
 Vue.prototype.$findParent = (registryObject, name) => {
   registryObject = Object.entries(registryObject)
-  let parentName = registryObject.find(
+  const parentName = registryObject.find(
     (parent) => parent[1].indexOf(name) !== -1
   )
   return parentName[0]

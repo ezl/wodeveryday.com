@@ -1,6 +1,6 @@
 <template>
-  <search-card
-    :item-list="stateList"
+  <geography-search-page
+    :item-list="$store.state.states"
     :select-item="selectState"
     :select-subitem="selectCity"
     :item-title="itemTitle"
@@ -8,21 +8,28 @@
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
   data() {
     return {
       itemTitle: "country",
-      stateList: {},
     }
+  },
+  computed: {
+    fetchStatesURL: function () {
+      const country = this.$store.state[`current_${this.itemTitle}`]
+      let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     this.determineIfCountryHasStates()
-    this.stateList = this.$store.state.states
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchStates()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
@@ -34,7 +41,7 @@ export default {
       ) {
         this.$router.go(-1)
       } else if (
-        !["United States", "Australia", "Canada"].includes(
+        !this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {
@@ -49,26 +56,15 @@ export default {
       }
     },
     fetchStates() {
-      const country = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
-      url = encodeURI(url)
-
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.stateList = response
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      const url = this.fetchStatesURL
+      apiLibrary.retrieveStates(url, this.$store)
     },
     selectState(stateName) {
       this.$store.commit("SET_CURRENT_STATE", stateName)
       this.$pushCleanedRoute(this.$router, `${stateName}/`)
     },
     selectCity(cityName) {
-      let stateName = this.$findParent(this.stateList, cityName)
+      const stateName = this.$findParent(this.$store.state.states, cityName)
       this.$store.commit("SET_CURRENT_STATE", stateName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
