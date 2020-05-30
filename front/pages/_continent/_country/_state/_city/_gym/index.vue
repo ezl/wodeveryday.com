@@ -295,11 +295,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#photo_column {
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
 #photoGrid {
   @media (max-width: 960px) {
     display: none;
