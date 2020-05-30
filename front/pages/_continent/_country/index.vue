@@ -9,7 +9,7 @@
 
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
@@ -57,7 +57,7 @@ export default {
     },
     fetchStates() {
       const url = this.fetchStatesURL
-      actions.retrieveStates(url, this.$store)
+      apiLibrary.retrieveStates(url, this.$store)
     },
     selectState(stateName) {
       this.$store.commit("SET_CURRENT_STATE", stateName)

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   name: "LeaderboardCard",
@@ -76,7 +76,7 @@ export default {
         page: this.options.page,
       }
       this.tableLoading = true
-      actions
+      apiLibrary
         .retrieveLeaderboardData(url, parameters)
         .then((data) => {
           this.leaderboardData = data

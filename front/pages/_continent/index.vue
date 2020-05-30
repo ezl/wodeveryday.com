@@ -9,7 +9,7 @@
 
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
@@ -36,7 +36,7 @@ export default {
   methods: {
     fetchCountries() {
       const url = this.fetchCountriesURL
-      actions.retrieveCountries(url, this.$store)
+      apiLibrary.retrieveCountries(url, this.$store)
     },
     selectCountry(countryName) {
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)

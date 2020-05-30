@@ -9,7 +9,7 @@
 
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
@@ -42,11 +42,11 @@ export default {
     },
     fetchCities() {
       const url = this.fetchCitiesURL()
-      actions.retrieveCities(url, this.$store)
+      apiLibrary.retrieveCities(url, this.$store)
     },
     fetchGym(cityName, gymName) {
       const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
-      actions.retrieveGym(url, this.$store).then(() => {
+      apiLibrary.retrieveGym(url, this.$store).then(() => {
         this.navigateToGym(cityName, gymName)
       })
     },

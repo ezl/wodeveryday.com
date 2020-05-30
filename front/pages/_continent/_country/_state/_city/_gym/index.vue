@@ -76,7 +76,7 @@ import ContactInfoCard from "~/components/gym_page/ContactInfoCard.vue"
 import AddressCard from "~/components/gym_page/AddressCard.vue"
 import GymNavbar from "~/components/gym_page/GymNavbar.vue"
 import PriceCard from "~/components/gym_page/PriceCard.vue"
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
@@ -183,7 +183,7 @@ export default {
       if (this.$store.state.gym_object.name === undefined) {
         this.$retrievePathVariables(this.$store, this.$route.params)
         const url = this.fetchGymURL
-        actions.retrieveGym(url, this.$store).then(() => {
+        apiLibrary.retrieveGym(url, this.$store).then(() => {
           this.initGymPage()
           return
         })

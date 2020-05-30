@@ -8,7 +8,7 @@
 
 <script>
 import GymSearchPage from "~/components/navigation/GymSearchPage.vue"
-import actions from "~/store/actions.js"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
@@ -43,7 +43,7 @@ export default {
   methods: {
     fetchGyms() {
       const url = this.fetchGymsURL
-      actions.retrieveGyms(url, this.$store)
+      apiLibrary.retrieveGyms(url, this.$store)
     },
     selectGym(selectedGym) {
       this.$store.commit("SET_GYM_OBJECT", selectedGym)
