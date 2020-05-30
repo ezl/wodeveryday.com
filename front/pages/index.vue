@@ -1,5 +1,5 @@
 <template>
-  <search-card
+  <geography-search-page
     :item-list="$store.state.continents"
     :select-item="selectContinent"
     :select-subitem="selectCountry"
@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import SearchCard from "~/components/navigation/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import actions from "~/store/actions.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
   computed: {
     fetchContinentURL: function () {

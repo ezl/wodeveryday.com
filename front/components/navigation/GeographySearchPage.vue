@@ -66,7 +66,7 @@ import Breadcrumb from "~/components/global/Breadcrumb.vue"
 import _ from "lodash"
 
 export default {
-  name: "SearchCard",
+  name: "GeographySearchPage",
   components: {
     Navbar,
     Breadcrumb,

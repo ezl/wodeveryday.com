@@ -1,5 +1,5 @@
 <template>
-  <search-card
+  <geography-search-page
     :item-list="$store.state.cities"
     :select-item="selectCity"
     :select-subitem="selectGym"
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import SearchCard from "~/components/navigation/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import actions from "~/store/actions.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
   data() {
     return {

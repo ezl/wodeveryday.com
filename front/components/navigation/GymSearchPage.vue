@@ -52,7 +52,7 @@ import Navbar from "~/components/global/Navbar.vue"
 import Breadcrumb from "~/components/global/Breadcrumb.vue"
 
 export default {
-  name: "GymSearchCard",
+  name: "GymSearchPage",
   components: {
     Navbar,
     Breadcrumb,

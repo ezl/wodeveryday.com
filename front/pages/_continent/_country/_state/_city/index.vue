@@ -1,5 +1,5 @@
 <template>
-  <gym-search-card
+  <gym-search-page
     :gym-list="fetchGymList"
     :select-item="selectGym"
     :item-title="itemTitle"
@@ -7,12 +7,12 @@
 </template>
 
 <script>
-import GymSearchCard from "~/components/navigation/GymSearchCard.vue"
+import GymSearchPage from "~/components/navigation/GymSearchPage.vue"
 import actions from "~/store/actions.js"
 
 export default {
   components: {
-    GymSearchCard,
+    GymSearchPage,
   },
   data() {
     return {
