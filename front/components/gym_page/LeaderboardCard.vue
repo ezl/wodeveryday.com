@@ -1,6 +1,6 @@
 <template>
-  <v-card id="leaderboard" class="mb-3">
-    <v-card-text v-if="leaderboardItems === undefined" class="text-center">
+  <v-card v-show="showLeaderboard" id="leaderboard" class="mb-3">
+    <v-card-text v-if="!leaderboardItems" class="text-center">
       <v-progress-circular :size="70" :width="7" color="white" indeterminate />
     </v-card-text>
     <template v-if="leaderboardItems && leaderboardItems.length > 0">
@@ -55,6 +55,12 @@ export default {
     gymName: function () {
       return this.$store.state.gym_object.name
     },
+    showLeaderboard: function () {
+      return (
+        !this.leaderboardItems ||
+        (this.leaderboardItems && this.leaderboardItems.length > 0)
+      )
+    },
   },
   watch: {
     options: {
@@ -80,11 +86,13 @@ export default {
         .retrieveLeaderboardData(url, parameters)
         .then((data) => {
           this.leaderboardData = data
-          if (data.pagination !== undefined)
-            this.leaderboardTotalItems = data.pagination.totalCompetitors
           if (this.leaderboardData.leaderboardRows !== undefined) {
+            this.leaderboardTotalItems = data.pagination.totalCompetitors
             this.addLeaderboardLinkToGymNavbar()
             this.formatLeaderboardData()
+          } else {
+            this.leaderboardData = []
+            this.leaderboardItems = []
           }
           this.tableLoading = false
         })
