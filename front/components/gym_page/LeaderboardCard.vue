@@ -1,6 +1,6 @@
 <template>
   <v-card id="leaderboard" class="mb-3">
-    <v-card-text v-if="!leaderboardItems" class="text-center">
+    <v-card-text v-if="leaderboardItems === undefined" class="text-center">
       <v-progress-circular :size="70" :width="7" color="white" indeterminate />
     </v-card-text>
     <template v-if="leaderboardItems && leaderboardItems.length > 0">
@@ -82,7 +82,10 @@ export default {
           this.leaderboardData = data
           if (data.pagination !== undefined)
             this.leaderboardTotalItems = data.pagination.totalCompetitors
-          this.formatLeaderboardData()
+          if (this.leaderboardData.leaderboardRows !== undefined) {
+            this.addLeaderboardLinkToGymNavbar()
+            this.formatLeaderboardData()
+          }
           this.tableLoading = false
         })
         .catch(function (error) {
@@ -92,17 +95,16 @@ export default {
           this.tableLoading = false
         })
     },
-    formatLeaderboardData() {
-      this.leaderboardItems = []
-      if (this.leaderboardData.leaderboardRows === undefined) return
-
+    addLeaderboardLinkToGymNavbar() {
       if (
         this.$store.state["gym_navbar_options"].indexOf("Leaderboard") === -1
       ) {
         this.$store.commit("PUSH_TO_GYM_NAVBAR_OPTIONS", "Leaderboard")
         this.$store.commit("PUSH_TO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
       }
-
+    },
+    formatLeaderboardData() {
+      this.leaderboardItems = []
       const leaderboardRows = this.leaderboardData.leaderboardRows
       leaderboardRows.forEach((dataRow) => {
         this.leaderboardItems.push(this.createLeaderBoardItemObject(dataRow))
