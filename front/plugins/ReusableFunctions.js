@@ -45,7 +45,7 @@ Vue.prototype.$retrievePathVariables = (store, routeParams) => {
 
 Vue.prototype.$findParent = (registryObject, name) => {
   registryObject = Object.entries(registryObject)
-  let parentName = registryObject.find(
+  const parentName = registryObject.find(
     (parent) => parent[1].indexOf(name) !== -1
   )
   return parentName[0]

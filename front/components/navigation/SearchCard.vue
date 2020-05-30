@@ -138,12 +138,13 @@ export default {
       }
 
       let listOfObjects = []
+      let subset
       for (let i = 0; i < divideInto; i++) {
         if (i + 1 === divideInto) {
-          let subset = _.pick(obj, objectKeys)
+          subset = _.pick(obj, objectKeys)
           listOfObjects.unshift(subset)
         } else {
-          let subset = _.pick(obj, objectKeys.slice(0, listOfObjectsSize))
+          subset = _.pick(obj, objectKeys.slice(0, listOfObjectsSize))
           listOfObjects.unshift(subset)
           objectKeys = objectKeys.slice(listOfObjectsSize)
         }

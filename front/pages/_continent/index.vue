@@ -58,7 +58,7 @@ export default {
       }
     },
     selectCityOrState(cityOrStateName) {
-      let countryName = this.$findParent(
+      const countryName = this.$findParent(
         this.$store.state.countries,
         cityOrStateName
       )

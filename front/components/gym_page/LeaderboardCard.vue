@@ -47,7 +47,7 @@ export default {
       ],
       rankSuffix: ["", "st", "nd", "rd", "th"],
       leaderboardPage: 1,
-      options: {},
+      options: { page: 1 },
       tableLoading: true,
     }
   },
@@ -58,17 +58,15 @@ export default {
   },
   watch: {
     options: {
-      handler() {
+      handler(oldVal, newVal) {
+        if (oldVal.page === newVal.page) return
         this.fetchLeaderboardData()
       },
       deep: true,
     },
-    gymName: {
-      handler() {
-        this.fetchLeaderboardData()
-      },
-      deep: true,
-    },
+  },
+  mounted() {
+    this.fetchLeaderboardData()
   },
   methods: {
     fetchLeaderboardData() {
@@ -95,7 +93,6 @@ export default {
         })
     },
     formatLeaderboardData() {
-      let that = this
       this.leaderboardItems = []
       if (this.leaderboardData.leaderboardRows === undefined) return
 
@@ -104,8 +101,9 @@ export default {
         this.$store.commit("PUSH_TO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
       }
 
-      this.leaderboardData.leaderboardRows.forEach((dataRow) => {
-        that.leaderboardItems.push(this.createLeaderBoardItemObject(dataRow))
+      const leaderboardRows = this.leaderboardData.leaderboardRows
+      leaderboardRows.forEach((dataRow) => {
+        this.leaderboardItems.push(this.createLeaderBoardItemObject(dataRow))
       })
     },
     createLeaderBoardItemObject(dataRow) {

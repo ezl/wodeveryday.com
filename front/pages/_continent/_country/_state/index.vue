@@ -58,7 +58,7 @@ export default {
       this.$pushCleanedRoute(this.$router, `${cityName}/`)
     },
     selectGym(gymName) {
-      let cityName = this.$findParent(this.$store.state.cities, gymName)
+      const cityName = this.$findParent(this.$store.state.cities, gymName)
       this.$store.commit("SET_CURRENT_CITY", cityName)
       this.fetchGym(cityName, gymName)
     },

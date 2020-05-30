@@ -33,10 +33,8 @@ export default {
   },
   methods: {
     fetchContinents() {
-      if (Object.values(this.$store.state.continents).length === 0) {
-        const url = this.fetchContinentURL
-        actions.retrieveContinents(url, this.$store)
-      }
+      const url = this.fetchContinentURL
+      actions.retrieveContinents(url, this.$store)
     },
     selectContinent(continentName) {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)

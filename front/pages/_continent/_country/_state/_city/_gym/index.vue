@@ -52,7 +52,10 @@
           <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
           <photo-carousel :gym-photos="gymPhotos" />
         </span>
-        <leaderboard-card id="leaderboard" />
+        <leaderboard-card
+          v-if="$store.state.gym_object.name"
+          id="leaderboard"
+        />
         <map-card :map-active="mapActive" :gym-address="gymAddress" />
       </v-col>
     </v-row>
@@ -224,23 +227,22 @@ export default {
 
       // eslint-disable-next-line no-undef
       this.service = new google.maps.places.PlacesService(this.map)
-      let that = this
       // eslint-disable-next-line no-unused-vars
-      this.service.findPlaceFromQuery(request, function (results, status) {
-        that.createMarker(coordinates, that.map)
-        that.map.setCenter(coordinates)
+      this.service.findPlaceFromQuery(request, (results, status) => {
+        this.createMarker(coordinates, this.map)
+        this.map.setCenter(coordinates)
 
         if (results != null) {
-          that.place_id = results[0].place_id
-          that.getPlaceDetails()
+          this.place_id = results[0].place_id
+          this.getPlaceDetails()
         } else {
-          that.gymPhoneNumber = ""
-          that.gymRating = -1
-          that.gymReviews = []
-          that.gymPhotos = []
-          that.gymTimes = []
-          that.gymTimes = []
-          that.fillGymNavbar()
+          this.gymPhoneNumber = ""
+          this.gymRating = -1
+          this.gymReviews = []
+          this.gymPhotos = []
+          this.gymTimes = []
+          this.gymTimes = []
+          this.fillGymNavbar()
         }
       })
     },
@@ -258,18 +260,17 @@ export default {
 
       // eslint-disable-next-line no-undef
       this.service = new google.maps.places.PlacesService(this.map)
-      let that = this
-      this.service.getDetails(request, function (place, status) {
+      this.service.getDetails(request, (place, status) => {
         // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          that.gymPhoneNumber = place.formatted_phone_number || ""
-          that.gymRating = place.rating || -1
-          that.gymReviews = place.reviews || []
-          that.gymPhotos = place.photos || []
-          that.gymPhotos = that.gymPhotos.slice(0, 9)
-          that.gymTimes = place.opening_hours || []
-          that.gymTimes = that.gymTimes.weekday_text || []
-          that.fillGymNavbar()
+          this.gymPhoneNumber = place.formatted_phone_number || ""
+          this.gymRating = place.rating || -1
+          this.gymReviews = place.reviews || []
+          this.gymPhotos = place.photos || []
+          this.gymPhotos = this.gymPhotos.slice(0, 9)
+          this.gymTimes = place.opening_hours || []
+          this.gymTimes = this.gymTimes.weekday_text || []
+          this.fillGymNavbar()
         }
       })
     },
