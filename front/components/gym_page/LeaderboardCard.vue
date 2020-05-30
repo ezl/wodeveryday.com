@@ -113,36 +113,25 @@ export default {
         rank: dataRow.overallRank,
         name: dataRow.entrant.competitorName,
         points: dataRow.overallScore,
-        "20.1": `${this.getRank(dataRow.scores[0].rank)} (${this.getScore(
-          dataRow.scores[0].scoreDisplay
-        )}`,
-        "20.2": `${this.getRank(dataRow.scores[1].rank)} (${this.getScore(
-          dataRow.scores[1].scoreDisplay
-        )})`,
-        "20.3": `${this.getRank(dataRow.scores[2].rank)} (${this.getScore(
-          dataRow.scores[2].scoreDisplay
-        )})`,
-        "20.4": `${this.getRank(dataRow.scores[3].rank)} (${this.getScore(
-          dataRow.scores[3].scoreDisplay
-        )})`,
-        "20.5": `${this.getRank(dataRow.scores[4].rank)} (${this.getScore(
-          dataRow.scores[4].scoreDisplay
-        )})`,
+        "20.1": this.fetchLeaderboardRow(dataRow, 0),
+        "20.2": this.fetchLeaderboardRow(dataRow, 1),
+        "20.3": this.fetchLeaderboardRow(dataRow, 2),
+        "20.4": this.fetchLeaderboardRow(dataRow, 3),
+        "20.5": this.fetchLeaderboardRow(dataRow, 4),
       }
+    },
+    fetchLeaderboardRow(dataRow, rowNumber) {
+      return `${this.getRank(dataRow.scores[rowNumber].rank)} (${this.getScore(
+        dataRow.scores[rowNumber].scoreDisplay
+      )}`
     },
     getRank(rankNumber) {
-      if (rankNumber > 3) {
-        return rankNumber + "th"
-      } else {
-        return rankNumber + this.rankSuffix[rankNumber]
-      }
+      if (rankNumber > 3) return rankNumber + "th"
+      return rankNumber + this.rankSuffix[rankNumber]
     },
     getScore(scoreDisplay) {
-      if (scoreDisplay.length > 0) {
-        return scoreDisplay
-      } else {
-        return "--"
-      }
+      if (scoreDisplay.length > 0) return scoreDisplay
+      return "--"
     },
   },
 }
