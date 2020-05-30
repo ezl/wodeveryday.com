@@ -1,55 +1,11 @@
-import django_filters
-import requests
 from django.db.models import Q
-from rest_framework import viewsets, mixins, filters
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from quickstart.models import Affiliate
-from quickstart.serializers import AffiliateSerializer
+from quickstart.affiliate.affiliate_model import Affiliate
+from quickstart.affiliate.affiliate_serializer import AffiliateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from app.constants import GET_AFFILIATE_URL, GET_AFFILIATE_LEADERBOARD_URL
-
-
-class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
-    queryset = ''
-    serializer_class = []
-
-    def list(self, request, *args, **kwargs):
-        affiliate_name = request.query_params.get('affiliate_name')
-        page = request.query_params.get('page', 1)
-        affiliate_leaderboard_data = self.get_affiliate_leaderboard_data(affiliate_name, page)
-
-        return Response(affiliate_leaderboard_data)
-
-    def get_affiliate_leaderboard_data(self, affiliate_name, page):
-        affiliate_id = self.get_affiliate_id(affiliate_name)
-        if not affiliate_id:
-            return []
-
-        parameters = {
-            "affiliate": affiliate_id,
-            "division": 1,
-            "scaled": 0,
-            "page": page
-        }
-
-        r = requests.get(url=GET_AFFILIATE_URL, params=parameters)
-        affiliate_leaderboard_data = r.json()
-
-        return affiliate_leaderboard_data
-
-    def get_affiliate_id(self, affiliate_name):
-        parameters = {
-            "term": affiliate_name,
-        }
-
-        r = requests.get(url=GET_AFFILIATE_LEADERBOARD_URL, params=parameters)
-        data = r.json()
-        if len(data) == 0:
-            return None
-        affiliate_id = data[0].get('id')
-
-        return affiliate_id
+from app.constants import GET_AFFILIATE_URL, GET_AFFILIATE_LEADERBOARD_URL, COUNTRIES_WITH_STATE
 
 
 class AffiliateViewSet(mixins.RetrieveModelMixin,
@@ -97,20 +53,10 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
             .order_by('country') \
             .distinct()
 
-        countries_by_continent_dictionary = dict.fromkeys(countries_list, [])
+        countries_by_continent_dictionary = dict.fromkeys(countries_list, []).items()
 
-        for key, value in countries_by_continent_dictionary.copy().items():
-            if key in ["United States", "Australia", "Canada"]:
-                countries_by_continent_dictionary[key] = queryset.filter(country__iexact=key) \
-                    .values_list('full_state', flat=True) \
-                    .order_by('full_state') \
-                    .distinct()
-            else:
-                countries_by_continent_dictionary[key] = queryset.filter(country__iexact=key) \
-                    .values_list('city', flat=True) \
-                    .order_by('city') \
-                    .distinct()
-
+        countries_by_continent_dictionary = self.build_countries_by_continent_dict(countries_by_continent_dictionary,
+                                                                                   queryset)
         return Response(countries_by_continent_dictionary)
 
     @action(detail=False, methods=['get'], url_path='states')
@@ -159,3 +105,20 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
                 .distinct()
 
         return Response(gyms_by_city_or_state_dictionary)
+
+    @staticmethod
+    def build_countries_by_continent_dict(original_dictionary, queryset):
+        new_dictionary = {}
+        for key, value in original_dictionary:
+            if key in COUNTRIES_WITH_STATE:
+                new_dictionary[key] = queryset.filter(country__iexact=key) \
+                    .values_list('full_state', flat=True) \
+                    .order_by('full_state') \
+                    .distinct()
+            else:
+                new_dictionary[key] = queryset.filter(country__iexact=key) \
+                    .values_list('city', flat=True) \
+                    .order_by('city') \
+                    .distinct()
+
+        return new_dictionary
