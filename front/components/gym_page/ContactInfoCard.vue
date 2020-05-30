@@ -16,7 +16,6 @@
     <v-tooltip v-if="phoneNumberVisible" right>
       <template v-slot:activator="{ on }">
         <v-btn
-          id="phone_field"
           large
           class="ml-2 d-block"
           :loading="gymPhoneNumber === undefined"
@@ -33,13 +32,7 @@
     </v-tooltip>
     <v-tooltip v-if="$store.state.gym_object.email" right>
       <template v-slot:activator="{ on }">
-        <v-btn
-          id="phone_field"
-          large
-          class="ml-2 d-block"
-          v-on="on"
-          @click="copyToClipboard()"
-        >
+        <v-btn large class="ml-2 d-block" v-on="on" @click="copyToClipboard()">
           {{ $store.state.gym_object.email
           }}<v-icon right>
             mdi-content-copy

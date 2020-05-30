@@ -1,5 +1,5 @@
 <template>
-  <v-card id="photo_carousel" class="mb-3">
+  <v-card id="photoCarousel" class="mb-3">
     <v-card-text v-if="!gymPhotos" class="text-center">
       <v-progress-circular :size="70" :width="7" color="white" indeterminate />
     </v-card-text>
@@ -34,7 +34,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#photo_carousel {
+#photoCarousel {
   display: none;
   @media (max-width: 960px) {
     display: block;

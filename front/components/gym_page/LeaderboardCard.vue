@@ -96,7 +96,9 @@ export default {
       this.leaderboardItems = []
       if (this.leaderboardData.leaderboardRows === undefined) return
 
-      if (this.$store.state["gymNavbarOptions"].indexOf("Leaderboard") === -1) {
+      if (
+        this.$store.state["gym_navbar_options"].indexOf("Leaderboard") === -1
+      ) {
         this.$store.commit("PUSH_TO_GYM_NAVBAR_OPTIONS", "Leaderboard")
         this.$store.commit("PUSH_TO_GYM_NAVBAR_GOTO_ELEMENTS", "#leaderboard")
       }

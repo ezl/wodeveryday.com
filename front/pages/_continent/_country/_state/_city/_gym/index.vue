@@ -2,13 +2,13 @@
   <div>
     <navbar />
     <breadcrumb
-      :breadcrumb-names="$store.state.globalBreadcrumbNames"
-      :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+      :breadcrumb-names="$store.state.global_bread_crumb_names"
+      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
     />
     <gym-navbar
       :navbar-active="navbarActive"
-      :goto-elements="$store.state.gymNavbarGotoElements"
-      :navbar-options="$store.state.gymNavbarOptions"
+      :goto-elements="$store.state.gym_navbar_goto_elements"
+      :navbar-options="$store.state.gym_navbar_options"
     />
     <v-row>
       <v-col v-show="windowInnerWidth > 540">

@@ -2,8 +2,8 @@
   <v-content>
     <navbar />
     <breadcrumb
-      :breadcrumb-names="$store.state.globalBreadcrumbNames"
-      :breadcrumb-paths="$store.state.globalBreadcrumbPaths"
+      :breadcrumb-names="$store.state.global_bread_crumb_names"
+      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
     />
     <v-row align="center" justify="center" style="flex-direction: column;">
       <v-col cols="12" sm="8" md="4">
