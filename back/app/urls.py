@@ -1,15 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
 
-from quickstart.affiliate.affiliate_view import AffiliateViewSet
-from quickstart.affiliate_leaderboard.affiliate_leaderboard_view import AffiliateLeaderboardViewSet
+from quickstart.affiliate.urls import affiliate_router
+from quickstart.affiliate_leaderboard.urls import affiliate_leaderboard_router
 
-router = routers.DefaultRouter()
-router.register('affiliates', AffiliateViewSet)
-router.register('affiliate_leaderboard', AffiliateLeaderboardViewSet, basename='affiliate_leaderboard')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(affiliate_router.urls)),
+    path('', include(affiliate_leaderboard_router.urls)),
     path('admin/', admin.site.urls),
 ]

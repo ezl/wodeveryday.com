@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from quickstart.affiliate.affiliate_model import Affiliate
+from quickstart.affiliate.model import Affiliate
 
 
 class AffiliateSerializer(serializers.HyperlinkedModelSerializer):

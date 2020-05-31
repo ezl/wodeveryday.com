@@ -2,8 +2,8 @@ from django.db.models import Q
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from quickstart.affiliate.affiliate_model import Affiliate
-from quickstart.affiliate.affiliate_serializer import AffiliateSerializer
+from quickstart.affiliate.model import Affiliate
+from quickstart.affiliate.serializer import AffiliateSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from app.constants import GET_AFFILIATE_URL, GET_AFFILIATE_LEADERBOARD_URL, COUNTRIES_WITH_STATE
 
