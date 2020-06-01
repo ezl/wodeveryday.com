@@ -1,0 +1,341 @@
+{
+	"info": {
+		"_postman_id": "2cfc7603-c163-4bd1-81c0-f4dd5d4dbbfa",
+		"name": "api_tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test_get_continents",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e6439247-63de-4acb-964e-2e612f29bb6c",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/continents/",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						"continents",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_countries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "101d1fcd-52ef-4590-835b-45baa85bf209",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/countries/?continent=Oceania",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						"countries",
+						""
+					],
+					"query": [
+						{
+							"key": "continent",
+							"value": "Oceania"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_states",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f0ad9fdf-d21a-4fff-83b6-38f12b260c10",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/states/?country=Canada",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						"states",
+						""
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "Canada"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_cities_of_country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dae193a4-3afb-4bda-b865-18ca6ac07698",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/gyms/?country=Austria",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						"gyms",
+						""
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "Austria"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_cities_of_state",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b16dd29-eb3a-4826-b18e-885fd030fe8e",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/gyms/?state=Hawaii",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						"gyms",
+						""
+					],
+					"query": [
+						{
+							"key": "state",
+							"value": "Hawaii"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gyms_by_city",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a1c1e31-8ae4-4501-8a52-5e980708b0c7",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=Honolulu",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "city__iexact",
+							"value": "Honolulu"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gym_by_name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c593d0b9-59ee-4a2a-bae3-71f4c64726aa",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/?name__iexact=crossfit%20mayhem",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "name__iexact",
+							"value": "crossfit%20mayhem"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gym_leaderboard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b7dfa272-7b23-40f1-9c0e-26f50b02d4e7",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliate_leaderboard/?affiliate_name=crossfit%20vikings%20hammer&page=1",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliate_leaderboard",
+						""
+					],
+					"query": [
+						{
+							"key": "affiliate_name",
+							"value": "crossfit%20vikings%20hammer"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
