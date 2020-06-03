@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
@@ -27,7 +29,8 @@ class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet)
             "page": page
         }
 
-        r = requests.get(url=GET_AFFILIATE_URL, params=parameters)
+        url = GET_AFFILIATE_URL.format(datetime.utcnow().year)
+        r = requests.get(url=url, params=parameters)
 
         if r.status_code != 200:
             raise Exception("failed to find gym leaderboard data")
@@ -41,7 +44,8 @@ class AffiliateLeaderboardViewSet(mixins.ListModelMixin,viewsets.GenericViewSet)
             "term": affiliate_name,
         }
 
-        r = requests.get(url=GET_AFFILIATE_LEADERBOARD_URL, params=parameters)
+        url = GET_AFFILIATE_LEADERBOARD_URL.format(datetime.utcnow().year)
+        r = requests.get(url=url, params=parameters)
 
         if r.status_code != 200:
             raise Exception("failed to locate gym")
