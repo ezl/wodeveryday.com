@@ -25,12 +25,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/continents/",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/continents/",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -61,12 +58,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/countries/?continent=oceania",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/countries/?continent=oceania",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -103,12 +97,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/states/?country=canada",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/states/?country=canada",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -145,12 +136,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/gyms/?country=austria",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/gyms/?country=austria",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -187,12 +175,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/gyms/?state=hawaii",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/gyms/?state=hawaii",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -229,12 +214,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=honolulu&country__iexact=united%20states",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/?city__iexact=honolulu&country__iexact=united%20states",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -274,12 +256,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=honolulu&country__iexact=united%20states&state__iexact=hawaii",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/?city__iexact=honolulu&country__iexact=united%20states&state__iexact=hawaii",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -323,12 +302,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/?name__iexact=crossfit%20mayhem&city__iexact=cookeville",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliates/?name__iexact=crossfit%20mayhem&city__iexact=cookeville",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliates",
@@ -368,12 +344,9 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliate_leaderboard/?affiliate_name=crossfit%20vikings%20hammer&page=1",
-					"protocol": "https",
+					"raw": "{{base_path}}/affiliate_leaderboard/?affiliate_name=crossfit%20vikings%20hammer&page=1",
 					"host": [
-						"api",
-						"wodeveryday",
-						"com"
+						"{{base_path}}"
 					],
 					"path": [
 						"affiliate_leaderboard",
