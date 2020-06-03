@@ -61,7 +61,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/countries/?continent=Oceania",
+					"raw": "https://api.wodeveryday.com/affiliates/countries/?continent=oceania",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -76,7 +76,7 @@
 					"query": [
 						{
 							"key": "continent",
-							"value": "Oceania"
+							"value": "oceania"
 						}
 					]
 				}
@@ -103,7 +103,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/states/?country=Canada",
+					"raw": "https://api.wodeveryday.com/affiliates/states/?country=canada",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -118,7 +118,7 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "Canada"
+							"value": "canada"
 						}
 					]
 				}
@@ -145,7 +145,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/gyms/?country=Austria",
+					"raw": "https://api.wodeveryday.com/affiliates/gyms/?country=austria",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -160,7 +160,7 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "Austria"
+							"value": "austria"
 						}
 					]
 				}
@@ -187,7 +187,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/gyms/?state=Hawaii",
+					"raw": "https://api.wodeveryday.com/affiliates/gyms/?state=hawaii",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -202,7 +202,7 @@
 					"query": [
 						{
 							"key": "state",
-							"value": "Hawaii"
+							"value": "hawaii"
 						}
 					]
 				}
@@ -210,7 +210,7 @@
 			"response": []
 		},
 		{
-			"name": "test_get_gyms_by_city",
+			"name": "test_get_gyms_by_city_and_country",
 			"event": [
 				{
 					"listen": "test",
@@ -229,7 +229,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=Honolulu",
+					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=honolulu&country__iexact=united%20states",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -243,7 +243,11 @@
 					"query": [
 						{
 							"key": "city__iexact",
-							"value": "Honolulu"
+							"value": "honolulu"
+						},
+						{
+							"key": "country__iexact",
+							"value": "united%20states"
 						}
 					]
 				}
@@ -251,12 +255,12 @@
 			"response": []
 		},
 		{
-			"name": "test_get_gym_by_name",
+			"name": "test_get_gyms_by_city_country_and_state",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "c593d0b9-59ee-4a2a-bae3-71f4c64726aa",
+						"id": "cc0e31b4-6138-4e44-98fc-2e10a69c8ddf",
 						"exec": [
 							"pm.test(\"200 Status code\", function() {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -270,7 +274,56 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.wodeveryday.com/affiliates/?name__iexact=crossfit%20mayhem",
+					"raw": "https://api.wodeveryday.com/affiliates/?city__iexact=honolulu&country__iexact=united%20states&state__iexact=hawaii",
+					"protocol": "https",
+					"host": [
+						"api",
+						"wodeveryday",
+						"com"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "city__iexact",
+							"value": "honolulu"
+						},
+						{
+							"key": "country__iexact",
+							"value": "united%20states"
+						},
+						{
+							"key": "state__iexact",
+							"value": "hawaii"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gym_by_name_and_city",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bb8adca1-b713-4ccb-ba22-bcba5dc316b2",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.wodeveryday.com/affiliates/?name__iexact=crossfit%20mayhem&city__iexact=cookeville",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -285,6 +338,10 @@
 						{
 							"key": "name__iexact",
 							"value": "crossfit%20mayhem"
+						},
+						{
+							"key": "city__iexact",
+							"value": "cookeville"
 						}
 					]
 				}
