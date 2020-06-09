@@ -63,5 +63,12 @@ export default {
       this.fetchGym(cityName, gymName)
     },
   },
+  head() {
+    return {
+      title: `The Best Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }`,
+    }
+  },
 }
 </script>
