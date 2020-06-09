@@ -65,5 +65,10 @@ export default {
       }
     },
   },
+  head() {
+    return {
+      title: "Find a Gym Anywhere",
+    }
+  },
 }
 </script>

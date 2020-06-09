@@ -82,5 +82,12 @@ export default {
       }
     },
   },
+  head() {
+    return {
+      title: `The Best Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }`,
+    }
+  },
 }
 </script>

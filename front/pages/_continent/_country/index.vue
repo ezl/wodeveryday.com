@@ -70,5 +70,12 @@ export default {
       this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
     },
   },
+  head() {
+    return {
+      title: `The Best Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }`,
+    }
+  },
 }
 </script>
