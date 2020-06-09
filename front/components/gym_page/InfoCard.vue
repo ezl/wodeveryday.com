@@ -5,7 +5,10 @@
         <v-col md6 class="d-flex justify-center align-center">
           <v-avatar v-show="$store.state.gym_object.photo" size="200">
             <!--eslint-disable-next-line vue/html-self-closing-->
-            <img :src="$store.state.gym_object.photo" />
+            <img
+              :src="$store.state.gym_object.photo"
+              :alt="$store.state.gym_object.name"
+            />
           </v-avatar>
         </v-col>
         <v-col md6 class="d-flex flex-column justify-center">

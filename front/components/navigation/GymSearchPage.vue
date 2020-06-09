@@ -35,7 +35,11 @@
               :color="active ? 'primary' : ''"
               @click="toggle"
             >
-              <v-img :src="gymObject.photo" height="200px" />
+              <v-img
+                :src="gymObject.photo"
+                height="200px"
+                :alt="gymObject.name"
+              />
               <v-card-title>
                 {{ gymObject.name }}
               </v-card-title>
