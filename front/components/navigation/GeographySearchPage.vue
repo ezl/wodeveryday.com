@@ -57,17 +57,20 @@
         </v-list>
       </v-col>
     </v-row>
+    <gym-footer />
   </v-content>
 </template>
 
 <script>
 import Navbar from "~/components/global/Navbar.vue"
 import Breadcrumb from "~/components/global/Breadcrumb.vue"
+import GymFooter from "~/components/global/GymFooter.vue"
 import _ from "lodash"
 
 export default {
   name: "GeographySearchPage",
   components: {
+    GymFooter,
     Navbar,
     Breadcrumb,
   },

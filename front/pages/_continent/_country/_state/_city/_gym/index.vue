@@ -59,10 +59,12 @@
         <map-card :map-active="mapActive" :gym-address="gymAddress" />
       </v-col>
     </v-row>
+    <gym-footer />
   </div>
 </template>
 
 <script>
+import GymFooter from "~/components/global/GymFooter.vue"
 import Navbar from "~/components/global/Navbar.vue"
 import Breadcrumb from "~/components/global/Breadcrumb.vue"
 import InfoCard from "~/components/gym_page/InfoCard.vue"
@@ -80,6 +82,7 @@ import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
+    GymFooter,
     Navbar,
     Breadcrumb,
     InfoCard,
