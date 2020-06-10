@@ -41,15 +41,15 @@ export default {
   data() {
     return {
       links: {
-        "About Us": "",
-        "Terms of Service": "",
-        "Privacy Policy": "",
+        "About Us": "javascript:;",
+        "Terms of Service": "javascript:;",
+        "Privacy Policy": "javascript:;",
       },
       socialMediaInfo: {
-        "mdi-facebook": "",
-        "mdi-twitter": "",
-        "mdi-linkedin": "",
-        "mdi-instagram": "",
+        "mdi-facebook": "javascript:;",
+        "mdi-twitter": "javascript:;",
+        "mdi-linkedin": "javascript:;",
+        "mdi-instagram": "javascript:;",
       },
     }
   },
