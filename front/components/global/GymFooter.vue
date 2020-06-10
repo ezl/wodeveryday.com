@@ -1,5 +1,9 @@
 <template>
-  <v-card>
+  <v-card class="pa-3">
+    <v-card-text class="py-2 white--text text-center">
+      CrossFit® is a registered trademark of CrossFit, Inc. This website is not
+      endorsed, sponsored, or affiliated with CrossFit, Inc
+    </v-card-text>
     <v-row justify="center" no-gutters>
       <v-btn
         v-for="(link, btnName) in links"
