@@ -29,15 +29,17 @@ export default {
       default: undefined,
     },
   },
-  fetchPhotoAltTag: function () {
-    let altTag = `Photo of ${this.$store.state.gym_object.name} in ${this.$store.state.gym_object.city}, `
+  computed: {
+    fetchPhotoAltTag: function () {
+      let altTag = `Photo of ${this.$store.state.gym_object.name} in ${this.$store.state.gym_object.city}, `
 
-    if (this.$store.state.gym_object.full_state)
-      altTag += `${this.$store.state.gym_object.full_state}, `
+      if (this.$store.state.gym_object.full_state)
+        altTag += `${this.$store.state.gym_object.full_state}, `
 
-    altTag += `${this.$store.state.gym_object.country}`
+      altTag += `${this.$store.state.gym_object.country}`
 
-    return altTag
+      return altTag
+    },
   },
 }
 </script>
