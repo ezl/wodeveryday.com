@@ -55,6 +55,17 @@ export default {
       title: `The Best Gyms in ${
         this.$store.state[`current_${this.itemTitle}`]
       }`,
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: `The ${this.fetchGymList.length} Best CrossFit Gyms in ${
+            this.$store.state[`current_${this.itemTitle}`]
+          }. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${
+            this.$store.state[`current_${this.itemTitle}`]
+          }`,
+        },
+      ],
     }
   },
 }

@@ -135,6 +135,10 @@ export default {
       url = encodeURI(url)
       return url
     },
+    fetchReviewCount: function () {
+      if (!this.gymReviews) return 0
+      return this.gymReviews.length
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -290,6 +294,19 @@ export default {
       gymFullAddress += " " + this.$store.state.gym_object.zip
       return gymFullAddress
     },
+  },
+  head() {
+    return {
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: `${this.fetchReviewCount} reviews for ${
+            this.$store.state[`current_gym`]
+          }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`,
+        },
+      ],
+    }
   },
 }
 </script>
