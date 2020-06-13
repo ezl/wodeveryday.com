@@ -67,13 +67,24 @@ export default {
   },
   head() {
     return {
-      title: "Find a Gym Anywhere",
+      title: this.$store.state.constants.HOME_PAGE_TITLE,
       meta: [
         {
           hid: "description",
           name: "description",
-          content:
-            "WOD Every Day is the Largest Platform for CrossFit Gyms Across the World. Get The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in Your Area.",
+          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+        },
+        {
+          property: "og:title",
+          content: this.$store.state.constants.HOME_PAGE_TITLE,
+        },
+        {
+          property: "og:description",
+          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
         },
       ],
     }

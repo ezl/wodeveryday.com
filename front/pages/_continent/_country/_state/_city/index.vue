@@ -34,6 +34,19 @@ export default {
       url = encodeURI(url)
       return url
     },
+    fetchPageTitle: function () {
+      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
+        "{}",
+        this.$store.state[`current_${this.itemTitle}`]
+      )
+    },
+    fetchPageDescription: function () {
+      return `The ${this.fetchGymList.length} Best CrossFit Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }`
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -52,18 +65,24 @@ export default {
   },
   head() {
     return {
-      title: `The Best Gyms in ${
-        this.$store.state[`current_${this.itemTitle}`]
-      }`,
+      title: this.fetchPageTitle,
       meta: [
         {
           hid: "description",
           name: "description",
-          content: `The ${this.fetchGymList.length} Best CrossFit Gyms in ${
-            this.$store.state[`current_${this.itemTitle}`]
-          }. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${
-            this.$store.state[`current_${this.itemTitle}`]
-          }`,
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:title",
+          content: this.fetchPageTitle,
+        },
+        {
+          property: "og:description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
         },
       ],
     }

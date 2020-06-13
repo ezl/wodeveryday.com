@@ -21,6 +21,32 @@ export default {
       cityList: {},
     }
   },
+  computed: {
+    fetchPageTitle: function () {
+      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
+        "{}",
+        this.$store.state[`current_${this.itemTitle}`]
+      )
+    },
+    fetchNumberOfGymsInCountry: function () {
+      const gymLists = Object.values(this.$store.state.cities)
+      let numberOfGyms = 0
+      gymLists.forEach((list) => {
+        numberOfGyms += list.length
+      })
+      return numberOfGyms
+    },
+    fetchPageDescription: function () {
+      const numberOfCities = Object.keys(this.$store.state.cities).length
+      let locationName = ""
+      if (this.itemTitle === "state") {
+        locationName = "states"
+      } else {
+        locationName = "cities"
+      }
+      return `${this.fetchNumberOfGymsInCountry} gyms across ${numberOfCities} ${locationName}. Find the best CrossFit Gym in your City. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+    },
+  },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchCities()
@@ -65,9 +91,26 @@ export default {
   },
   head() {
     return {
-      title: `The Best Gyms in ${
-        this.$store.state[`current_${this.itemTitle}`]
-      }`,
+      title: this.fetchPageTitle,
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:title",
+          content: this.fetchPageTitle,
+        },
+        {
+          property: "og:description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
+        },
+      ],
     }
   },
 }

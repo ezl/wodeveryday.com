@@ -27,6 +27,12 @@ export default {
       url = encodeURI(url)
       return url
     },
+    fetchPageTitle: function () {
+      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
+        "{}",
+        this.$store.state[`current_${this.itemTitle}`]
+      )
+    },
   },
   mounted() {
     this.determineIfCountryHasStates()
@@ -72,9 +78,21 @@ export default {
   },
   head() {
     return {
-      title: `The Best Gyms in ${
-        this.$store.state[`current_${this.itemTitle}`]
-      }`,
+      title: this.fetchPageTitle,
+      meta: [
+        {
+          property: "og:title",
+          content: this.fetchPageTitle,
+        },
+        {
+          property: "og:description",
+          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
+        },
+      ],
     }
   },
 }

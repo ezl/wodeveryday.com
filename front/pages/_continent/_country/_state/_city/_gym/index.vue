@@ -139,6 +139,11 @@ export default {
       if (!this.gymReviews) return 0
       return this.gymReviews.length
     },
+    fetchPageDescription: function () {
+      return `${this.fetchReviewCount} reviews for ${
+        this.$store.state[`current_gym`]
+      }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -297,13 +302,24 @@ export default {
   },
   head() {
     return {
+      title: this.$store.state.gym_object.name,
       meta: [
         {
           hid: "description",
           name: "description",
-          content: `${this.fetchReviewCount} reviews for ${
-            this.$store.state[`current_gym`]
-          }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`,
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:title",
+          content: `${this.$store.state.gym_object.name} | WOD Every Day`,
+        },
+        {
+          property: "og:description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.gym_object.photo,
         },
       ],
     }
