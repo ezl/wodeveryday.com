@@ -1,0 +1,371 @@
+{
+	"info": {
+		"_postman_id": "2cfc7603-c163-4bd1-81c0-f4dd5d4dbbfa",
+		"name": "api_tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test_get_continents",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e6439247-63de-4acb-964e-2e612f29bb6c",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/continents/",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						"continents",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_countries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "101d1fcd-52ef-4590-835b-45baa85bf209",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/countries/?continent=oceania",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						"countries",
+						""
+					],
+					"query": [
+						{
+							"key": "continent",
+							"value": "oceania"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_states",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f0ad9fdf-d21a-4fff-83b6-38f12b260c10",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/states/?country=canada",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						"states",
+						""
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "canada"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_cities_of_country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dae193a4-3afb-4bda-b865-18ca6ac07698",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/gyms/?country=austria",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						"gyms",
+						""
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "austria"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_cities_of_state",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b16dd29-eb3a-4826-b18e-885fd030fe8e",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/gyms/?state=hawaii",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						"gyms",
+						""
+					],
+					"query": [
+						{
+							"key": "state",
+							"value": "hawaii"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gyms_by_city_and_country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2a1c1e31-8ae4-4501-8a52-5e980708b0c7",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/?city__iexact=honolulu&country__iexact=united%20states",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "city__iexact",
+							"value": "honolulu"
+						},
+						{
+							"key": "country__iexact",
+							"value": "united%20states"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gyms_by_city_country_and_state",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc0e31b4-6138-4e44-98fc-2e10a69c8ddf",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/?city__iexact=honolulu&country__iexact=united%20states&state__iexact=hawaii",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "city__iexact",
+							"value": "honolulu"
+						},
+						{
+							"key": "country__iexact",
+							"value": "united%20states"
+						},
+						{
+							"key": "state__iexact",
+							"value": "hawaii"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gym_by_name_and_city",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bb8adca1-b713-4ccb-ba22-bcba5dc316b2",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliates/?name__iexact=crossfit%20mayhem&city__iexact=cookeville",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliates",
+						""
+					],
+					"query": [
+						{
+							"key": "name__iexact",
+							"value": "crossfit%20mayhem"
+						},
+						{
+							"key": "city__iexact",
+							"value": "cookeville"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test_get_gym_leaderboard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b7dfa272-7b23-40f1-9c0e-26f50b02d4e7",
+						"exec": [
+							"pm.test(\"200 Status code\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_path}}/affiliate_leaderboard/?affiliate_name=crossfit%20vikings%20hammer&page=1",
+					"host": [
+						"{{base_path}}"
+					],
+					"path": [
+						"affiliate_leaderboard",
+						""
+					],
+					"query": [
+						{
+							"key": "affiliate_name",
+							"value": "crossfit%20vikings%20hammer"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -7,18 +7,12 @@ export default {
    ** Headers of the page
    */
   head: {
-    titleTemplate: "%s - " + process.env.npm_package_name,
-    title: process.env.npm_package_name || "",
+    titleTemplate: "%s | WOD every day",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      {
-        hid: "description",
-        name: "description",
-        content: process.env.npm_package_description || "",
-      },
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    link: [{ rel: "icon", type: "image/x-icon", href: "/default_favicon.ico" }],
     script: [
       {
         src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GCP_API_KEY}&libraries=places`,

@@ -1,22 +1,25 @@
 <template>
-  <search-card
-    :item-list="continentObject"
+  <geography-search-page
+    :item-list="$store.state.continents"
     :select-item="selectContinent"
     :select-subitem="selectCountry"
   />
 </template>
 
 <script>
-import SearchCard from "~/components/SearchCard.vue"
+import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
-    SearchCard,
+    GeographySearchPage,
   },
-  data() {
-    return {
-      continentObject: {},
-    }
+  computed: {
+    fetchContinentURL: function () {
+      let url = `${process.env.BACKEND_URL}/affiliates/continents`
+      url = encodeURI(url)
+      return url
+    },
   },
   mounted() {
     // ToDo: remove this line when the routing structure is improved.
@@ -30,32 +33,22 @@ export default {
   },
   methods: {
     fetchContinents() {
-      this.continentObject = this.$store.state.continents
-      if (Object.values(this.continentObject).length === 0) {
-        let url = `${process.env.BACKEND_URL}/affiliates/continents`
-        url = encodeURI(url)
-        let that = this
-        this.$axios
-          .$get(url)
-          .then((response) => {
-            that.continentObject = response
-            that.$store.commit("SET_CONTINENTS", that.continentObject)
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      }
+      const url = this.fetchContinentURL
+      apiLibrary.retrieveContinents(url, this.$store)
     },
     selectContinent(continentName) {
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$pushCleanedRoute(this.$router, `${continentName}/`)
     },
     selectCountry(countryName) {
-      let continentName = this.$findParent(this.continentObject, countryName)
+      const continentName = this.$findParent(
+        this.$store.state.continents,
+        countryName
+      )
       this.$store.commit("SET_CURRENT_CONTINENT", continentName)
       this.$store.commit("SET_CURRENT_COUNTRY", countryName)
       if (
-        ["United States", "Australia", "Canada"].includes(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.includes(
           this.$store.state.current_country
         )
       ) {
@@ -71,6 +64,30 @@ export default {
         )
       }
     },
+  },
+  head() {
+    return {
+      title: this.$store.state.constants.HOME_PAGE_TITLE,
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+        },
+        {
+          property: "og:title",
+          content: this.$store.state.constants.HOME_PAGE_TITLE,
+        },
+        {
+          property: "og:description",
+          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
+        },
+      ],
+    }
   },
 }
 </script>

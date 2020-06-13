@@ -1,31 +1,30 @@
 <template>
-  <gym-search-card
-    :gym-list="affiliateList"
-    :select-item="selectAffiliate"
+  <gym-search-page
+    :gym-list="fetchGymList"
+    :select-item="selectGym"
     :item-title="itemTitle"
   />
 </template>
 
 <script>
-import GymSearchCard from "~/components/GymSearchCard.vue"
+import GymSearchPage from "~/components/navigation/GymSearchPage.vue"
+import apiLibrary from "~/store/apiLibrary.js"
 
 export default {
   components: {
-    GymSearchCard,
+    GymSearchPage,
   },
   data() {
     return {
       itemTitle: "city",
-      affiliateList: [],
     }
   },
-  mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchAffiliates()
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
-  },
-  methods: {
-    fetchAffiliates() {
+  computed: {
+    fetchGymList: function () {
+      if (this.$store.state.gyms !== {}) return this.$store.state.gyms
+      return []
+    },
+    fetchGymsURL: function () {
       const country = this.$store.state["current_country"]
       const state = this.$store.state["current_state"]
       const city = this.$store.state[`current_${this.itemTitle}`]
@@ -33,20 +32,60 @@ export default {
       if (state != this.$store.state.constants.NOSTATE)
         url += `&full_state__iexact=${state}`
       url = encodeURI(url)
-      let that = this
-      this.$axios
-        .$get(url)
-        .then((response) => {
-          that.affiliateList = response.results
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+      return url
     },
-    selectAffiliate(selectedAffiliate) {
-      this.$store.commit("SET_CURRENT_AFFILIATE", selectedAffiliate)
-      this.$pushCleanedRoute(this.$router, `${selectedAffiliate.name}/`)
+    fetchPageTitle: function () {
+      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
+        "{}",
+        this.$store.state[`current_${this.itemTitle}`]
+      )
     },
+    fetchPageDescription: function () {
+      return `The ${this.fetchGymList.length} Best CrossFit Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${
+        this.$store.state[`current_${this.itemTitle}`]
+      }`
+    },
+  },
+  mounted() {
+    this.$retrievePathVariables(this.$store, this.$route.params)
+    this.fetchGyms()
+    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+  },
+  methods: {
+    fetchGyms() {
+      const url = this.fetchGymsURL
+      apiLibrary.retrieveGyms(url, this.$store)
+    },
+    selectGym(selectedGym) {
+      this.$store.commit("SET_GYM_OBJECT", selectedGym)
+      this.$pushCleanedRoute(this.$router, `${selectedGym.name}/`)
+    },
+  },
+  head() {
+    return {
+      title: this.fetchPageTitle,
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:title",
+          content: this.fetchPageTitle,
+        },
+        {
+          property: "og:description",
+          content: this.fetchPageDescription,
+        },
+        {
+          property: "og:image",
+          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
+        },
+      ],
+    }
   },
 }
 </script>

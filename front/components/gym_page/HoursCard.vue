@@ -32,11 +32,6 @@ export default {
       required: false,
       default: undefined,
     },
-    gymName: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     currentDayOfTheWeek: {
       type: Number,
       required: false,

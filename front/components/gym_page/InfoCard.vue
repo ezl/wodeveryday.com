@@ -3,13 +3,16 @@
     <v-container>
       <v-row>
         <v-col md6 class="d-flex justify-center align-center">
-          <v-avatar size="200">
+          <v-avatar v-show="$store.state.gym_object.photo" size="200">
             <!--eslint-disable-next-line vue/html-self-closing-->
-            <img :src="gymLogo" />
+            <img
+              :src="$store.state.gym_object.photo"
+              :alt="$store.state.gym_object.name"
+            />
           </v-avatar>
         </v-col>
         <v-col md6 class="d-flex flex-column justify-center">
-          <h1>{{ gymName }}</h1>
+          <h1>{{ $store.state.gym_object.name }}</h1>
 
           <v-rating
             v-if="gymRating && gymRating != -1"
@@ -34,21 +37,6 @@
 export default {
   name: "InfoCard",
   props: {
-    gymLogo: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    gymName: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    gymWebsite: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
     gymPhoneNumber: {
       type: String,
       required: false,
@@ -61,12 +49,6 @@ export default {
     },
   },
   methods: {
-    phoneNumberVisible() {
-      return (
-        this.gymPhoneNumber === undefined ||
-        (this.gymPhoneNumber && this.gymPhoneNumber.length > 0)
-      )
-    },
     copyToClipboard() {
       navigator.clipboard.writeText(this.gymPhoneNumber)
     },
