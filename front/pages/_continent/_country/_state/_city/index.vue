@@ -9,10 +9,25 @@
 <script>
 import GymSearchPage from "~/components/navigation/GymSearchPage.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import _ from "lodash"
 
 export default {
   components: {
     GymSearchPage,
+  },
+  async asyncData({ route, store }) {
+    const country = route.params["country"]
+    const state = route.params["state"]
+    const city = route.params["city"]
+    let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
+    if (state != store.state.constants.NOSTATE)
+      url += `&full_state__iexact=${state}`
+    url = encodeURI(url)
+
+    const gymList = await apiLibrary.retrieveGyms(url, store)
+    return {
+      gymList,
+    }
   },
   data() {
     return {
@@ -34,18 +49,20 @@ export default {
       url = encodeURI(url)
       return url
     },
+    fetchCityName: function () {
+      return _.capitalize(this.$route.params[this.itemTitle]).replace(
+        /-/gi,
+        " "
+      )
+    },
     fetchPageTitle: function () {
       return this.$store.state.constants.GEO_PAGE_TITLE.replace(
         "{}",
-        this.$store.state[`current_${this.itemTitle}`]
+        this.fetchCityName
       )
     },
     fetchPageDescription: function () {
-      return `The ${this.fetchGymList.length} Best CrossFit Gyms in ${
-        this.$store.state[`current_${this.itemTitle}`]
-      }. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${
-        this.$store.state[`current_${this.itemTitle}`]
-      }`
+      return `The ${this.gymList.length} Best CrossFit Gyms in ${this.fetchCityName}. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${this.fetchCityName}`
     },
   },
   mounted() {

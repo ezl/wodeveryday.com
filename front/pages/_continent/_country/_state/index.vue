@@ -10,6 +10,7 @@
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import _ from "lodash"
 
 export default {
   components: {
@@ -25,7 +26,7 @@ export default {
     fetchPageTitle: function () {
       return this.$store.state.constants.GEO_PAGE_TITLE.replace(
         "{}",
-        this.$store.state[`current_${this.itemTitle}`]
+        _.capitalize(this.$route.params[this.itemTitle]).replace(/-/gi, " ")
       )
     },
     fetchNumberOfGymsInCountry: function () {
