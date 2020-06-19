@@ -94,6 +94,22 @@ export default {
     GymNavbar,
     PriceCard,
   },
+  async asyncData({ route, store }) {
+    const country = route.params["country"].replace(/-/gi, " ")
+    const state = route.params["state"].replace(/-/gi, " ")
+    const city = route.params["city"].replace(/-/gi, " ")
+    const gymName = route.params["gym"].replace(/-/gi, " ")
+    let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
+    if (state != store.state.constants.NOSTATE)
+      url += `&full_state__iexact=${state}`
+
+    url = encodeURI(url)
+    let gymObject = await apiLibrary.retrieveGyms(url, store)
+    gymObject = gymObject[0]
+    return {
+      gymObject,
+    }
+  },
   data() {
     return {
       gymRating: undefined,
@@ -143,6 +159,22 @@ export default {
       return `${this.fetchReviewCount} reviews for ${
         this.$store.state[`current_gym`]
       }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+    },
+    fetchIdPlusJsonScript: function () {
+      return JSON.stringify({
+        context: "https://schema.org",
+        type: "ExerciseGym",
+        name: this.gymObject.name,
+        image: this.gymObject.photo,
+        id: this.gymObject.url,
+        // telephone": "{gym phone}",
+        address: {
+          type: "PostalAddress",
+          streetAddress: this.gymObject.address,
+          postalCode: this.gymObject.zip,
+          addressCountry: this.gymObject.country,
+        },
+      })
     },
   },
   mounted() {
@@ -303,6 +335,13 @@ export default {
   head() {
     return {
       title: this.$store.state.gym_object.name,
+      __dangerouslyDisableSanitizers: ["script"],
+      script: [
+        {
+          innerHTML: this.fetchIdPlusJsonScript,
+          type: "application/ld+json",
+        },
+      ],
       meta: [
         {
           hid: "description",
