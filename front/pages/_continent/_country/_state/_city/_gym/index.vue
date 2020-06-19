@@ -162,14 +162,14 @@ export default {
     },
     fetchIdPlusJsonScript: function () {
       return JSON.stringify({
-        context: "https://schema.org",
-        type: "ExerciseGym",
+        "@context": "https://schema.org",
+        "@type": "ExerciseGym",
         name: this.gymObject.name,
         image: this.gymObject.photo,
-        id: this.gymObject.url,
+        "@id": this.gymObject.url,
         // telephone": "{gym phone}",
         address: {
-          type: "PostalAddress",
+          "@type": "PostalAddress",
           streetAddress: this.gymObject.address,
           postalCode: this.gymObject.zip,
           addressCountry: this.gymObject.country,
@@ -251,16 +251,19 @@ export default {
         this.$store.state.gym_object.lat,
         this.$store.state.gym_object.lon
       )
-      var coordinates = {
-        lat: parseFloat(this.$store.state.gym_object.lat),
-        lng: parseFloat(this.$store.state.gym_object.lon),
-      }
+
       // eslint-disable-next-line no-undef
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: location,
         zoom: 15,
       })
 
+      this.createMarker(location, this.map)
+      this.map.setCenter(location)
+
+      this.getPlaceDetails()
+    },
+    getPlaceDetails() {
       var request = {
         query: this.fetchGymSearchQuery,
         fields: ["name", "place_id", "geometry"],
@@ -268,51 +271,30 @@ export default {
 
       // eslint-disable-next-line no-undef
       this.service = new google.maps.places.PlacesService(this.map)
-      // eslint-disable-next-line no-unused-vars
-      this.service.findPlaceFromQuery(request, (results, status) => {
-        this.createMarker(coordinates, this.map)
-        this.map.setCenter(coordinates)
 
-        if (results != null) {
-          this.place_id = results[0].place_id
-          this.getPlaceDetails()
-        } else {
-          this.gymPhoneNumber = ""
-          this.gymRating = -1
-          this.gymReviews = []
-          this.gymPhotos = []
-          this.gymTimes = []
-          this.gymTimes = []
-          this.fillGymNavbar()
+      apiLibrary.retrieveGymId(this.service, request).then((gymId) => {
+        var detailsRequest = {
+          placeId: gymId,
+          fields: [
+            "formatted_phone_number",
+            "rating",
+            "review",
+            "photos",
+            "opening_hours",
+          ],
         }
-      })
-    },
-    getPlaceDetails() {
-      var request = {
-        placeId: this.place_id,
-        fields: [
-          "formatted_phone_number",
-          "rating",
-          "review",
-          "photos",
-          "opening_hours",
-        ],
-      }
-
-      // eslint-disable-next-line no-undef
-      this.service = new google.maps.places.PlacesService(this.map)
-      this.service.getDetails(request, (place, status) => {
-        // eslint-disable-next-line no-undef
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          this.gymPhoneNumber = place.formatted_phone_number || ""
-          this.gymRating = place.rating || -1
-          this.gymReviews = place.reviews || []
-          this.gymPhotos = place.photos || []
-          this.gymPhotos = this.gymPhotos.slice(0, 9)
-          this.gymTimes = place.opening_hours || []
-          this.gymTimes = this.gymTimes.weekday_text || []
-          this.fillGymNavbar()
-        }
+        apiLibrary
+          .retrieveGymDetails(this.service, detailsRequest)
+          .then((place) => {
+            this.gymPhoneNumber = place.formatted_phone_number || ""
+            this.gymRating = place.rating || -1
+            this.gymReviews = place.reviews || []
+            this.gymPhotos = place.photos || []
+            this.gymPhotos = this.gymPhotos.slice(0, 9)
+            this.gymTimes = place.opening_hours || []
+            this.gymTimes = this.gymTimes.weekday_text || []
+            this.fillGymNavbar()
+          })
       })
     },
     createMarker(coordinates, map) {
