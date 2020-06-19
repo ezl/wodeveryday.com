@@ -20,6 +20,7 @@ export const state = () => {
     current_state: undefined,
     cities: {},
     current_city: undefined,
+    place_details: {},
   }
 
   return s
@@ -30,6 +31,9 @@ export const initialState = state
 // Mutations
 // =================================================
 export const mutations = {
+  SET_PLACE_DETAILS: (state, place_details) => {
+    Vue.set(state, "place_details", place_details)
+  },
   RESET_STATE: (state) => {
     const s = initialState()
     Object.keys(s).forEach((key) => {

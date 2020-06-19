@@ -36,21 +36,9 @@
 <script>
 export default {
   name: "InfoCard",
-  props: {
-    gymPhoneNumber: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    gymRating: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-  },
-  methods: {
-    copyToClipboard() {
-      navigator.clipboard.writeText(this.gymPhoneNumber)
+  computed: {
+    gymRating: function () {
+      return this.$store.state.place_details.rating || -1
     },
   },
 }

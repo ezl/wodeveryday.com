@@ -47,14 +47,10 @@
 <script>
 export default {
   name: "ContactInfoCard",
-  props: {
-    gymPhoneNumber: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-  },
   computed: {
+    gymPhoneNumber: function () {
+      return this.$store.state.place_details.formatted_phone_number || ""
+    },
     phoneNumberVisible: function () {
       return (
         this.gymPhoneNumber === undefined ||
