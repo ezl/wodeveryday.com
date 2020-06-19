@@ -49,4 +49,48 @@ export default {
     const data = response.data
     return data
   },
+
+  async retrieveGymDetails(store, service, request) {
+    return new Promise((resolve, reject) => {
+      service.getDetails(request, (place, status) => {
+        // eslint-disable-next-line no-undef
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          store.commit("SET_PLACE_DETAILS", place)
+          resolve(place)
+        }
+        reject(status)
+      })
+    })
+  },
+
+  async retrieveGymId(service, request) {
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
+      service.findPlaceFromQuery(request, (results, status) => {
+        if (results != null) {
+          resolve(results[0].place_id)
+        }
+        reject(status)
+      })
+    })
+  },
+
+  async initMap(latitude, longitude) {
+    // eslint-disable-next-line no-undef
+    var location = new google.maps.LatLng(latitude, longitude)
+
+    // eslint-disable-next-line no-undef
+    let map = new google.maps.Map(document.getElementById("map"), {
+      center: location,
+      zoom: 15,
+    })
+
+    // eslint-disable-next-line no-undef
+    new google.maps.Marker({
+      map: map,
+      position: location,
+    })
+
+    return map
+  },
 }

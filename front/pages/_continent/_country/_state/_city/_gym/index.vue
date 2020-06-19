@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div itemscope itemtype="https://schema.org/ExerciseGym">
     <navbar />
     <breadcrumb
       :breadcrumb-names="$store.state.global_bread_crumb_names"
@@ -12,51 +12,36 @@
     />
     <v-row>
       <v-col v-show="windowInnerWidth > 540">
-        <info-card
-          class="mb-3"
-          :gym-phone-number="gymPhoneNumber"
-          :gym-rating="gymRating"
-        />
+        <info-card class="mb-3" />
         <reviews-card
           :id="windowInnerWidth > 540 ? 'reviews' : ''"
           class="mb-3"
-          :gym-reviews="gymReviews"
         />
       </v-col>
       <v-col id="keyInfo">
-        <info-card
-          v-show="windowInnerWidth <= 540"
-          class="mb-3"
-          :gym-phone-number="gymPhoneNumber"
-          :gym-rating="gymRating"
-        />
-        <contact-info-card class="mb-3" :gym-phone-number="gymPhoneNumber" />
-        <hours-card
-          class="mb-3"
-          :gym-times="gymTimes"
-          :current-day-of-the-week="currentDayOfTheWeek"
-        />
+        <info-card v-show="windowInnerWidth <= 540" class="mb-3" />
+        <contact-info-card class="mb-3" />
+        <hours-card class="mb-3" />
         <price-card class="mb-3" />
         <address-card class="mb-3" :gym-address="gymAddress" />
         <reviews-card
           v-show="windowInnerWidth <= 540"
           :id="windowInnerWidth <= 540 ? 'reviews' : ''"
           class="mb-3"
-          :gym-reviews="gymReviews"
         />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <span id="photos">
-          <photo-grid id="photoGrid" :gym-photos="gymPhotos" />
-          <photo-carousel :gym-photos="gymPhotos" />
+          <photo-grid id="photoGrid" />
+          <photo-carousel />
         </span>
         <leaderboard-card
           v-if="$store.state.gym_object.name"
           id="leaderboard"
         />
-        <map-card :map-active="mapActive" :gym-address="gymAddress" />
+        <map-card :gym-address="gymAddress" />
       </v-col>
     </v-row>
   </div>
@@ -94,19 +79,23 @@ export default {
     GymNavbar,
     PriceCard,
   },
+  async fetch({ route, store }) {
+    if (store.state.gym_object.name === undefined) {
+      const country = route.params["country"].replace(/-/gi, " ")
+      const state = route.params["state"].replace(/-/gi, " ")
+      const city = route.params["city"].replace(/-/gi, " ")
+      const gymName = route.params["gym"].replace(/-/gi, " ")
+      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
+      if (state != store.state.constants.NOSTATE)
+        url += `&full_state__iexact=${state}`
+
+      url = encodeURI(url)
+      await apiLibrary.retrieveGym(url, store)
+    }
+  },
   data() {
     return {
-      gymRating: undefined,
-      gymPhoneNumber: undefined,
       gymAddress: undefined,
-      gymReviews: undefined,
-      gymPhotos: undefined,
-      gymTimes: undefined,
-      currentDayOfTheWeek: this.getCurrentDayOfTheWeek(),
-      place_id: undefined,
-      map: undefined,
-      mapActive: false,
-      service: undefined,
       navbarOptions: ["Key Info"],
       gotoElements: ["#keyInfo"],
       navbarActive: false,
@@ -136,13 +125,27 @@ export default {
       return url
     },
     fetchReviewCount: function () {
-      if (!this.gymReviews) return 0
-      return this.gymReviews.length
+      if (!this.$store.state.place_details.reviews) return 0
+      return this.$store.state.place_details.reviews.length
     },
     fetchPageDescription: function () {
       return `${this.fetchReviewCount} reviews for ${
         this.$store.state[`current_gym`]
       }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+    },
+    fetchIdPlusJsonScript: function () {
+      return JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ExerciseGym",
+        name: this.$store.state.gym_object.name,
+        image: this.$store.state.gym_object.photo,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: this.$store.state.gym_object.address,
+          postalCode: this.$store.state.gym_object.zip,
+          addressCountry: this.$store.state.gym_object.country,
+        },
+      })
     },
   },
   mounted() {
@@ -153,7 +156,8 @@ export default {
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
 
-    this.maybeLoadGym()
+    this.gymAddress = this.getAddress()
+    this.initMap()
   },
   created() {
     if (process.client) window.addEventListener("resize", this.handleResize)
@@ -170,7 +174,10 @@ export default {
       let navbarOptions = ["Key Info"]
       let gotoElements = ["#keyInfo"]
 
-      if (this.gymReviews && this.gymReviews.length > 0) {
+      if (
+        this.$store.state.place_details.reviews &&
+        this.$store.state.place_details.reviews.length > 0
+      ) {
         navbarOptions.push("Reviews")
         gotoElements.push("#reviews")
       }
@@ -178,7 +185,10 @@ export default {
       navbarOptions.push("Map")
       gotoElements.push("#map")
 
-      if (this.gymReviews && this.gymPhotos.length > 0) {
+      if (
+        this.$store.state.place_details.photos &&
+        this.$store.state.place_details.photos.length > 0
+      ) {
         navbarOptions.push("Photos")
         gotoElements.push("#photos")
       }
@@ -188,108 +198,43 @@ export default {
 
       this.navbarActive = true
     },
-    maybeLoadGym() {
-      if (this.$store.state.gym_object.name === undefined) {
-        this.$retrievePathVariables(this.$store, this.$route.params)
-        const url = this.fetchGymURL
-        apiLibrary.retrieveGym(url, this.$store).then(() => {
-          this.initGymPage()
-          return
-        })
-      } else {
-        this.initGymPage()
-      }
-    },
-    initGymPage() {
-      this.gymAddress = this.getAddress()
-      this.initMap()
-    },
-    getCurrentDayOfTheWeek() {
-      let currentDay = new Date().getDay()
-      if (currentDay == 0) {
-        this.currentDayOfTheWeek = 6
-      } else {
-        this.currentDayOfTheWeek = currentDay - 1
-      }
-      return this.currentDayOfTheWeek
-    },
     initMap() {
-      // eslint-disable-next-line no-undef
-      var location = new google.maps.LatLng(
-        this.$store.state.gym_object.lat,
-        this.$store.state.gym_object.lon
-      )
-      var coordinates = {
-        lat: parseFloat(this.$store.state.gym_object.lat),
-        lng: parseFloat(this.$store.state.gym_object.lon),
-      }
-      // eslint-disable-next-line no-undef
-      this.map = new google.maps.Map(document.getElementById("map"), {
-        center: location,
-        zoom: 15,
-      })
-
+      apiLibrary
+        .initMap(
+          this.$store.state.gym_object.lat,
+          this.$store.state.gym_object.lon
+        )
+        .then((map) => {
+          this.getPlaceDetails(map)
+        })
+    },
+    getPlaceDetails(map) {
       var request = {
         query: this.fetchGymSearchQuery,
         fields: ["name", "place_id", "geometry"],
       }
 
       // eslint-disable-next-line no-undef
-      this.service = new google.maps.places.PlacesService(this.map)
-      // eslint-disable-next-line no-unused-vars
-      this.service.findPlaceFromQuery(request, (results, status) => {
-        this.createMarker(coordinates, this.map)
-        this.map.setCenter(coordinates)
+      let service = new google.maps.places.PlacesService(map)
 
-        if (results != null) {
-          this.place_id = results[0].place_id
-          this.getPlaceDetails()
-        } else {
-          this.gymPhoneNumber = ""
-          this.gymRating = -1
-          this.gymReviews = []
-          this.gymPhotos = []
-          this.gymTimes = []
-          this.gymTimes = []
-          this.fillGymNavbar()
+      apiLibrary.retrieveGymId(service, request).then((gymId) => {
+        var detailsRequest = {
+          placeId: gymId,
+          fields: [
+            "formatted_phone_number",
+            "rating",
+            "review",
+            "photos",
+            "opening_hours",
+          ],
         }
+        apiLibrary
+          .retrieveGymDetails(this.$store, service, detailsRequest)
+          // eslint-disable-next-line no-unused-vars
+          .then((place) => {
+            this.fillGymNavbar()
+          })
       })
-    },
-    getPlaceDetails() {
-      var request = {
-        placeId: this.place_id,
-        fields: [
-          "formatted_phone_number",
-          "rating",
-          "review",
-          "photos",
-          "opening_hours",
-        ],
-      }
-
-      // eslint-disable-next-line no-undef
-      this.service = new google.maps.places.PlacesService(this.map)
-      this.service.getDetails(request, (place, status) => {
-        // eslint-disable-next-line no-undef
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          this.gymPhoneNumber = place.formatted_phone_number || ""
-          this.gymRating = place.rating || -1
-          this.gymReviews = place.reviews || []
-          this.gymPhotos = place.photos || []
-          this.gymPhotos = this.gymPhotos.slice(0, 9)
-          this.gymTimes = place.opening_hours || []
-          this.gymTimes = this.gymTimes.weekday_text || []
-          this.fillGymNavbar()
-        }
-      })
-    },
-    createMarker(coordinates, map) {
-      // eslint-disable-next-line no-undef
-      new google.maps.Marker({
-        map: map,
-        position: coordinates,
-      })
-      this.mapActive = true
     },
     getAddress() {
       let gymFullAddress = this.$store.state.gym_object.address
@@ -303,6 +248,13 @@ export default {
   head() {
     return {
       title: this.$store.state.gym_object.name,
+      __dangerouslyDisableSanitizers: ["script"],
+      script: [
+        {
+          innerHTML: this.fetchIdPlusJsonScript,
+          type: "application/ld+json",
+        },
+      ],
       meta: [
         {
           hid: "description",

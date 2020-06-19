@@ -6,13 +6,14 @@
           <v-avatar v-show="$store.state.gym_object.photo" size="200">
             <!--eslint-disable-next-line vue/html-self-closing-->
             <img
+              itemprop="image"
               :src="$store.state.gym_object.photo"
               :alt="$store.state.gym_object.name"
             />
           </v-avatar>
         </v-col>
         <v-col md6 class="d-flex flex-column justify-center">
-          <h1>{{ $store.state.gym_object.name }}</h1>
+          <h1 itemprop="name">{{ $store.state.gym_object.name }}</h1>
 
           <v-rating
             v-if="gymRating && gymRating != -1"
@@ -36,21 +37,9 @@
 <script>
 export default {
   name: "InfoCard",
-  props: {
-    gymPhoneNumber: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    gymRating: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-  },
-  methods: {
-    copyToClipboard() {
-      navigator.clipboard.writeText(this.gymPhoneNumber)
+  computed: {
+    gymRating: function () {
+      return this.$store.state.place_details.rating || -1
     },
   },
 }
