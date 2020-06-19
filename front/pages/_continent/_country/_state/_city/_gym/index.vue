@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div itemscope itemtype="https://schema.org/ExerciseGym">
     <navbar />
     <breadcrumb
       :breadcrumb-names="$store.state.global_bread_crumb_names"
@@ -139,7 +139,6 @@ export default {
         "@type": "ExerciseGym",
         name: this.$store.state.gym_object.name,
         image: this.$store.state.gym_object.photo,
-        "@id": this.$store.state.gym_object.url,
         address: {
           "@type": "PostalAddress",
           streetAddress: this.$store.state.gym_object.address,
@@ -158,8 +157,7 @@ export default {
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
 
     this.gymAddress = this.getAddress()
-    const map = this.initMap()
-    this.getPlaceDetails(map)
+    this.initMap()
   },
   created() {
     if (process.client) window.addEventListener("resize", this.handleResize)
@@ -201,10 +199,14 @@ export default {
       this.navbarActive = true
     },
     initMap() {
-      apiLibrary.initMap(
-        this.$store.state.gym_object.lat,
-        this.$store.state.gym_object.lon
-      )
+      apiLibrary
+        .initMap(
+          this.$store.state.gym_object.lat,
+          this.$store.state.gym_object.lon
+        )
+        .then((map) => {
+          this.getPlaceDetails(map)
+        })
     },
     getPlaceDetails(map) {
       var request = {
