@@ -22,14 +22,13 @@
 <script>
 export default {
   name: "PhotoCarousel",
-  props: {
-    gymPhotos: {
-      type: Array,
-      required: false,
-      default: undefined,
-    },
-  },
   computed: {
+    gymPhotos: function () {
+      if (this.$store.state.place_details.photos) {
+        return this.$store.state.place_details.photos.slice(0, 9)
+      }
+      return []
+    },
     fetchPhotoAltTag: function () {
       let altTag = `Photo of ${this.$store.state.gym_object.name} in ${this.$store.state.gym_object.city}, `
 

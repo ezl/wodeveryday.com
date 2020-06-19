@@ -26,16 +26,28 @@
 <script>
 export default {
   name: "HoursCard",
-  props: {
-    gymTimes: {
-      type: Array,
-      required: false,
-      default: undefined,
+  data() {
+    return {
+      currentDayOfTheWeek: this.getCurrentDayOfTheWeek(),
+    }
+  },
+  computed: {
+    gymTimes: function () {
+      if (this.$store.state.place_details.opening_hours) {
+        return this.$store.state.place_details.opening_hours.weekday_text || []
+      }
+      return []
     },
-    currentDayOfTheWeek: {
-      type: Number,
-      required: false,
-      default: 0,
+  },
+  methods: {
+    getCurrentDayOfTheWeek() {
+      let currentDay = new Date().getDay()
+      if (currentDay == 0) {
+        this.currentDayOfTheWeek = 6
+      } else {
+        this.currentDayOfTheWeek = currentDay - 1
+      }
+      return this.currentDayOfTheWeek
     },
   },
 }

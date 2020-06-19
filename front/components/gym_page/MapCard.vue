@@ -6,7 +6,6 @@
       class="d-flex justify-center align-center"
     >
       <v-progress-circular
-        v-if="!mapActive"
         class="mt-5"
         :size="70"
         :width="7"
@@ -24,11 +23,6 @@
 export default {
   name: "MapCard",
   props: {
-    mapActive: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     gymAddress: {
       type: String,
       required: false,
