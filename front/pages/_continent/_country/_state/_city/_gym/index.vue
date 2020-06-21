@@ -100,6 +100,7 @@ export default {
       gotoElements: ["#keyInfo"],
       navbarActive: false,
       windowInnerWidth: 0,
+      metaTags: [],
     }
   },
   computed: {
@@ -129,9 +130,7 @@ export default {
       return this.$store.state.place_details.reviews.length
     },
     fetchPageDescription: function () {
-      return `${this.fetchReviewCount} reviews for ${
-        this.$store.state[`current_gym`]
-      }. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+      return `${this.fetchReviewCount} reviews for ${this.$store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
     },
     fetchIdPlusJsonScript: function () {
       return JSON.stringify({
@@ -147,6 +146,9 @@ export default {
         },
       })
     },
+    fetchGymPageTitle: function () {
+      return `${this.$store.state.gym_object.name} | ${this.$store.state.constants.WEBSITE_TITLE}`
+    },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
@@ -157,6 +159,12 @@ export default {
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
 
     this.gymAddress = this.getAddress()
+    this.metaTags = this.$generateMetaTags(
+      this.$store,
+      this.fetchGymPageTitle,
+      this.fetchPageDescription,
+      this.$store.state.gym_object.photo
+    )
     this.initMap()
   },
   created() {
@@ -255,25 +263,7 @@ export default {
           type: "application/ld+json",
         },
       ],
-      meta: [
-        {
-          hid: "description",
-          name: "description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:title",
-          content: `${this.$store.state.gym_object.name} | WOD Every Day`,
-        },
-        {
-          property: "og:description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:image",
-          content: this.$store.state.gym_object.photo,
-        },
-      ],
+      meta: this.metaTags,
     }
   },
 }
