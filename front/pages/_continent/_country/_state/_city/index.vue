@@ -1,6 +1,6 @@
 <template>
   <gym-search-page
-    :gym-list="fetchGymList"
+    :gym-list="$store.state.gyms"
     :select-item="selectGym"
     :item-title="itemTitle"
   />
@@ -15,40 +15,24 @@ export default {
   components: {
     GymSearchPage,
   },
-  async asyncData({ route, store }) {
-    const country = route.params["country"]
-    const state = route.params["state"]
-    const city = route.params["city"]
+  async fetch({ route, store }) {
+    const country = route.params["country"].replace(/-/gi, " ")
+    const state = route.params["state"].replace(/-/gi, " ")
+    const city = route.params["city"].replace(/-/gi, " ")
     let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
     if (state != store.state.constants.NOSTATE)
       url += `&full_state__iexact=${state}`
     url = encodeURI(url)
 
-    const gymList = await apiLibrary.retrieveGyms(url, store)
-    return {
-      gymList,
-    }
+    await apiLibrary.retrieveGyms(url, store)
   },
   data() {
     return {
       itemTitle: "city",
+      metaTags: [],
     }
   },
   computed: {
-    fetchGymList: function () {
-      if (this.$store.state.gyms !== {}) return this.$store.state.gyms
-      return []
-    },
-    fetchGymsURL: function () {
-      const country = this.$store.state["current_country"]
-      const state = this.$store.state["current_state"]
-      const city = this.$store.state[`current_${this.itemTitle}`]
-      let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
-      if (state != this.$store.state.constants.NOSTATE)
-        url += `&full_state__iexact=${state}`
-      url = encodeURI(url)
-      return url
-    },
     fetchCityName: function () {
       return _.capitalize(this.$route.params[this.itemTitle]).replace(
         /-/gi,
@@ -62,19 +46,20 @@ export default {
       )
     },
     fetchPageDescription: function () {
-      return `The ${this.gymList.length} Best CrossFit Gyms in ${this.fetchCityName}. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${this.fetchCityName}`
+      return `The ${this.$store.state.gyms.length} Best CrossFit Gyms in ${this.fetchCityName}. Check Out The Latest Reviews, Pricing, Contact Information for CrossFit Gyms in ${this.fetchCityName}`
     },
   },
   mounted() {
     this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchGyms()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+    this.metaTags = this.$generateMetaTags(
+      this.$store,
+      this.fetchPageTitle,
+      this.fetchPageDescription,
+      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
   },
   methods: {
-    fetchGyms() {
-      const url = this.fetchGymsURL
-      apiLibrary.retrieveGyms(url, this.$store)
-    },
     selectGym(selectedGym) {
       this.$store.commit("SET_GYM_OBJECT", selectedGym)
       this.$pushCleanedRoute(this.$router, `${selectedGym.name}/`)
@@ -83,25 +68,7 @@ export default {
   head() {
     return {
       title: this.fetchPageTitle,
-      meta: [
-        {
-          hid: "description",
-          name: "description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:title",
-          content: this.fetchPageTitle,
-        },
-        {
-          property: "og:description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:image",
-          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
-        },
-      ],
+      meta: this.metaTags,
     }
   },
 }

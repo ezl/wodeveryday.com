@@ -16,10 +16,23 @@ export default {
   components: {
     GeographySearchPage,
   },
+  async fetch({ route, store }) {
+    let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
+    const state = route.params["state"].replace(/-/gi, " ")
+    if (state === store.state.constants.NOSTATE) {
+      const country = route.params["country"].replace(/-/gi, " ")
+      url += `?country=${country}`
+    } else {
+      url += `?state=${state}`
+    }
+    url = encodeURI(url)
+    await apiLibrary.retrieveCities(url, store)
+  },
   data() {
     return {
       itemTitle: "state",
       cityList: {},
+      metaTags: [],
     }
   },
   computed: {
@@ -49,27 +62,24 @@ export default {
     },
   },
   mounted() {
+    this.getItemTitle()
     this.$retrievePathVariables(this.$store, this.$route.params)
-    this.fetchCities()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+    this.metaTags = this.$generateMetaTags(
+      this.$store,
+      this.fetchPageTitle,
+      this.fetchPageDescription,
+      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
   },
   methods: {
-    fetchCitiesURL() {
-      let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
-      const state = this.$store.state[`current_${this.itemTitle}`]
-      if (state === this.$store.state.constants.NOSTATE) {
+    getItemTitle() {
+      if (
+        this.$store.state[`current_state`] ===
+        this.$store.state.constants.NOSTATE
+      ) {
         this.itemTitle = "country"
-        const country = this.$store.state[`current_${this.itemTitle}`]
-        url += `?country=${country}`
-      } else {
-        url += `?state=${state}`
       }
-      url = encodeURI(url)
-      return url
-    },
-    fetchCities() {
-      const url = this.fetchCitiesURL()
-      apiLibrary.retrieveCities(url, this.$store)
     },
     fetchGym(cityName, gymName) {
       const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
@@ -93,25 +103,7 @@ export default {
   head() {
     return {
       title: this.fetchPageTitle,
-      meta: [
-        {
-          hid: "description",
-          name: "description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:title",
-          content: this.fetchPageTitle,
-        },
-        {
-          property: "og:description",
-          content: this.fetchPageDescription,
-        },
-        {
-          property: "og:image",
-          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
-        },
-      ],
+      meta: this.metaTags,
     }
   },
 }

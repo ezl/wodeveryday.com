@@ -19,6 +19,7 @@ export default {
   data() {
     return {
       itemTitle: "country",
+      metaTags: [],
     }
   },
   computed: {
@@ -40,6 +41,12 @@ export default {
     this.$retrievePathVariables(this.$store, this.$route.params)
     this.fetchStates()
     this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
+    this.metaTags = this.$generateMetaTags(
+      this.$store,
+      this.fetchPageTitle,
+      this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
   },
   methods: {
     determineIfCountryHasStates() {
@@ -80,20 +87,7 @@ export default {
   head() {
     return {
       title: this.fetchPageTitle,
-      meta: [
-        {
-          property: "og:title",
-          content: this.fetchPageTitle,
-        },
-        {
-          property: "og:description",
-          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-        },
-        {
-          property: "og:image",
-          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
-        },
-      ],
+      meta: this.metaTags,
     }
   },
 }

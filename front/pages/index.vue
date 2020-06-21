@@ -14,6 +14,11 @@ export default {
   components: {
     GeographySearchPage,
   },
+  data() {
+    return {
+      metaTags: [],
+    }
+  },
   computed: {
     fetchContinentURL: function () {
       let url = `${process.env.BACKEND_URL}/affiliates/continents`
@@ -30,6 +35,12 @@ export default {
 
     this.fetchContinents()
     this.$generateBreadcrumb(this.$store, this.$route.params)
+    this.metaTags = this.$generateMetaTags(
+      this.$store,
+      this.$store.state.constants.HOME_PAGE_TITLE,
+      this.$store.state.constants.DEFAULT_META_DESCRIPTION,
+      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
   },
   methods: {
     fetchContinents() {
@@ -68,25 +79,7 @@ export default {
   head() {
     return {
       title: this.$store.state.constants.HOME_PAGE_TITLE,
-      meta: [
-        {
-          hid: "description",
-          name: "description",
-          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-        },
-        {
-          property: "og:title",
-          content: this.$store.state.constants.HOME_PAGE_TITLE,
-        },
-        {
-          property: "og:description",
-          content: this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-        },
-        {
-          property: "og:image",
-          content: this.$store.state.constants.DEFAULT_GYM_THUMBNAIL,
-        },
-      ],
+      meta: this.metaTags,
     }
   },
 }
