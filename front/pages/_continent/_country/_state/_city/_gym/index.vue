@@ -147,7 +147,7 @@ export default {
       })
     },
     fetchGymPageTitle: function () {
-      return `${this.$store.state.gym_object.name} | WOD Every Day`
+      return `${this.$store.state.gym_object.name} | ${this.$store.state.constants.WEBSITE_TITLE}`
     },
   },
   mounted() {
