@@ -23,14 +23,12 @@ export default {
 
     if (countryHasStates) {
       const country = route.params["country"].replace(/-/gi, " ")
-      let url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
-      url = encodeURI(url)
+      const url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
 
       await apiLibrary.retrieveStates(url, store)
     } else {
       const country = route.params["country"].replace(/-/gi, " ")
-      let url = `${process.env.BACKEND_URL}/affiliates/gyms/?country=${country}`
-      url = encodeURI(url)
+      const url = `${process.env.BACKEND_URL}/affiliates/gyms/?country=${country}`
 
       await apiLibrary.retrieveCities(url, store)
     }

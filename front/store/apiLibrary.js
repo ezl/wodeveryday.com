@@ -2,49 +2,64 @@ import apiService from "./apiService"
 
 /* eslint-disable no-unused-vars */
 export default {
-  async retrieveContinents(url, store) {
+  async retrieveContinents(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data
-    store.commit("SET_CONTINENTS", data)
+    if (store) store.commit("SET_CONTINENTS", data)
     return data
   },
 
-  async retrieveCountries(url, store) {
+  async retrieveCountries(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data
-    store.commit("SET_COUNTRIES", data)
+    if (store) store.commit("SET_COUNTRIES", data)
     return data
   },
 
-  async retrieveStates(url, store) {
+  async retrieveStates(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data
-    store.commit("SET_STATES", data)
+    if (store) store.commit("SET_STATES", data)
     return data
   },
 
-  async retrieveCities(url, store) {
+  async retrieveCities(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data
-    store.commit("SET_CITIES", data)
+    if (store) store.commit("SET_CITIES", data)
     return data
   },
 
-  async retrieveGym(url, store) {
+  async retrieveGym(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data.results[0]
-    store.commit("SET_GYM_OBJECT", data)
+    if (store) store.commit("SET_GYM_OBJECT", data)
     return data
   },
 
-  async retrieveGyms(url, store) {
+  async retrieveGyms(url, store = null) {
+    url = encodeURI(url)
     const response = await apiService.get(url)
     const data = response.data.results
-    store.commit("SET_GYMS", data)
+    if (store) store.commit("SET_GYMS", data)
+    return data
+  },
+
+  async retrieveGymSlugs(url) {
+    url = encodeURI(url)
+    const response = await apiService.get(url)
+    console.log(response)
+    const data = response.data
     return data
   },
 
   async retrieveLeaderboardData(url, params) {
+    url = encodeURI(url)
     const response = await apiService.get(url, params)
     const data = response.data
     return data
