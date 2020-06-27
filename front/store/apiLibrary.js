@@ -53,7 +53,6 @@ export default {
   async retrieveGymSlugs(url) {
     url = encodeURI(url)
     const response = await apiService.get(url)
-    console.log(response)
     const data = response.data
     return data
   },
