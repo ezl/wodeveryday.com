@@ -27,7 +27,6 @@ export default {
       ) === -1
     )
       url += `&full_state__iexact=${state}`
-    url = encodeURI(url)
 
     await apiLibrary.retrieveGyms(url, store)
   },

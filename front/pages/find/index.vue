@@ -21,8 +21,7 @@ export default {
   },
   computed: {
     fetchContinentURL: function () {
-      let url = `${process.env.BACKEND_URL}/affiliates/continents`
-      url = encodeURI(url)
+      const url = `${process.env.BACKEND_URL}/affiliates/continents`
       return url
     },
   },

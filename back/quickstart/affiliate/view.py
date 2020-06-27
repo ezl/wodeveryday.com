@@ -23,6 +23,14 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
             'name_slug': ['iexact']
         }
 
+    @action(detail=False, methods=['get'], url_path='slugs')
+    def listGymSlugs(self, request, *args):
+
+        queryset = self.get_queryset()
+        gym_slugs_list = queryset.values_list('name_slug', flat=True)
+
+        return Response(gym_slugs_list)
+
     @action(detail=False, methods=['get'], url_path='continents')
     def listDistinctCountriesByContinent(self, request, *args):
 

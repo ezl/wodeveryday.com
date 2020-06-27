@@ -30,7 +30,7 @@ export default {
     } else {
       url += `?state=${state}`
     }
-    url = encodeURI(url)
+
     await apiLibrary.retrieveCities(url, store)
   },
   data() {
