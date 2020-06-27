@@ -150,11 +150,12 @@ export default {
       ) {
         // TODO: remove this tech debt
         let itemAndSubItem = this.findParentAndSubItem(this.itemList, subItem)
-        this.selectSubitem(itemAndSubItem[0], itemAndSubItem[1])
+        item = itemAndSubItem[0]
+        subItem = itemAndSubItem[1]
       } else if (!item) {
         item = this.findParent(this.itemList, subItem)
-        this.selectSubitem(item, subItem)
       }
+      this.selectSubitem(item, subItem)
     },
     isLoading() {
       return (
