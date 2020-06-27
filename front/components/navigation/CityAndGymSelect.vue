@@ -13,13 +13,18 @@ import apiLibrary from "~/store/apiLibrary.js"
 import _ from "lodash"
 
 export default {
+  name: "CityAndGymSelect",
   components: {
     GeographySearchPage,
   },
   async fetch({ route, store }) {
     let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
     const state = route.params["state"].replace(/-/gi, " ")
-    if (state === store.state.constants.NOSTATE) {
+    if (
+      ["united-states", "australia", "canada"].indexOf(
+        this.$route.params["country"]
+      ) === -1
+    ) {
       const country = route.params["country"].replace(/-/gi, " ")
       url += `?country=${country}`
     } else {
@@ -63,8 +68,6 @@ export default {
   },
   mounted() {
     this.getItemTitle()
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
     this.metaTags = this.$generateMetaTags(
       this.$store,
       this.fetchPageTitle,
@@ -75,29 +78,27 @@ export default {
   methods: {
     getItemTitle() {
       if (
-        this.$store.state[`current_state`] ===
-        this.$store.state.constants.NOSTATE
+        ["united-states", "australia", "canada"].indexOf(
+          this.$route.params["country"]
+        ) === -1
       ) {
         this.itemTitle = "country"
       }
     },
-    fetchGym(cityName, gymName) {
-      const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${cityName}&name__iexact=${gymName}`
+    fetchGym(cityName, gymNameSlug) {
+      const url = `${process.env.BACKEND_URL}/affiliates/?name_slug__iexact=${gymNameSlug}`
       apiLibrary.retrieveGym(url, this.$store).then(() => {
-        this.navigateToGym(cityName, gymName)
+        this.navigateToGym(cityName, gymNameSlug)
       })
     },
-    navigateToGym(cityName, gymName) {
-      this.$pushCleanedRoute(this.$router, `${cityName}/${gymName}/`)
+    navigateToGym(cityName, gymNameSlug) {
+      this.$router.replace({ path: `/gym/${gymNameSlug}` })
     },
     selectCity(cityName) {
-      this.$store.commit("SET_CURRENT_CITY", cityName)
       this.$pushCleanedRoute(this.$router, `${cityName}/`)
     },
-    selectGym(gymName) {
-      const cityName = this.$findParent(this.$store.state.cities, gymName)
-      this.$store.commit("SET_CURRENT_CITY", cityName)
-      this.fetchGym(cityName, gymName)
+    selectGym(cityName, gymNameSlug) {
+      this.fetchGym(cityName, gymNameSlug)
     },
   },
   head() {

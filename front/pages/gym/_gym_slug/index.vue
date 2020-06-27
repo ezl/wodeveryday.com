@@ -1,10 +1,7 @@
 <template>
   <div itemscope itemtype="https://schema.org/ExerciseGym">
     <navbar />
-    <breadcrumb
-      :breadcrumb-names="$store.state.global_bread_crumb_names"
-      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
-    />
+    <breadcrumb />
     <gym-navbar
       :navbar-active="navbarActive"
       :goto-elements="$store.state.gym_navbar_goto_elements"
@@ -80,18 +77,11 @@ export default {
     PriceCard,
   },
   async fetch({ route, store }) {
-    if (store.state.gym_object.name === undefined) {
-      const country = route.params["country"].replace(/-/gi, " ")
-      const state = route.params["state"].replace(/-/gi, " ")
-      const city = route.params["city"].replace(/-/gi, " ")
-      const gymName = route.params["gym"].replace(/-/gi, " ")
-      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
-      if (state != store.state.constants.NOSTATE)
-        url += `&full_state__iexact=${state}`
+    const gymNameSlug = route.params["gym_slug"]
+    let url = `${process.env.BACKEND_URL}/affiliates/?name_slug__iexact=${gymNameSlug}`
+    url = encodeURI(url)
 
-      url = encodeURI(url)
-      await apiLibrary.retrieveGym(url, store)
-    }
+    await apiLibrary.retrieveGym(url, store)
   },
   data() {
     return {
@@ -112,18 +102,6 @@ export default {
         " " +
         this.$store.state.gym_object.country
       return query
-    },
-    fetchGymURL: function () {
-      const country = this.$store.state["current_country"]
-      const state = this.$store.state["current_state"]
-      const city = this.$store.state[`current_city`]
-      const gymName = this.$store.state[`current_gym`]
-      let url = `${process.env.BACKEND_URL}/affiliates/?name__iexact=${gymName}&city__iexact=${city}&country__iexact=${country}`
-      if (state != this.$store.state.constants.NOSTATE)
-        url += `&full_state__iexact=${state}`
-
-      url = encodeURI(url)
-      return url
     },
     fetchReviewCount: function () {
       if (!this.$store.state.place_details.reviews) return 0
@@ -151,9 +129,6 @@ export default {
     },
   },
   mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.$generateBreadcrumb(this.$store, this.$route.params, "gym")
-
     // empty navbar for refill
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])

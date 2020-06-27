@@ -12,6 +12,7 @@ import apiLibrary from "~/store/apiLibrary.js"
 import _ from "lodash"
 
 export default {
+  name: "GymSelect",
   components: {
     GymSearchPage,
   },
@@ -20,7 +21,11 @@ export default {
     const state = route.params["state"].replace(/-/gi, " ")
     const city = route.params["city"].replace(/-/gi, " ")
     let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
-    if (state != store.state.constants.NOSTATE)
+    if (
+      ["united-states", "australia", "canada"].indexOf(
+        route.params["country"]
+      ) === -1
+    )
       url += `&full_state__iexact=${state}`
     url = encodeURI(url)
 
@@ -50,8 +55,6 @@ export default {
     },
   },
   mounted() {
-    this.$retrievePathVariables(this.$store, this.$route.params)
-    this.$generateBreadcrumb(this.$store, this.$route.params, this.itemTitle)
     this.metaTags = this.$generateMetaTags(
       this.$store,
       this.fetchPageTitle,
@@ -62,7 +65,6 @@ export default {
   methods: {
     selectGym(selectedGym) {
       this.$store.commit("SET_GYM_OBJECT", selectedGym)
-      this.$pushCleanedRoute(this.$router, `${selectedGym.name}/`)
     },
   },
   head() {
