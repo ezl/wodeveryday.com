@@ -19,8 +19,17 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
             'country': ['iexact'],
             'full_state': ['iexact'],
             'city': ['iexact'],
-            'name': ['iexact']
+            'name': ['iexact'],
+            'name_slug': ['iexact']
         }
+
+    @action(detail=False, methods=['get'], url_path='slugs')
+    def listGymSlugs(self, request, *args):
+
+        queryset = self.get_queryset()
+        gym_slugs_list = queryset.values_list('name_slug', flat=True)
+
+        return Response(gym_slugs_list)
 
     @action(detail=False, methods=['get'], url_path='continents')
     def listDistinctCountriesByContinent(self, request, *args):
@@ -100,7 +109,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
 
         for key, value in gyms_by_city_or_state_dictionary.copy().items():
             gyms_by_city_or_state_dictionary[key] = queryset.filter(city__iexact=key) \
-                .values_list('name', flat=True) \
+                .values_list('name', 'name_slug') \
                 .order_by('name') \
                 .distinct()
 

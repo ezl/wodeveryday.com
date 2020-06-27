@@ -58,17 +58,15 @@
 <script>
 export default {
   name: "ReviewsCard",
-  props: {
-    gymReviews: {
-      type: Array,
-      required: false,
-      default: undefined,
-    },
-  },
   data() {
     return {
       moreReviewsVisible: false,
     }
+  },
+  computed: {
+    gymReviews: function () {
+      return this.$store.state.place_details.reviews || []
+    },
   },
   methods: {
     getGymReviews() {

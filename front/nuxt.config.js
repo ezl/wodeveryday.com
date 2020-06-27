@@ -1,5 +1,6 @@
 import colors from "vuetify/es5/util/colors"
 require("dotenv").config()
+// import routes from "./utils/getRoutes.js"
 
 export default {
   mode: "universal",
@@ -45,9 +46,20 @@ export default {
     pageTracking: true,
   },
   /*
+   ** generate sitemap
+   */
+  // sitemap: {
+  //   routes() {
+  //     return routes.getAppRoutes()
+  //   },
+  //   path: "/sitemap.xml",
+  //   gzip: true,
+  //   generate: false,
+  // },
+  /*
    ** Nuxt.js modules
    */
-  modules: ["nuxt-leaflet", "@nuxtjs/axios"],
+  modules: ["nuxt-leaflet", "@nuxtjs/axios", "@nuxtjs/sitemap"],
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module

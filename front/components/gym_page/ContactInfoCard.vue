@@ -6,6 +6,7 @@
     <v-divider />
     <v-btn
       v-show="$store.state.gym_object.website"
+      itemprop="id"
       large
       class="ma-2"
       :href="$store.state.gym_object.website"
@@ -47,14 +48,10 @@
 <script>
 export default {
   name: "ContactInfoCard",
-  props: {
-    gymPhoneNumber: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-  },
   computed: {
+    gymPhoneNumber: function () {
+      return this.$store.state.place_details.formatted_phone_number || ""
+    },
     phoneNumberVisible: function () {
       return (
         this.gymPhoneNumber === undefined ||
