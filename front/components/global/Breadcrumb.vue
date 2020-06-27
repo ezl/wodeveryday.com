@@ -20,15 +20,60 @@
 <script>
 export default {
   name: "Breadcrumb",
-  props: {
-    breadcrumbNames: {
-      type: Array,
-      required: true,
-      default: Array,
+  data() {
+    return {
+      breadcrumbNames: [],
+      breadcrumbPaths: [],
+    }
+  },
+  computed: {
+    onGymPage: function () {
+      return this.$route.fullPath.indexOf("/gym/") !== -1
     },
-    breadcrumbPaths: {
-      type: Array,
-      default: Array,
+  },
+  mounted() {
+    if (this.onGymPage) {
+      this.generateBreadCrumbFromGym()
+    } else {
+      this.generateBreadCrumb()
+    }
+  },
+  methods: {
+    generateBreadCrumb() {
+      const routeParams = this.$route.params
+      const pageNames = Object.values(routeParams)
+      const pages = Object.keys(routeParams)
+      const pageCount = pages.length - 1
+
+      if (pageCount === -1) return
+
+      this.populateBreadcrumb(pageNames, pageCount)
+    },
+    generateBreadCrumbFromGym() {
+      const continent = this.$store.state.gym_object.continent
+      const country = this.$store.state.gym_object.country
+      const state = this.$store.state.gym_object.full_state
+      const city = this.$store.state.gym_object.city
+      let breadCrumbList = [continent, country, city]
+      if (state) breadCrumbList.splice(2, 0, state)
+
+      this.populateBreadcrumb(breadCrumbList, breadCrumbList.length - 1)
+    },
+    populateBreadcrumb(nameList, iterations) {
+      this.breadcrumbNames = ["Home"]
+      let path = "/find/"
+      this.breadcrumbPaths = ["/"]
+      let name = ""
+      let cleanedPath = ""
+
+      for (let i = 0; i <= iterations; i++) {
+        name = nameList[i]
+        this.breadcrumbNames.push(name)
+
+        path = path + name + "/"
+        cleanedPath = encodeURI(path.toLowerCase().replace(/ /gi, "-"))
+        this.breadcrumbPaths.push(cleanedPath)
+      }
     },
   },
 }

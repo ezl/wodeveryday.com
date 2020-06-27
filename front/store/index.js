@@ -11,15 +11,10 @@ export const state = () => {
     global_bread_crumb_paths: [],
     gym_object: {},
     gyms: [],
-    current_gym: undefined,
     continents: {},
-    current_continent: undefined,
     countries: {},
-    current_country: undefined,
     states: {},
-    current_state: undefined,
     cities: {},
-    current_city: undefined,
     place_details: {},
   }
 
@@ -78,31 +73,16 @@ export const mutations = {
   SET_GYMS: (state, gyms) => {
     Vue.set(state, "gyms", gyms)
   },
-  SET_CURRENT_GYM: (state, current_gym) => {
-    Vue.set(state, "current_gym", current_gym)
-  },
   SET_CONTINENTS: (state, continents) => {
     Vue.set(state, "continents", continents)
-  },
-  SET_CURRENT_CONTINENT: (state, current_continent) => {
-    Vue.set(state, "current_continent", current_continent)
   },
   SET_COUNTRIES: (state, countries) => {
     Vue.set(state, "countries", countries)
   },
-  SET_CURRENT_COUNTRY: (state, current_country) => {
-    Vue.set(state, "current_country", current_country)
-  },
   SET_STATES: (state, states) => {
     Vue.set(state, "states", states)
   },
-  SET_CURRENT_STATE: (state, current_state) => {
-    Vue.set(state, "current_state", current_state)
-  },
   SET_CITIES: (state, cities) => {
     Vue.set(state, "cities", cities)
-  },
-  SET_CURRENT_CITY: (state, current_city) => {
-    Vue.set(state, "current_city", current_city)
   },
 }

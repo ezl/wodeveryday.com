@@ -13,7 +13,9 @@
           </v-avatar>
         </v-col>
         <v-col md6 class="d-flex flex-column justify-center">
-          <h1 itemprop="name">{{ $store.state.gym_object.name }}</h1>
+          <h1 itemprop="name">
+            {{ $store.state.gym_object.name }}
+          </h1>
 
           <v-rating
             v-if="gymRating && gymRating != -1"

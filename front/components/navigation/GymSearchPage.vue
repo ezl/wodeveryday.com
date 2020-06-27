@@ -1,15 +1,12 @@
 <template>
   <v-content>
     <navbar />
-    <breadcrumb
-      :breadcrumb-names="$store.state.global_bread_crumb_names"
-      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
-    />
+    <breadcrumb />
     <v-row align="center" justify="center" style="flex-direction: column;">
       <v-col cols="12" sm="8" md="4">
         <v-card class="pa-4 elevation-12 ma-4">
           <h1 style="text-align: center;">
-            Gyms in {{ $store.state.current_city }}
+            Gyms in {{ $route.params["city"] }}
           </h1>
         </v-card>
       </v-col>
@@ -35,14 +32,16 @@
               :color="active ? 'primary' : ''"
               @click="toggle"
             >
-              <v-img
-                :src="gymObject.photo"
-                height="200px"
-                :alt="gymObject.name"
-              />
-              <v-card-title>
-                {{ gymObject.name }}
-              </v-card-title>
+              <nuxt-link :to="{ path: `/gym/${gymObject.name_slug}` }">
+                <v-img
+                  :src="gymObject.photo"
+                  height="200px"
+                  :alt="gymObject.name"
+                />
+                <v-card-title>
+                  {{ gymObject.name }}
+                </v-card-title>
+              </nuxt-link>
             </v-card>
           </v-item>
         </v-col>

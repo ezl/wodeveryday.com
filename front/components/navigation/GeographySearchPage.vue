@@ -1,10 +1,7 @@
 <template>
   <v-content>
     <navbar />
-    <breadcrumb
-      :breadcrumb-names="$store.state.global_bread_crumb_names"
-      :breadcrumb-paths="$store.state.global_bread_crumb_paths"
-    />
+    <breadcrumb />
     <v-row align="center" justify="center" style="flex-direction: column;">
       <h1 class="ma-4">
         Find a Gym Anywhere
@@ -13,22 +10,22 @@
         <v-card class="pa-4 elevation-12">
           <v-autocomplete
             v-model="selectedItem"
-            :items="flat(Object.values(itemList))"
+            :items="getSearchableList"
             :loading="isLoading()"
             color="white"
             hide-no-data
             hide-selected
             placeholder="Start typing to Search"
             return-object
-            @change="selectSubitem(selectedItem)"
+            @change="selectSubitemPrefetch(null, selectedItem)"
           />
         </v-card>
       </v-col>
       <h1 v-if="itemTitle" class="mt-4 text-capitalize">
-        {{ $store.state["current_" + itemTitle] }}
+        {{ $route.params[itemTitle] }}
       </h1>
     </v-row>
-    <v-row justify="center" class="flex-nowrap">
+    <v-row v-if="listOfItemLists" justify="center" class="flex-nowrap">
       <v-col
         v-for="(subList, index) in listOfItemLists"
         :key="index"
@@ -47,10 +44,17 @@
             <v-list-item
               v-for="(subItem, i) in subItems"
               :key="i"
-              @click="selectSubitem(subItem)"
+              @click="selectSubitemPrefetch(item, subItem)"
             >
               <v-list-item-content>
-                <v-list-item-title v-text="subItem" />
+                <v-list-item-title
+                  v-if="typeof subItem === 'string'"
+                  v-text="subItem"
+                />
+                <v-list-item-title
+                  v-if="subItem && typeof subItem !== 'string'"
+                  v-text="subItem[0]"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -80,7 +84,7 @@ export default {
     itemList: {
       type: Object,
       required: false,
-      default: undefined,
+      default: Object,
     },
     selectItem: {
       type: Function,
@@ -100,6 +104,12 @@ export default {
       breadcrumbNames: undefined,
     }
   },
+  computed: {
+    getSearchableList: function () {
+      let searchableList = this.flat(Object.values(this.itemList))
+      return searchableList
+    },
+  },
   watch: {
     itemList: function () {
       this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
@@ -116,6 +126,36 @@ export default {
     if (process.client) window.removeEventListener("resize", this.handleResize)
   },
   methods: {
+    // TODO: remove this tech debt
+    findParentAndSubItem(registryObject, name) {
+      registryObject = Object.entries(registryObject)
+      const parentName = registryObject.find(
+        (parent) => parent[1][0].indexOf(name) !== -1
+      )
+      return [parentName[0], parentName[1][0][1]]
+    },
+    findParent(registryObject, name) {
+      registryObject = Object.entries(registryObject)
+      const parentName = registryObject.find(
+        (parent) => parent[1].indexOf(name) !== -1
+      )
+      return parentName[0]
+    },
+    selectSubitemPrefetch(item = null, subItem) {
+      if (typeof subItem !== "string") subItem = subItem[1]
+      if (
+        !item &&
+        Object.entries(this.itemList)[0] &&
+        typeof Object.entries(this.itemList)[0][1][0] !== "string"
+      ) {
+        // TODO: remove this tech debt
+        let itemAndSubItem = this.findParentAndSubItem(this.itemList, subItem)
+        this.selectSubitem(itemAndSubItem[0], itemAndSubItem[1])
+      } else if (!item) {
+        item = this.findParent(this.itemList, subItem)
+        this.selectSubitem(item, subItem)
+      }
+    },
     isLoading() {
       return (
         this.itemList === undefined || Object.values(this.itemList).length === 0
@@ -157,6 +197,8 @@ export default {
         if (item instanceof Array && depth > 0) {
           this.flat(item, depth - 1, validStack)
         } else {
+          // TODO: remove this tech debt
+          if (typeof item !== "string") item = item[0]
           validStack.push(item)
         }
       }
