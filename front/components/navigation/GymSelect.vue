@@ -20,7 +20,7 @@ export default {
     const country = route.params["country"].replace(/-/gi, " ")
     const state = route.params["state"].replace(/-/gi, " ")
     const city = route.params["city"].replace(/-/gi, " ")
-    let url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
+    let url = `${process.env.BACKEND_URL}/gyms/?city__iexact=${city}&country__iexact=${country}`
     if (
       ["united-states", "australia", "canada"].indexOf(
         route.params["country"]

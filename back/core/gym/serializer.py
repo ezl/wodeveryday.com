@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from quickstart.affiliate.model import Affiliate
+from core.gym.model import Gym
 
 
-class AffiliateSerializer(serializers.HyperlinkedModelSerializer):
+class GymSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Affiliate
+        model = Gym
         fields = [
             'id',
             'website',

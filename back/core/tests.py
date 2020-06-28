@@ -1,11 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from quickstart.affiliate.model import Affiliate
+from core.gym.model import Gym
 
 
-class AffiliateViewTestCases(APITestCase):
-    BASE_URL = reverse("affiliate-list")
+class GymViewTestCases(APITestCase):
+    BASE_URL = reverse("gym-list")
     CONTINENTS_URL = BASE_URL + "continents/"
     COUNTRIES_URL = BASE_URL + "countries/"
     STATES_URL = BASE_URL + "states/"
@@ -67,8 +67,8 @@ class AffiliateViewTestCases(APITestCase):
 
     def setUp(self):
         self.maxDiff = None
-        Affiliate.objects.create(**self.TEST_GYM_OBJECT_WITH_STATE)
-        Affiliate.objects.create(**self.TEST_GYM_OBJECT_WITHOUT_STATE)
+        Gym.objects.create(**self.TEST_GYM_OBJECT_WITH_STATE)
+        Gym.objects.create(**self.TEST_GYM_OBJECT_WITHOUT_STATE)
 
     def testListContinentsAndCountries(self):
         response = self.client.get(self.CONTINENTS_URL)

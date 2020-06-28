@@ -78,7 +78,7 @@ export default {
   },
   async fetch({ route, store }) {
     const gymNameSlug = route.params["gym_slug"]
-    const url = `${process.env.BACKEND_URL}/affiliates/?name_slug__iexact=${gymNameSlug}`
+    const url = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
 
     await apiLibrary.retrieveGym(url, store)
   },

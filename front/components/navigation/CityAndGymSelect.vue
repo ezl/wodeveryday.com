@@ -18,7 +18,7 @@ export default {
     GeographySearchPage,
   },
   async fetch({ route, store }) {
-    let url = `${process.env.BACKEND_URL}/affiliates/gyms/`
+    let url = `${process.env.BACKEND_URL}/gyms/gyms/`
     const state = route.params["state"].replace(/-/gi, " ")
     if (
       ["united-states", "australia", "canada"].indexOf(
@@ -86,7 +86,7 @@ export default {
       }
     },
     fetchGym(cityName, gymNameSlug) {
-      const url = `${process.env.BACKEND_URL}/affiliates/?name_slug__iexact=${gymNameSlug}`
+      const url = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
       apiLibrary.retrieveGym(url, this.$store).then(() => {
         this.navigateToGym(cityName, gymNameSlug)
       })

@@ -76,9 +76,10 @@ export default {
   },
   methods: {
     fetchLeaderboardData() {
-      const url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
+      const url = `${process.env.BACKEND_URL}/gym_leaderboard/`
       const parameters = {
-        affiliate_name: this.$store.state.gym_object.name,
+        gym_id: this.$store.state.gym_object.id,
+        gym_name: this.$store.state.gym_object.name,
         page: this.options.page,
       }
       this.tableLoading = true
