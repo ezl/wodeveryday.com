@@ -6,7 +6,7 @@ export const state = () => ({
   HOME_PAGE_TITLE: "Find a Gym Anywhere",
   WEBSITE_TITLE: "WOD Every Day",
   GEO_PAGE_TITLE: "The Best Gyms in {}",
-  DEFAULT_GYM_THUMBNAIL: "https://api.wodeveryday.com/logo.png",
+  DEFAULT_GYM_THUMBNAIL: "https://www.wodeveryday.com/logo.png",
 })
 
 export default {
