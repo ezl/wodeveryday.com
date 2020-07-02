@@ -106,6 +106,7 @@ export default {
   },
   computed: {
     getSearchableList: function () {
+      if (!this.itemList) return []
       let searchableList = this.flat(Object.values(this.itemList))
       return searchableList
     },
@@ -129,10 +130,17 @@ export default {
     // TODO: remove this tech debt
     findParentAndSubItem(registryObject, name) {
       registryObject = Object.entries(registryObject)
-      const parentName = registryObject.find(
-        (parent) => parent[1][0].indexOf(name) !== -1
-      )
-      return [parentName[0], parentName[1][0][1]]
+      let parentAndSubItem = undefined
+      for (let registryList of registryObject) {
+        parentAndSubItem = registryList[1].find(
+          (parent) => parent[0].indexOf(name) !== -1
+        )
+        if (parentAndSubItem !== undefined) {
+          parentAndSubItem = [registryList[0], parentAndSubItem[1]]
+          break
+        }
+      }
+      return parentAndSubItem
     },
     findParent(registryObject, name) {
       registryObject = Object.entries(registryObject)
@@ -199,7 +207,7 @@ export default {
           this.flat(item, depth - 1, validStack)
         } else {
           // TODO: remove this tech debt
-          if (typeof item !== "string") item = item[0]
+          if (item && typeof item !== "string") item = item[0]
           validStack.push(item)
         }
       }

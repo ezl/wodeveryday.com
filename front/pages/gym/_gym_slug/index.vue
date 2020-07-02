@@ -59,6 +59,7 @@ import AddressCard from "~/components/gym_page/AddressCard.vue"
 import GymNavbar from "~/components/gym_page/GymNavbar.vue"
 import PriceCard from "~/components/gym_page/PriceCard.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   components: {
@@ -76,11 +77,25 @@ export default {
     GymNavbar,
     PriceCard,
   },
-  async fetch({ route, store }) {
+  async asyncData({ route, store }) {
     const gymNameSlug = route.params["gym_slug"]
     const url = `${process.env.BACKEND_URL}/affiliates/?name_slug__iexact=${gymNameSlug}`
 
     await apiLibrary.retrieveGym(url, store)
+
+    let pageTitle = `${store.state.gym_object.name} | ${store.state.constants.WEBSITE_TITLE}`
+    let pageDescription = `0 reviews for ${store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+
+    let metaTags = reusableFunctionsLibrary.generateMetaTags(
+      store,
+      pageTitle,
+      pageDescription,
+      store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
+
+    return {
+      metaTags: metaTags,
+    }
   },
   data() {
     return {
@@ -102,13 +117,6 @@ export default {
         this.$store.state.gym_object.country
       return query
     },
-    fetchReviewCount: function () {
-      if (!this.$store.state.place_details.reviews) return 0
-      return this.$store.state.place_details.reviews.length
-    },
-    fetchPageDescription: function () {
-      return `${this.fetchReviewCount} reviews for ${this.$store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
-    },
     fetchIdPlusJsonScript: function () {
       return JSON.stringify({
         "@context": "https://schema.org",
@@ -123,9 +131,6 @@ export default {
         },
       })
     },
-    fetchGymPageTitle: function () {
-      return `${this.$store.state.gym_object.name} | ${this.$store.state.constants.WEBSITE_TITLE}`
-    },
   },
   mounted() {
     // empty navbar for refill
@@ -133,12 +138,6 @@ export default {
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
 
     this.gymAddress = this.getAddress()
-    this.metaTags = this.$generateMetaTags(
-      this.$store,
-      this.fetchGymPageTitle,
-      this.fetchPageDescription,
-      this.$store.state.gym_object.photo
-    )
     this.initMap()
   },
   created() {
