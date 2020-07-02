@@ -9,7 +9,6 @@
 
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
-import _ from "lodash"
 
 export default {
   name: "StateAndCitySelect",
@@ -19,24 +18,7 @@ export default {
   data() {
     return {
       itemTitle: "country",
-      metaTags: [],
     }
-  },
-  computed: {
-    fetchPageTitle: function () {
-      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
-        "{}",
-        _.capitalize(this.$route.params[this.itemTitle]).replace(/-/gi, " ")
-      )
-    },
-  },
-  mounted() {
-    this.metaTags = this.$generateMetaTags(
-      this.$store,
-      this.fetchPageTitle,
-      this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
-    )
   },
   methods: {
     selectState(stateName) {
@@ -45,12 +27,6 @@ export default {
     selectCity(stateName, cityName) {
       this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
     },
-  },
-  head() {
-    return {
-      title: this.fetchPageTitle,
-      meta: this.metaTags,
-    }
   },
 }
 </script>
