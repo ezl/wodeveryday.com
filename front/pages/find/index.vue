@@ -9,10 +9,22 @@
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   components: {
     GeographySearchPage,
+  },
+  asyncData({ store }) {
+    let metaTags = reusableFunctionsLibrary.generateMetaTags(
+      store,
+      store.state.constants.HOME_PAGE_TITLE,
+      store.state.constants.DEFAULT_META_DESCRIPTION,
+      store.state.constants.DEFAULT_GYM_THUMBNAIL
+    )
+    return {
+      metaTags: metaTags,
+    }
   },
   data() {
     return {
@@ -27,12 +39,6 @@ export default {
   },
   mounted() {
     this.fetchContinents()
-    this.metaTags = this.$generateMetaTags(
-      this.$store,
-      this.$store.state.constants.HOME_PAGE_TITLE,
-      this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
-    )
   },
   methods: {
     fetchContinents() {
