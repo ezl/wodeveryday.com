@@ -60,7 +60,8 @@ export default {
       store,
       pageTitle,
       pageDescription,
-      store.state.constants.DEFAULT_GYM_THUMBNAIL
+      store.state.constants.DEFAULT_GYM_THUMBNAIL,
+      route.fullPath
     )
 
     return {
