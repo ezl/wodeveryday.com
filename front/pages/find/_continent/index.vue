@@ -26,7 +26,8 @@ export default {
       store,
       pageTitle,
       store.state.constants.DEFAULT_META_DESCRIPTION,
-      store.state.constants.DEFAULT_GYM_THUMBNAIL
+      store.state.constants.DEFAULT_GYM_THUMBNAIL,
+      route.fullPath
     )
     return {
       metaTags: metaTags,
