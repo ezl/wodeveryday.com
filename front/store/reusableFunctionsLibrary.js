@@ -1,5 +1,5 @@
 export default {
-  generateMetaTags(store, title, description, image) {
+  generateMetaTags(store, title, description, image, urlPath) {
     return [
       {
         property: "og:type",
@@ -26,6 +26,10 @@ export default {
       {
         name: "twitter:image",
         content: image,
+      },
+      {
+        name: "og:url",
+        content: "https://www.wodeveryday.com" + urlPath,
       },
     ]
   },
