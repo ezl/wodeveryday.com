@@ -41,7 +41,7 @@ export default {
       store,
       pageTitle,
       pageDescription,
-      store.state.gym_object.photo
+      store.state.constants.DEFAULT_GYM_THUMBNAIL
     )
 
     return {
