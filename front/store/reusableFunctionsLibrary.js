@@ -28,7 +28,7 @@ export default {
         content: image,
       },
       {
-        name: "og:url",
+        property: "og:url",
         content: "https://www.wodeveryday.com" + urlPath,
       },
     ]
