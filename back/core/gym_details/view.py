@@ -51,7 +51,7 @@ class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_gym_details(self, gym_details_api_id):
         parameters = {
             "place_id": gym_details_api_id,
-            "fields": "formatted_phone_number,rating,review,photos,opening_hours",
+            "fields": "international_phone_number,rating,review,photos,opening_hours",
             "key": GET_DETAILS_API_KEY
         }
 
