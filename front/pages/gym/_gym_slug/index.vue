@@ -76,11 +76,16 @@ export default {
     GymNavbar,
     PriceCard,
   },
-  async fetch({ route, store }) {
-    const gymNameSlug = route.params["gym_slug"]
-    const url = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
+  async asyncData({ route, store }) {
+    if (store.state.gym_object.name === undefined) {
+      const gymNameSlug = route.params["gym_slug"]
+      const gymUrl = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
+      await apiLibrary.retrieveGym(gymUrl, store)
+    }
 
-    await apiLibrary.retrieveGym(url, store)
+    const gymSearchQuery = `${store.state.gym_object.name} ${store.state.gym_object.city} ${store.state.gym_object.country}`
+    const detailsUrl = `${process.env.BACKEND_URL}/gym_details/?gym_id=${store.state.gym_object.id}&gym_search_query=${gymSearchQuery}`
+    await apiLibrary.retrieveGymDetails(detailsUrl, store)
   },
   data() {
     return {
@@ -93,15 +98,6 @@ export default {
     }
   },
   computed: {
-    fetchGymSearchQuery: function () {
-      const query =
-        this.$store.state.gym_object.name +
-        " " +
-        this.$store.state.gym_object.city +
-        " " +
-        this.$store.state.gym_object.country
-      return query
-    },
     fetchReviewCount: function () {
       if (!this.$store.state.place_details.reviews) return 0
       return this.$store.state.place_details.reviews.length
@@ -131,7 +127,6 @@ export default {
     // empty navbar for refill
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
-
     this.gymAddress = this.getAddress()
     this.metaTags = this.$generateMetaTags(
       this.$store,
@@ -140,6 +135,7 @@ export default {
       this.$store.state.gym_object.photo
     )
     this.initMap()
+    this.fillGymNavbar()
   },
   created() {
     if (process.client) window.addEventListener("resize", this.handleResize)
@@ -187,36 +183,21 @@ export default {
           this.$store.state.gym_object.lon
         )
         .then((map) => {
-          this.getPlaceDetails(map)
+          this.getPlacePhotos(map)
         })
     },
-    getPlaceDetails(map) {
-      var request = {
-        query: this.fetchGymSearchQuery,
-        fields: ["name", "place_id", "geometry"],
-      }
-
-      // eslint-disable-next-line no-undef
-      let service = new google.maps.places.PlacesService(map)
-
-      apiLibrary.retrieveGymId(service, request).then((gymId) => {
+    getPlacePhotos(map) {
+      // This function is tech debt to get photos working temporarily.
+      // Remove after photos are working
+      if (this.$store.state.place_details.place_id) {
         var detailsRequest = {
-          placeId: gymId,
-          fields: [
-            "formatted_phone_number",
-            "rating",
-            "review",
-            "photos",
-            "opening_hours",
-          ],
+          placeId: this.$store.state.place_details.place_id,
+          fields: ["photos"],
         }
-        apiLibrary
-          .retrieveGymDetails(this.$store, service, detailsRequest)
-          // eslint-disable-next-line no-unused-vars
-          .then((place) => {
-            this.fillGymNavbar()
-          })
-      })
+        // eslint-disable-next-line no-undef
+        let service = new google.maps.places.PlacesService(map)
+        apiLibrary.retrieveGymPhotos(this.$store, service, detailsRequest)
+      }
     },
     getAddress() {
       let gymFullAddress = this.$store.state.gym_object.address

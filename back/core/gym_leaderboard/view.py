@@ -16,26 +16,33 @@ class GymLeaderboardViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         gym_id = request.query_params.get('gym_id')
         page = request.query_params.get('page', 1)
 
+        gym_leaderboard = self.process_gym_leaderboard_request(gym_name, gym_id, page)
+
+        return Response(gym_leaderboard)
+
+    def process_gym_leaderboard_request(self, gym_name, gym_id, page):
+
         gym_object = Gym.objects.get(id=gym_id)
         gym_has_leaderboard = hasattr(gym_object, 'gymleaderboard')
 
         if gym_has_leaderboard:
             try:
-                gym_leaderboard_data = gym_object.gymleaderboard.data[int(page)-1]
-                return Response(gym_leaderboard_data)
+                gym_leaderboard_data = gym_object.gymleaderboard.data
+                return gym_leaderboard_data
             except Exception as e:
                 leaderboard_api_id = gym_object.gymleaderboard.leaderboard_api_id
         else:
             leaderboard_api_id = self.get_leaderboard_api_id(gym_name)
 
-            if not leaderboard_api_id:
-                return Response([])
-
         gym_leaderboard_data = self.get_gym_leaderboard_data(leaderboard_api_id, page)
 
-        self.create_or_update_leaderboard_data(gym_has_leaderboard, gym_object, gym_leaderboard_data, leaderboard_api_id)
+        self.create_or_update_leaderboard_data(gym_has_leaderboard, gym_object, gym_leaderboard_data,
+                                               leaderboard_api_id)
 
-        return Response(gym_leaderboard_data)
+        # gym_leaderboard_data is an dictionary in a list when returned from the database.
+        # gym_leaderboard_data is an dictionary when it is fetched from the api.
+        # To maintain a contract with the frontend, both should be returned as an dictionary in a list
+        return [gym_leaderboard_data]
 
     def create_or_update_leaderboard_data(self, gym_has_leaderboard, gym_object, gym_leaderboard_data, leaderboard_api_id):
         if gym_has_leaderboard:
@@ -79,7 +86,7 @@ class GymLeaderboardViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         data = r.json()
         if len(data) == 0:
-            return None
+            raise Exception("failed to locate gym")
 
         leaderboard_api_id = data[0].get('id')
 

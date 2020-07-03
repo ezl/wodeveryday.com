@@ -108,7 +108,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         gyms_by_city_or_state_dictionary = dict.fromkeys(city_or_state_list, [])
 
         for key, value in gyms_by_city_or_state_dictionary.copy().items():
-            gyms_by_city_or_state_dictionary[key] = queryset.filter(city__iexact=key) \
+            gyms_by_city_or_state_dictionary[key] = queryset.filter(Q(city__iexact=key), query) \
                 .values_list('name', 'name_slug') \
                 .order_by('name') \
                 .distinct()

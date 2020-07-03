@@ -16,7 +16,7 @@ export default {
   components: {
     GymSearchPage,
   },
-  async fetch({ route, store }) {
+  async asyncData({ route, store }) {
     const country = route.params["country"].replace(/-/gi, " ")
     const state = route.params["state"].replace(/-/gi, " ")
     const city = route.params["city"].replace(/-/gi, " ")

@@ -97,7 +97,7 @@ export default {
           }
           this.tableLoading = false
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error)
           this.leaderboardData = []
           this.leaderboardItems = []
@@ -134,7 +134,7 @@ export default {
     fetchLeaderboardRow(dataRow, rowNumber) {
       return `${this.getRank(dataRow.scores[rowNumber].rank)} (${this.getScore(
         dataRow.scores[rowNumber].scoreDisplay
-      )}`
+      )})`
     },
     getRank(rankNumber) {
       if (rankNumber > 3) return rankNumber + "th"

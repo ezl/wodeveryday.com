@@ -16,6 +16,7 @@ export const state = () => {
     states: {},
     cities: {},
     place_details: {},
+    place_photos: {},
   }
 
   return s
@@ -28,6 +29,9 @@ export const initialState = state
 export const mutations = {
   SET_PLACE_DETAILS: (state, place_details) => {
     Vue.set(state, "place_details", place_details)
+  },
+  SET_PLACE_PHOTOS: (state, place_photos) => {
+    Vue.set(state, "place_photos", place_photos)
   },
   RESET_STATE: (state) => {
     const s = initialState()

@@ -17,7 +17,7 @@ export default {
   components: {
     GeographySearchPage,
   },
-  async fetch({ route, store }) {
+  async asyncData({ route, store }) {
     let url = `${process.env.BACKEND_URL}/gyms/gyms/`
     const state = route.params["state"].replace(/-/gi, " ")
     if (
