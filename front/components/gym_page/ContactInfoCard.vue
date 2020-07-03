@@ -50,7 +50,7 @@ export default {
   name: "ContactInfoCard",
   computed: {
     gymPhoneNumber: function () {
-      return this.$store.state.place_details.formatted_phone_number || ""
+      return this.$store.state.place_details.international_phone_number || ""
     },
     phoneNumberVisible: function () {
       return (

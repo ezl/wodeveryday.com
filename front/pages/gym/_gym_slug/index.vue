@@ -88,14 +88,19 @@ export default {
     const detailsUrl = `${process.env.BACKEND_URL}/gym_details/?gym_id=${store.state.gym_object.id}&gym_search_query=${gymSearchQuery}`
     await apiLibrary.retrieveGymDetails(detailsUrl, store)
 
+    let reviewCount =
+      store.state.place_details.reviews !== undefined
+        ? store.state.place_details.reviews.length
+        : "0"
     let pageTitle = `${store.state.gym_object.name} | ${store.state.constants.WEBSITE_TITLE}`
-    let pageDescription = `${store.state.place_details.reviews.length} reviews for ${store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+    let pageDescription = `${reviewCount} reviews for ${store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
 
     let metaTags = reusableFunctionsLibrary.generateMetaTags(
       store,
       pageTitle,
       pageDescription,
-      store.state.gym_object.photo
+      store.state.gym_object.photo,
+      route.fullPath
     )
 
     return {
@@ -119,7 +124,8 @@ export default {
         "@type": "ExerciseGym",
         name: this.$store.state.gym_object.name,
         image: this.$store.state.gym_object.photo,
-        telephone: this.$store.state.place_details.formatted_phone_number || "",
+        telephone:
+          this.$store.state.place_details.international_phone_number || "",
         address: {
           "@type": "PostalAddress",
           streetAddress: this.$store.state.gym_object.address,
