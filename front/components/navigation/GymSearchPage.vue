@@ -5,9 +5,8 @@
     <v-row align="center" justify="center" style="flex-direction: column;">
       <v-col cols="12" sm="8" md="4">
         <v-card class="pa-4 elevation-12 ma-4">
-          <h1 style="text-align: center;">
-            Gyms in {{ $route.params["city"] }}
-          </h1>
+          <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+          <h1 style="text-align: center;">Gyms in {{ getCityName }}</h1>
         </v-card>
       </v-col>
     </v-row>
@@ -53,6 +52,7 @@
 <script>
 import Navbar from "~/components/global/Navbar.vue"
 import Breadcrumb from "~/components/global/Breadcrumb.vue"
+import _ from "lodash"
 
 export default {
   name: "GymSearchPage",
@@ -84,6 +84,19 @@ export default {
     return {
       selectedItem: undefined,
     }
+  },
+  computed: {
+    getCityName: function () {
+      if (
+        this.$store.state.constants.COUNTRIES_WITH_STATES.indexOf(
+          this.$route.params["country"]
+        ) === -1
+      ) {
+        return _.capitalize(this.$route.params["state"]).replace(/-/gi, " ")
+      } else {
+        return _.capitalize(this.$route.params["city"]).replace(/-/gi, " ")
+      }
+    },
   },
 }
 </script>

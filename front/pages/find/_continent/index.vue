@@ -11,15 +11,34 @@
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import apiLibrary from "~/store/apiLibrary.js"
 import _ from "lodash"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   components: {
     GeographySearchPage,
   },
+  asyncData({ store, route }) {
+    const pageTitle = store.state.constants.GEO_PAGE_TITLE.replace(
+      "{}",
+      _.capitalize(route.params["continent"]).replace(/-/gi, " ")
+    )
+    let metaTags = reusableFunctionsLibrary.generateMetaTags(
+      store,
+      pageTitle,
+      store.state.constants.DEFAULT_META_DESCRIPTION,
+      store.state.constants.DEFAULT_GYM_THUMBNAIL,
+      route.fullPath
+    )
+    return {
+      metaTags: metaTags,
+      pageTitle: pageTitle,
+    }
+  },
   data() {
     return {
       itemTitle: "continent",
       metaTags: [],
+      pageTitle: "",
     }
   },
   computed: {
@@ -28,21 +47,9 @@ export default {
       const url = `${process.env.BACKEND_URL}/gyms/countries/?continent=${continent}`
       return url
     },
-    fetchPageTitle: function () {
-      return this.$store.state.constants.GEO_PAGE_TITLE.replace(
-        "{}",
-        _.capitalize(this.$route.params[this.itemTitle]).replace(/-/gi, " ")
-      )
-    },
   },
   mounted() {
     this.fetchCountries()
-    this.metaTags = this.$generateMetaTags(
-      this.$store,
-      this.fetchPageTitle,
-      this.$store.state.constants.DEFAULT_META_DESCRIPTION,
-      this.$store.state.constants.DEFAULT_GYM_THUMBNAIL
-    )
   },
   methods: {
     fetchCountries() {
@@ -58,7 +65,7 @@ export default {
   },
   head() {
     return {
-      title: this.fetchPageTitle,
+      title: this.pageTitle,
       meta: this.metaTags,
     }
   },

@@ -59,6 +59,7 @@ import AddressCard from "~/components/gym_page/AddressCard.vue"
 import GymNavbar from "~/components/gym_page/GymNavbar.vue"
 import PriceCard from "~/components/gym_page/PriceCard.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   components: {
@@ -86,6 +87,20 @@ export default {
     const gymSearchQuery = `${store.state.gym_object.name} ${store.state.gym_object.city} ${store.state.gym_object.country}`
     const detailsUrl = `${process.env.BACKEND_URL}/gym_details/?gym_id=${store.state.gym_object.id}&gym_search_query=${gymSearchQuery}`
     await apiLibrary.retrieveGymDetails(detailsUrl, store)
+
+    let pageTitle = `${store.state.gym_object.name} | ${store.state.constants.WEBSITE_TITLE}`
+    let pageDescription = `${store.state.place_details.reviews.length} reviews for ${store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
+
+    let metaTags = reusableFunctionsLibrary.generateMetaTags(
+      store,
+      pageTitle,
+      pageDescription,
+      store.state.gym_object.photo
+    )
+
+    return {
+      metaTags: metaTags,
+    }
   },
   data() {
     return {
@@ -98,19 +113,13 @@ export default {
     }
   },
   computed: {
-    fetchReviewCount: function () {
-      if (!this.$store.state.place_details.reviews) return 0
-      return this.$store.state.place_details.reviews.length
-    },
-    fetchPageDescription: function () {
-      return `${this.fetchReviewCount} reviews for ${this.$store.state.gym_object.name}. Photos, Pricing, Contact Information and All You Need To Know Before Visiting`
-    },
     fetchIdPlusJsonScript: function () {
       return JSON.stringify({
         "@context": "https://schema.org",
         "@type": "ExerciseGym",
         name: this.$store.state.gym_object.name,
         image: this.$store.state.gym_object.photo,
+        telephone: this.$store.state.place_details.formatted_phone_number || "",
         address: {
           "@type": "PostalAddress",
           streetAddress: this.$store.state.gym_object.address,
@@ -119,21 +128,12 @@ export default {
         },
       })
     },
-    fetchGymPageTitle: function () {
-      return `${this.$store.state.gym_object.name} | ${this.$store.state.constants.WEBSITE_TITLE}`
-    },
   },
   mounted() {
     // empty navbar for refill
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
     this.gymAddress = this.getAddress()
-    this.metaTags = this.$generateMetaTags(
-      this.$store,
-      this.fetchGymPageTitle,
-      this.fetchPageDescription,
-      this.$store.state.gym_object.photo
-    )
     this.initMap()
     this.fillGymNavbar()
   },
