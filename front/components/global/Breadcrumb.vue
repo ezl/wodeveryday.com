@@ -68,11 +68,10 @@ export default {
 
       for (let i = 0; i <= iterations; i++) {
         name = nameList[i]
-        this.breadcrumbNames.push(name)
-
         path = path + name + "/"
         cleanedPath = encodeURI(path.toLowerCase().replace(/ /gi, "-"))
         this.breadcrumbPaths.push(cleanedPath)
+        this.breadcrumbNames.push(name.replace(/-/gi, " "))
       }
     },
   },

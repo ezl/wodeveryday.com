@@ -20,12 +20,14 @@
 </template>
 
 <script>
+import apiLibrary from "~/store/apiLibrary.js"
+
 export default {
   name: "PhotoCarousel",
   computed: {
     gymPhotos: function () {
-      if (this.$store.state.place_details.photos) {
-        return this.$store.state.place_details.photos.slice(0, 9)
+      if (this.$store.state.place_photos.photos) {
+        return this.$store.state.place_photos.photos.slice(0, 9)
       }
       return []
     },
@@ -38,6 +40,12 @@ export default {
       altTag += `${this.$store.state.gym_object.country}`
 
       return altTag
+    },
+  },
+  methods: {
+    async fetchPhoto(photoObj) {
+      const data = await apiLibrary.retrieveGymPhoto(photoObj.photo_reference)
+      return data
     },
   },
 }

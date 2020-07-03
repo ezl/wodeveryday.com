@@ -88,7 +88,7 @@ export default {
   computed: {
     getCityName: function () {
       if (
-        ["united-states", "australia", "canada"].indexOf(
+        this.$store.state.constants.COUNTRIES_WITH_STATES.indexOf(
           this.$route.params["country"]
         ) === -1
       ) {

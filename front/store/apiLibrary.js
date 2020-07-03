@@ -60,16 +60,26 @@ export default {
   async retrieveLeaderboardData(url, params) {
     url = encodeURI(url)
     const response = await apiService.get(url, params)
-    const data = response.data
+    const data = response.data[0]
     return data
   },
 
-  async retrieveGymDetails(store, service, request) {
+  async retrieveGymDetails(url, store) {
+    url = encodeURI(url)
+    const response = await apiService.get(url)
+    if (response) {
+      const data = response.data[0]
+      if (store) store.commit("SET_PLACE_DETAILS", data)
+      return data
+    }
+  },
+
+  async retrieveGymPhotos(store, service, request) {
     return new Promise((resolve, reject) => {
       service.getDetails(request, (place, status) => {
         // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          store.commit("SET_PLACE_DETAILS", place)
+          store.commit("SET_PLACE_PHOTOS", place)
           resolve(place)
         }
         reject(status)

@@ -2,18 +2,18 @@ from django.db.models import Q
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from quickstart.affiliate.model import Affiliate
-from quickstart.affiliate.serializer import AffiliateSerializer
+from core.gym.model import Gym
+from core.gym.serializer import GymSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from app.constants import GET_AFFILIATE_URL, GET_AFFILIATE_LEADERBOARD_URL, COUNTRIES_WITH_STATE
+from app.constants import GET_GYM_URL, GET_GYM_LEADERBOARD_URL, COUNTRIES_WITH_STATE
 
 
-class AffiliateViewSet(mixins.RetrieveModelMixin,
+class GymViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
 
-    queryset = Affiliate.objects.all()
-    serializer_class = AffiliateSerializer
+    queryset = Gym.objects.all()
+    serializer_class = GymSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
             'country': ['iexact'],
@@ -108,7 +108,7 @@ class AffiliateViewSet(mixins.RetrieveModelMixin,
         gyms_by_city_or_state_dictionary = dict.fromkeys(city_or_state_list, [])
 
         for key, value in gyms_by_city_or_state_dictionary.copy().items():
-            gyms_by_city_or_state_dictionary[key] = queryset.filter(city__iexact=key) \
+            gyms_by_city_or_state_dictionary[key] = queryset.filter(Q(city__iexact=key), query) \
                 .values_list('name', 'name_slug') \
                 .order_by('name') \
                 .distinct()

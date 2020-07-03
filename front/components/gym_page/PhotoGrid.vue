@@ -29,8 +29,8 @@ export default {
   name: "PhotoGrid",
   computed: {
     gymPhotos: function () {
-      if (this.$store.state.place_details.photos) {
-        return this.$store.state.place_details.photos.slice(0, 9)
+      if (this.$store.state.place_photos.photos) {
+        return this.$store.state.place_photos.photos.slice(0, 9)
       }
       return []
     },
