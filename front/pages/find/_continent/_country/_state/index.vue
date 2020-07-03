@@ -21,11 +21,12 @@ export default {
     let countryHasStates = route.fullPath
       .split("/")
       .filter(Boolean)
-      .some((r) => ["united-states", "australia", "canada"].indexOf(r) >= 0)
+      .some((r) => store.state.constants.COUNTRIES_WITH_STATES.indexOf(r) >= 0)
     let pageDescription = ""
     if (countryHasStates) {
       const state = route.params["state"].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/affiliates/gyms/?state=${state}`
+      const url = `${process.env.BACKEND_URL}/gyms/gyms/?state=${state}`
+
       await apiLibrary.retrieveCities(url, store)
 
       // generate page description
@@ -43,7 +44,8 @@ export default {
     } else {
       const country = route.params["country"].replace(/-/gi, " ")
       const city = route.params["state"].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/affiliates/?city__iexact=${city}&country__iexact=${country}`
+      const url = `${process.env.BACKEND_URL}/gyms/?city__iexact=${city}&country__iexact=${country}`
+
       await apiLibrary.retrieveGyms(url, store)
       const cityName = _.capitalize(city)
       pageDescription = `The ${store.state.gyms.length} Best CrossFit Gym${

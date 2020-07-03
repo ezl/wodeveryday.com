@@ -11,7 +11,7 @@ export default {
   async getAppRoutes() {
     // Initiate axios
     let routes = [baseFindPath]
-    const url = `${process.env.BACKEND_URL}/affiliates/continents`
+    const url = `${process.env.BACKEND_URL}/gyms/continents`
     let continentsAndCountries = await apiLibrary.retrieveContinents(url)
 
     for (let continentName of Object.keys(continentsAndCountries)) {
@@ -46,7 +46,7 @@ export default {
     return routes
   },
   async getGymRoutes(routes) {
-    const url = `${process.env.BACKEND_URL}/affiliates/slugs/`
+    const url = `${process.env.BACKEND_URL}/gyms/slugs/`
     let gymNameSlugs = await apiLibrary.retrieveCities(url)
 
     for (let nameSlug of gymNameSlugs) {
@@ -57,7 +57,7 @@ export default {
   },
   async getCitiesOfCountry(continentName, countryName, routes) {
     const country = countryName
-    const url = `${process.env.BACKEND_URL}/affiliates/gyms/?country=${country}`
+    const url = `${process.env.BACKEND_URL}/gyms/gyms/?country=${country}`
     let citiesAndGyms = await apiLibrary.retrieveCities(url)
 
     for (let cityName of Object.keys(citiesAndGyms)) {
@@ -71,7 +71,7 @@ export default {
   },
   async getStatesOfCountry(continentName, countryName, routes) {
     const country = countryName
-    const url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
+    const url = `${process.env.BACKEND_URL}/gyms/states/?country=${country}`
     let statesAndCities = await apiLibrary.retrieveStates(url)
 
     for (let stateName of Object.keys(statesAndCities)) {
@@ -91,7 +91,7 @@ export default {
   },
   async getCitiesOfState(continentName, countryName, stateName, routes) {
     const state = stateName
-    const url = `${process.env.BACKEND_URL}/affiliates/gyms/?state=${state}`
+    const url = `${process.env.BACKEND_URL}/gyms/gyms/?state=${state}`
     let citiesAndGyms = await apiLibrary.retrieveCities(url)
 
     for (let cityName of Object.keys(citiesAndGyms)) {

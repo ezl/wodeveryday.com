@@ -76,9 +76,10 @@ export default {
   },
   methods: {
     fetchLeaderboardData() {
-      const url = `${process.env.BACKEND_URL}/affiliate_leaderboard/`
+      const url = `${process.env.BACKEND_URL}/gym_leaderboard/`
       const parameters = {
-        affiliate_name: this.$store.state.gym_object.name,
+        gym_id: this.$store.state.gym_object.id,
+        gym_name: this.$store.state.gym_object.name,
         page: this.options.page,
       }
       this.tableLoading = true
@@ -96,7 +97,7 @@ export default {
           }
           this.tableLoading = false
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.log(error)
           this.leaderboardData = []
           this.leaderboardItems = []
@@ -133,7 +134,7 @@ export default {
     fetchLeaderboardRow(dataRow, rowNumber) {
       return `${this.getRank(dataRow.scores[rowNumber].rank)} (${this.getScore(
         dataRow.scores[rowNumber].scoreDisplay
-      )}`
+      )})`
     },
     getRank(rankNumber) {
       if (rankNumber > 3) return rankNumber + "th"

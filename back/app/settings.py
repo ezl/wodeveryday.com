@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'quickstart.apps.QuickstartConfig',
+    'core.apps.CoreConfig',
     'rest_framework',
     'django_filters',
     'corsheaders',

@@ -21,18 +21,18 @@ export default {
     let countryHasStates = route.fullPath
       .split("/")
       .filter(Boolean)
-      .some((r) => ["united-states", "australia", "canada"].indexOf(r) >= 0)
+      .some((r) => store.state.constants.COUNTRIES_WITH_STATES.indexOf(r) >= 0)
 
     let pageDescription = store.state.constants.DEFAULT_GYM_THUMBNAIL
 
     if (countryHasStates) {
       const country = route.params["country"].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/affiliates/states/?country=${country}`
+      const url = `${process.env.BACKEND_URL}/gyms/states/?country=${country}`
       await apiLibrary.retrieveStates(url, store)
     } else {
       // fetch cities and their gyms
       const country = route.params["country"].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/affiliates/gyms/?country=${country}`
+      const url = `${process.env.BACKEND_URL}/gyms/gyms/?country=${country}`
       await apiLibrary.retrieveCities(url, store)
 
       // generate page description

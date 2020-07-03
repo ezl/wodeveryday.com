@@ -44,7 +44,7 @@ export default {
   computed: {
     fetchCountriesURL: function () {
       const continent = this.$route.params[this.itemTitle].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/affiliates/countries/?continent=${continent}`
+      const url = `${process.env.BACKEND_URL}/gyms/countries/?continent=${continent}`
       return url
     },
   },

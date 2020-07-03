@@ -22,7 +22,7 @@
         </v-card>
       </v-col>
       <h1 v-if="itemTitle" class="mt-4 text-capitalize">
-        {{ $route.params[itemTitle] }}
+        {{ getSearchPageTitle }}
       </h1>
     </v-row>
     <v-row v-if="listOfItemLists" justify="center" class="flex-nowrap">
@@ -105,6 +105,9 @@ export default {
     }
   },
   computed: {
+    getSearchPageTitle: function () {
+      return this.$route.params[this.itemTitle].replace(/-/gi, " ")
+    },
     getSearchableList: function () {
       if (!this.itemList) return []
       let searchableList = this.flat(Object.values(this.itemList))
@@ -140,6 +143,7 @@ export default {
           break
         }
       }
+
       return parentAndSubItem
     },
     findParent(registryObject, name) {
