@@ -1,4 +1,8 @@
 export default {
+  pushCleanedRoute(router, route) {
+    const cleanedRoute = encodeURI(route.toLowerCase().replace(/ /gi, "-"))
+    router.push(cleanedRoute)
+  },
   generateMetaTags(store, title, description, image, urlPath) {
     return [
       {

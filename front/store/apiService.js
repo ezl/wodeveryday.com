@@ -7,7 +7,7 @@ export default {
       const data = await axios.get(url, { params: params })
       return data
     } catch (error) {
-      console.log(error)
+      throw new Error(error)
     }
   },
 }

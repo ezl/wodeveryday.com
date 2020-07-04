@@ -10,6 +10,7 @@
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
 import apiLibrary from "~/store/apiLibrary.js"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   name: "CityAndGymSelect",
@@ -45,7 +46,7 @@ export default {
       this.$router.replace({ path: `/gym/${gymNameSlug}` })
     },
     selectCity(cityName) {
-      this.$pushCleanedRoute(this.$router, `${cityName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(this.$router, `${cityName}/`)
     },
     selectGym(cityName, gymNameSlug) {
       this.fetchGym(cityName, gymNameSlug)
