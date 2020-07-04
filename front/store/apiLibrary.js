@@ -67,11 +67,9 @@ export default {
   async retrieveGymDetails(url, store) {
     url = encodeURI(url)
     const response = await apiService.get(url)
-    if (response) {
-      const data = response.data[0]
-      if (store) store.commit("SET_PLACE_DETAILS", data)
-      return data
-    }
+    const data = response.data[0]
+    if (store) store.commit("SET_PLACE_DETAILS", data)
+    return data
   },
 
   async retrieveGymPhotos(store, service, request) {

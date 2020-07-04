@@ -15,7 +15,10 @@ export default {
   components: {
     GeographySearchPage,
   },
-  asyncData({ store, route }) {
+  async asyncData({ store, route }) {
+    const url = `${process.env.BACKEND_URL}/gyms/continents`
+    await apiLibrary.retrieveContinents(url, store)
+
     let metaTags = reusableFunctionsLibrary.generateMetaTags(
       store,
       store.state.constants.HOME_PAGE_TITLE,
@@ -32,25 +35,15 @@ export default {
       metaTags: [],
     }
   },
-  computed: {
-    fetchContinentURL: function () {
-      const url = `${process.env.BACKEND_URL}/gyms/continents`
-      return url
-    },
-  },
-  mounted() {
-    this.fetchContinents()
-  },
   methods: {
-    fetchContinents() {
-      const url = this.fetchContinentURL
-      apiLibrary.retrieveContinents(url, this.$store)
-    },
     selectContinent(continentName) {
-      this.$pushCleanedRoute(this.$router, `find/${continentName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(
+        this.$router,
+        `find/${continentName}/`
+      )
     },
     selectCountry(continentName, countryName) {
-      this.$pushCleanedRoute(
+      reusableFunctionsLibrary.pushCleanedRoute(
         this.$router,
         `find/${continentName}/${countryName}/`
       )

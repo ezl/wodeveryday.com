@@ -9,6 +9,7 @@
 
 <script>
 import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
+import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
 
 export default {
   name: "StateAndCitySelect",
@@ -22,10 +23,13 @@ export default {
   },
   methods: {
     selectState(stateName) {
-      this.$pushCleanedRoute(this.$router, `${stateName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(this.$router, `${stateName}/`)
     },
     selectCity(stateName, cityName) {
-      this.$pushCleanedRoute(this.$router, `${stateName}/${cityName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(
+        this.$router,
+        `${stateName}/${cityName}/`
+      )
     },
   },
 }

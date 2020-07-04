@@ -14,7 +14,7 @@
       />
     </div>
     <v-card-text>
-      <h3>Located at {{ gymAddress }}</h3>
+      <h3>Located at {{ getGymAddress }}</h3>
     </v-card-text>
   </v-card>
 </template>
@@ -22,11 +22,14 @@
 <script>
 export default {
   name: "MapCard",
-  props: {
-    gymAddress: {
-      type: String,
-      required: false,
-      default: undefined,
+  computed: {
+    getGymAddress: function () {
+      let gymFullAddress = this.$store.state.gym_object.address
+      gymFullAddress += ", " + this.$store.state.gym_object.city
+      if (this.$store.state.gym_object.full_state)
+        gymFullAddress += ", " + this.$store.state.gym_object.full_state
+      gymFullAddress += " " + this.$store.state.gym_object.zip
+      return gymFullAddress
     },
   },
 }
