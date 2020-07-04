@@ -17,10 +17,17 @@ export default {
   components: {
     GeographySearchPage,
   },
-  asyncData({ store, route }) {
+  async asyncData({ store, route }) {
+    const continent = _.capitalize(route.params["continent"]).replace(
+      /-/gi,
+      " "
+    )
+    const url = `${process.env.BACKEND_URL}/gyms/countries/?continent=${continent}`
+    await apiLibrary.retrieveCountries(url, store)
+
     const pageTitle = store.state.constants.GEO_PAGE_TITLE.replace(
       "{}",
-      _.capitalize(route.params["continent"]).replace(/-/gi, " ")
+      continent
     )
     let metaTags = reusableFunctionsLibrary.generateMetaTags(
       store,
@@ -41,26 +48,15 @@ export default {
       pageTitle: "",
     }
   },
-  computed: {
-    fetchCountriesURL: function () {
-      const continent = this.$route.params[this.itemTitle].replace(/-/gi, " ")
-      const url = `${process.env.BACKEND_URL}/gyms/countries/?continent=${continent}`
-      return url
-    },
-  },
-  mounted() {
-    this.fetchCountries()
-  },
   methods: {
-    fetchCountries() {
-      const url = this.fetchCountriesURL
-      apiLibrary.retrieveCountries(url, this.$store)
-    },
     selectCountry(countryName) {
-      this.$pushCleanedRoute(this.$router, `${countryName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(this.$router, `${countryName}/`)
     },
     selectCityOrState(countryName, cityOrStateName) {
-      this.$pushCleanedRoute(this.$router, `${countryName}/${cityOrStateName}/`)
+      reusableFunctionsLibrary.pushCleanedRoute(
+        this.$router,
+        `${countryName}/${cityOrStateName}/`
+      )
     },
   },
   head() {

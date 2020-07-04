@@ -28,13 +28,6 @@
 <script>
 export default {
   name: "AddressCard",
-  props: {
-    gymAddress: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-  },
   methods: {
     toMap() {
       this.$vuetify.goTo("#map")

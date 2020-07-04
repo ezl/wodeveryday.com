@@ -31,7 +31,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ["~/plugins/ReusableFunctions.js"],
+  plugins: [],
   /*
    ** Nuxt.js dev-modules
    */

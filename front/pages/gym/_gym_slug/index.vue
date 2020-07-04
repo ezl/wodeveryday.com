@@ -20,7 +20,7 @@
         <contact-info-card class="mb-3" />
         <hours-card class="mb-3" />
         <price-card class="mb-3" />
-        <address-card class="mb-3" :gym-address="gymAddress" />
+        <address-card class="mb-3" />
         <reviews-card
           v-show="windowInnerWidth <= 540"
           :id="windowInnerWidth <= 540 ? 'reviews' : ''"
@@ -38,7 +38,7 @@
           v-if="$store.state.gym_object.name"
           id="leaderboard"
         />
-        <map-card :gym-address="gymAddress" />
+        <map-card />
       </v-col>
     </v-row>
   </div>
@@ -78,11 +78,9 @@ export default {
     PriceCard,
   },
   async asyncData({ route, store }) {
-    if (store.state.gym_object.name === undefined) {
-      const gymNameSlug = route.params["gym_slug"]
-      const gymUrl = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
-      await apiLibrary.retrieveGym(gymUrl, store)
-    }
+    const gymNameSlug = route.params["gym_slug"]
+    const gymUrl = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
+    await apiLibrary.retrieveGym(gymUrl, store)
 
     const gymSearchQuery = `${store.state.gym_object.name} ${store.state.gym_object.city} ${store.state.gym_object.country}`
     const detailsUrl = `${process.env.BACKEND_URL}/gym_details/?gym_id=${store.state.gym_object.id}&gym_search_query=${gymSearchQuery}`
@@ -109,7 +107,6 @@ export default {
   },
   data() {
     return {
-      gymAddress: undefined,
       navbarOptions: ["Key Info"],
       gotoElements: ["#keyInfo"],
       navbarActive: false,
@@ -139,7 +136,6 @@ export default {
     // empty navbar for refill
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
-    this.gymAddress = this.getAddress()
     this.initMap()
     this.fillGymNavbar()
   },
@@ -170,8 +166,8 @@ export default {
       gotoElements.push("#map")
 
       if (
-        this.$store.state.place_details.photos &&
-        this.$store.state.place_details.photos.length > 0
+        this.$store.state.place_photos.photos &&
+        this.$store.state.place_photos.photos.length > 0
       ) {
         navbarOptions.push("Photos")
         gotoElements.push("#photos")
@@ -204,14 +200,6 @@ export default {
         let service = new google.maps.places.PlacesService(map)
         apiLibrary.retrieveGymPhotos(this.$store, service, detailsRequest)
       }
-    },
-    getAddress() {
-      let gymFullAddress = this.$store.state.gym_object.address
-      gymFullAddress += ", " + this.$store.state.gym_object.city
-      if (this.$store.state.gym_object.full_state)
-        gymFullAddress += ", " + this.$store.state.gym_object.full_state
-      gymFullAddress += " " + this.$store.state.gym_object.zip
-      return gymFullAddress
     },
   },
   head() {
