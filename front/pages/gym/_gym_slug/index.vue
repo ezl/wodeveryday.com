@@ -78,6 +78,7 @@ export default {
     PriceCard,
   },
   async asyncData({ route, store }) {
+    store.commit("SET_PLACE_PHOTOS", [])
     const gymNameSlug = route.params["gym_slug"]
     const gymUrl = `${process.env.BACKEND_URL}/gyms/?name_slug__iexact=${gymNameSlug}`
     await apiLibrary.retrieveGym(gymUrl, store)
