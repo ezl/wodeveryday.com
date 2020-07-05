@@ -3,73 +3,68 @@ import apiService from "./apiService"
 /* eslint-disable no-unused-vars */
 export default {
   async retrieveContinents(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data
+    const data = await apiService.get(url)
     if (store) store.commit("SET_CONTINENTS", data)
     return data
   },
 
   async retrieveCountries(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data
+    const data = await apiService.get(url)
     if (store) store.commit("SET_COUNTRIES", data)
     return data
   },
 
   async retrieveStates(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data
+    const data = await apiService.get(url)
     if (store) store.commit("SET_STATES", data)
     return data
   },
 
   async retrieveCities(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data
+    const data = await apiService.get(url)
     if (store) store.commit("SET_CITIES", data)
     return data
   },
 
   async retrieveGym(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data.results[0]
+    let data = await apiService.get(url)
+    data = data.results[0]
     if (store) store.commit("SET_GYM_OBJECT", data)
     return data
   },
 
   async retrieveGyms(url, store = null) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data.results
+    let data = await apiService.get(url)
+    data = data.results
     if (store) store.commit("SET_GYMS", data)
     return data
   },
 
   async retrieveGymSlugs(url) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data
+    const data = await apiService.get(url)
     return data
   },
 
   async retrieveLeaderboardData(url, params) {
-    url = encodeURI(url)
-    const response = await apiService.get(url, params)
-    const data = response.data[0]
-    return data
+    try {
+      let data = await apiService.get(url, params)
+      data = data[0]
+      return data
+    } catch (e) {
+      return {}
+    }
   },
 
   async retrieveGymDetails(url, store) {
-    url = encodeURI(url)
-    const response = await apiService.get(url)
-    const data = response.data[0]
-    if (store) store.commit("SET_PLACE_DETAILS", data)
-    return data
+    try {
+      let data = await apiService.get(url)
+      data = data[0]
+      if (store) store.commit("SET_PLACE_DETAILS", data)
+      return data
+    } catch (e) {
+      if (store) store.commit("SET_PLACE_DETAILS", {})
+      return {}
+    }
   },
 
   async retrieveGymPhotos(store, service, request) {
