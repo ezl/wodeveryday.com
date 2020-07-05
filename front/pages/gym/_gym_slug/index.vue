@@ -138,7 +138,6 @@ export default {
     this.$store.commit("SET_GYM_NAVBAR_OPTIONS", [])
     this.$store.commit("SET_GYM_NAVBAR_GOTO_ELEMENTS", [])
     this.initMap()
-    this.fillGymNavbar()
   },
   created() {
     if (process.client) window.addEventListener("resize", this.handleResize)
@@ -199,7 +198,12 @@ export default {
         }
         // eslint-disable-next-line no-undef
         let service = new google.maps.places.PlacesService(map)
-        apiLibrary.retrieveGymPhotos(this.$store, service, detailsRequest)
+        apiLibrary
+          .retrieveGymPhotos(this.$store, service, detailsRequest)
+          // eslint-disable-next-line no-unused-vars
+          .then((result) => {
+            this.fillGymNavbar()
+          })
       }
     },
   },
