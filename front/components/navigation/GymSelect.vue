@@ -25,7 +25,7 @@ export default {
     if (
       store.state.constants.COUNTRIES_WITH_STATES.indexOf(
         route.params["country"]
-      ) === -1
+      ) !== -1
     )
       url += `&full_state__iexact=${state}`
 
@@ -47,15 +47,31 @@ export default {
 
     return {
       metaTags: metaTags,
-      pageTitle: pageTitle,
     }
   },
   data() {
     return {
       itemTitle: "city",
       metaTags: [],
-      pageTitle: "",
     }
+  },
+  computed: {
+    fetchPageTitle: function () {
+      let paramKey = "state"
+      if (
+        this.$store.state.constants.COUNTRIES_WITH_STATES.indexOf(
+          this.$route.params["country"]
+        ) !== -1
+      )
+        paramKey = "city"
+
+      const pageTitle = this.$store.state.constants.GEO_PAGE_TITLE.replace(
+        "{}",
+        _.capitalize(this.$route.params[paramKey]).replace(/-/gi, " ")
+      )
+
+      return pageTitle
+    },
   },
   methods: {
     selectGym(selectedGym) {
@@ -64,7 +80,7 @@ export default {
   },
   head() {
     return {
-      title: this.pageTitle,
+      title: this.fetchPageTitle,
       meta: this.metaTags,
     }
   },

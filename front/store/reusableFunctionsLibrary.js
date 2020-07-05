@@ -35,6 +35,14 @@ export default {
         property: "og:url",
         content: "https://www.wodeveryday.com" + urlPath,
       },
+      {
+        property: "og:image:width",
+        content: 220,
+      },
+      {
+        property: "og:image:height",
+        content: 220,
+      },
     ]
   },
 }
