@@ -81,7 +81,6 @@ class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise Exception("failed to locate gym")
 
         data = r.json()
-        print(data)
         if len(data) == 0 or len(data.get("candidates")) == 0:
             raise Exception("failed to locate gym")
 

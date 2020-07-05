@@ -4,7 +4,7 @@ import axios from "axios"
 export default {
   async get(url, params) {
     url = encodeURI(url)
-    const data = await axios
+    const data = axios
       .get(url, { params: params })
       .then((result) => {
         return result.data
