@@ -6,6 +6,16 @@ To setup, clone the repository with `git clone https://github.com/ezl/wodeveryda
 
 ### Backend
 - Copy the .env file into the `back` folder in the repository
+- Create a `local_settings.py` file in the `back` folder and add in this script 
+```
+DEBUG = True
+ALLOWED_HOSTS = []
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'http://localhost:8080',
+)
+```
 - Open the `back` folder in the command line
 - Ensure that you have python 3.7+ installed by running `python --version`
 - Ensure that you have pip installed by running `pip --version`
