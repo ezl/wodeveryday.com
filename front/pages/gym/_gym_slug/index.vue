@@ -206,7 +206,6 @@ export default {
           placeId: this.$store.state.place_details.place_id,
           fields: ["photos"],
         }
-
         // eslint-disable-next-line no-undef
         let service = new google.maps.places.PlacesService(map)
         apiLibrary

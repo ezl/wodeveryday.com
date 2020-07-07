@@ -12,14 +12,12 @@
     <template v-if="gymPhotos && gymPhotos.length > 0">
       <v-row>
         <v-col v-for="(photo, index) in gymPhotos" :key="index" cols="4">
-          <v-card max-width="344" class="mx-auto">
-            <v-img
-              :src="photo.photo_url"
-              class="mb-3 white--text align-end"
-              aspect-ratio="1.7"
-              :alt="fetchPhotoAltTag"
-            />
-          </v-card>
+          <v-img
+            :src="photo.photo_url"
+            class="mb-3"
+            aspect-ratio="1.7"
+            :alt="fetchPhotoAltTag"
+          />
         </v-col>
       </v-row>
     </template>
