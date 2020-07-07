@@ -24,10 +24,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'j_(4%1ylms+_k61hdgb=sj%_k&&uo%(gp5178$6*vdief^5b7%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["api.wodeveryday.com"]
 
+CORS_ORIGIN_WHITELIST = (
+    'http://www.wodeveryday.com',
+    'https://www.wodeveryday.com',
+)
 
 # Application definition
 

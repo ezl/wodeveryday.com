@@ -14,4 +14,16 @@ export default {
       })
     return data
   },
+  async put(url, payload) {
+    url = encodeURI(url)
+    const data = axios
+      .put(url, payload)
+      .then((result) => {
+        return result.data
+      })
+      .catch((error) => {
+        if (error.response) console.log(error.response)
+      })
+    return data
+  },
 }
