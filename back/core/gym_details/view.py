@@ -1,6 +1,3 @@
-import os
-import shutil
-
 from rest_framework import viewsets, mixins
 import requests
 
@@ -8,12 +5,24 @@ from app.constants import GET_GYM_ID_SEARCH_URL, GET_DETAILS_API_KEY, GET_GYM_DE
     GET_GYM_PHOTO_SEARCH_URL
 from core.gym.model import Gym
 from core.gym_details.model import GymDetails
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
 class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = GymDetails.objects.all()
     serializer_class = []
+
+    @action(detail=False, methods=['put'], url_path='update_photos')
+    def updatePhotos(self, request, *args):
+        gym_details_api_id = request.data.get('place_id')
+        photos = request.data.get('photos')
+
+        gym_details_object = GymDetails.objects.get(gym_details_api_id=gym_details_api_id)
+        gym_details_object.data[0]['photos'] = photos
+        gym_details_object.save()
+
+        return Response(gym_details_object.data)
 
     def list(self, request, *args, **kwargs):
         gym_search_query = request.query_params.get('gym_search_query')
@@ -51,7 +60,7 @@ class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_gym_details(self, gym_details_api_id):
         parameters = {
             "place_id": gym_details_api_id,
-            "fields": "international_phone_number,rating,review,photos,opening_hours",
+            "fields": "international_phone_number,rating,review,opening_hours",
             "key": GET_DETAILS_API_KEY
         }
 

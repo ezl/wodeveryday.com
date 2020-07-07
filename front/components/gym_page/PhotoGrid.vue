@@ -13,7 +13,7 @@
       <v-row>
         <v-col v-for="(photo, index) in gymPhotos" :key="index" cols="4">
           <v-img
-            :src="photo.getUrl()"
+            :src="photo.photo_url"
             class="mb-3"
             aspect-ratio="1.7"
             :alt="fetchPhotoAltTag"
@@ -29,6 +29,9 @@ export default {
   name: "PhotoGrid",
   computed: {
     gymPhotos: function () {
+      if (this.$store.state.place_details.photos) {
+        return this.$store.state.place_details.photos.slice(0, 9)
+      }
       if (this.$store.state.place_photos.photos) {
         return this.$store.state.place_photos.photos.slice(0, 9)
       }

@@ -132,6 +132,16 @@ export default {
         },
       })
     },
+    checkIfPlaceDetailsHasPhotos: function () {
+      return (
+        (this.$store.state.place_details.photos &&
+          this.$store.state.place_details.photos[0] &&
+          this.$store.state.place_details.photos[0].photo_url === undefined) ||
+        this.$store.state.place_details.photos === undefined ||
+        (this.$store.state.place_details.photos &&
+          this.$store.state.place_details.photos.length === 0)
+      )
+    },
   },
   mounted() {
     // empty navbar for refill
@@ -166,8 +176,8 @@ export default {
       gotoElements.push("#map")
 
       if (
-        this.$store.state.place_photos.photos &&
-        this.$store.state.place_photos.photos.length > 0
+        this.$store.state.place_details.photos &&
+        this.$store.state.place_details.photos.length > 0
       ) {
         navbarOptions.push("Photos")
         gotoElements.push("#photos")
@@ -185,7 +195,7 @@ export default {
           this.$store.state.gym_object.lon
         )
         .then((map) => {
-          this.getPlacePhotos(map)
+          if (this.checkIfPlaceDetailsHasPhotos) this.getPlacePhotos(map)
         })
     },
     getPlacePhotos(map) {
@@ -203,8 +213,13 @@ export default {
           // eslint-disable-next-line no-unused-vars
           .then((result) => {
             this.fillGymNavbar()
+            this.updatePlacePhotos()
           })
       }
+    },
+    updatePlacePhotos() {
+      const gymUrl = `${process.env.BACKEND_URL}/gym_details/update_photos/`
+      apiLibrary.updateGymDetails(gymUrl, this.$store.state.place_details)
     },
   },
   head() {
