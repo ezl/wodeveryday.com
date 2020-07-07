@@ -67,17 +67,41 @@ export default {
     }
   },
 
+  async updateGymDetails(url, payload) {
+    try {
+      const data = await apiService.put(url, payload)
+      return data
+    } catch (e) {
+      return {}
+    }
+  },
+
   async retrieveGymPhotos(store, service, request) {
     return new Promise((resolve, reject) => {
       service.getDetails(request, (place, status) => {
         // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          store.commit("SET_PLACE_PHOTOS", place)
+          if (place.photos) this.storePlacePhotoData(store, place)
           resolve(place)
         }
         reject(status)
       })
     })
+  },
+
+  storePlacePhotoData(store, place) {
+    let placePhotos = place.photos
+    placePhotos = this.extractPlacePhotoData(placePhotos)
+    store.commit("UPDATE_PLACE_DETAILS_PHOTOS", placePhotos)
+    placePhotos = { photos: placePhotos }
+    store.commit("SET_PLACE_PHOTOS", placePhotos)
+  },
+
+  extractPlacePhotoData(placePhotos) {
+    placePhotos.map((photoObj, index) => {
+      placePhotos[index].photo_url = photoObj.getUrl()
+    })
+    return placePhotos
   },
 
   async retrieveGymId(service, request) {

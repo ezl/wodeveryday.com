@@ -12,12 +12,14 @@
     <template v-if="gymPhotos && gymPhotos.length > 0">
       <v-row>
         <v-col v-for="(photo, index) in gymPhotos" :key="index" cols="4">
-          <v-img
-            :src="photo.getUrl()"
-            class="mb-3"
-            aspect-ratio="1.7"
-            :alt="fetchPhotoAltTag"
-          />
+          <v-card max-width="344" class="mx-auto">
+            <v-img
+              :src="photo.photo_url"
+              class="mb-3 white--text align-end"
+              aspect-ratio="1.7"
+              :alt="fetchPhotoAltTag"
+            />
+          </v-card>
         </v-col>
       </v-row>
     </template>
@@ -29,6 +31,9 @@ export default {
   name: "PhotoGrid",
   computed: {
     gymPhotos: function () {
+      if (this.$store.state.place_details.photos) {
+        return this.$store.state.place_details.photos.slice(0, 9)
+      }
       if (this.$store.state.place_photos.photos) {
         return this.$store.state.place_photos.photos.slice(0, 9)
       }

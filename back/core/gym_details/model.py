@@ -11,11 +11,6 @@ class GymDetails(models.Model):
     )
     gym_details_api_id = models.TextField()
     data = JSONField()
-    photos = ArrayField(
-        models.ImageField(upload_to="gym_photos", blank=True, null=True),
-        blank=True,
-        null=True
-    )
 
     def __str__(self):
         return ""

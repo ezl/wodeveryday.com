@@ -27,6 +27,11 @@ export const initialState = state
 // Mutations
 // =================================================
 export const mutations = {
+  UPDATE_PLACE_DETAILS_PHOTOS: (state, photos) => {
+    let place_details = state.place_details
+    place_details["photos"] = photos
+    Vue.set(state, "place_details", place_details)
+  },
   SET_PLACE_DETAILS: (state, place_details) => {
     Vue.set(state, "place_details", place_details)
   },

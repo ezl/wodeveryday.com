@@ -11,7 +11,7 @@
       <v-carousel-item v-for="(photo, index) in gymPhotos" :key="index">
         <v-sheet height="100%">
           <v-row class="fill-height" align="center" justify="center">
-            <v-img :src="photo.getUrl()" :alt="fetchPhotoAltTag" />
+            <v-img :src="photo.photo_url" :alt="fetchPhotoAltTag" />
           </v-row>
         </v-sheet>
       </v-carousel-item>
@@ -20,12 +20,13 @@
 </template>
 
 <script>
-import apiLibrary from "~/store/apiLibrary.js"
-
 export default {
   name: "PhotoCarousel",
   computed: {
     gymPhotos: function () {
+      if (this.$store.state.place_details.photos) {
+        return this.$store.state.place_details.photos.slice(0, 9)
+      }
       if (this.$store.state.place_photos.photos) {
         return this.$store.state.place_photos.photos.slice(0, 9)
       }
@@ -40,12 +41,6 @@ export default {
       altTag += `${this.$store.state.gym_object.country}`
 
       return altTag
-    },
-  },
-  methods: {
-    async fetchPhoto(photoObj) {
-      const data = await apiLibrary.retrieveGymPhoto(photoObj.photo_reference)
-      return data
     },
   },
 }
