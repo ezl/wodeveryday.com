@@ -1,6 +1,10 @@
 <template>
-  <v-col cols="12" sm="8" md="4">
-    <v-card class="pa-4 elevation-12">
+  <v-row
+    align="center"
+    justify="center"
+    style="flex-direction: row; width: 80%;"
+  >
+    <v-col cols="8">
       <v-autocomplete
         v-model="selectedItem"
         :items="getSearchableList"
@@ -8,12 +12,25 @@
         color="white"
         hide-no-data
         hide-selected
-        placeholder="Start typing to Search"
+        placeholder="Search for a Gym"
         return-object
         @change="selectSubitemPrefetch(null, selectedItem)"
       />
-    </v-card>
-  </v-col>
+    </v-col>
+    <v-col>
+      <v-autocomplete
+        v-model="selectedItem"
+        :items="getSearchableList"
+        :loading="isLoading"
+        color="white"
+        hide-no-data
+        hide-selected
+        placeholder="Search for a location"
+        return-object
+        @change="selectSubitemPrefetch(null, selectedItem)"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
