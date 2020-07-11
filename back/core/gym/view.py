@@ -1,5 +1,9 @@
+import operator
+from functools import reduce
+from itertools import chain
+
 from django.db.models import Q
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from core.gym.model import Gym
@@ -14,7 +18,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
     queryset = Gym.objects.all()
     serializer_class = GymSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['name']
     filterset_fields = {
             'country': ['iexact'],
             'full_state': ['iexact'],
@@ -22,6 +27,43 @@ class GymViewSet(mixins.RetrieveModelMixin,
             'name': ['iexact'],
             'name_slug': ['iexact']
         }
+
+    @action(detail=False, methods=['get'], url_path='search_locations')
+    def listSearchedLocation(self, request, *args):
+
+        queryset = self.get_queryset()
+        search_text = request.query_params.get('search_text')
+        search_text = search_text.split(" ")
+
+        # tokenize search text and create search query
+        search_query = []
+        for token in search_text:
+            additional_search_query = [Q(city__icontains=token), Q(full_state__icontains=token), Q(country__icontains=token), Q(continent__icontains=token)]
+            additional_search_query = reduce(operator.or_, additional_search_query)
+            search_query.append(additional_search_query)
+
+        search_query = reduce(operator.and_, search_query)
+
+        # fetch segments of search
+        cities_with_states_list = queryset.exclude(full_state__isnull=False).filter(search_query) \
+            .values_list('city', 'country').distinct()[:5]
+
+        cities_without_states_list = queryset.exclude(full_state__isnull=True).filter(search_query) \
+            .values_list('city', 'full_state').distinct()[:5]
+
+        continents_and_countries = queryset.filter(search_query) \
+            .values_list('country', 'continent').distinct()[:5]
+
+        countries_and_states = queryset.filter(search_query).exclude(full_state__isnull=True) \
+                                                   .values_list('full_state', 'country').distinct()[:5]
+
+        # combine search segments
+        response_body = chain(cities_without_states_list, cities_with_states_list, countries_and_states, continents_and_countries)
+        list_of_searched_locations = []
+        for location_tuple in response_body:
+            list_of_searched_locations.append(", ".join(location_tuple))
+
+        return Response(list_of_searched_locations)
 
     @action(detail=False, methods=['get'], url_path='slugs')
     def listGymSlugs(self, request, *args):

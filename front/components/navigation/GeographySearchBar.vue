@@ -5,35 +5,40 @@
     style="flex-direction: row; width: 80%;"
   >
     <v-col cols="8">
-      <v-autocomplete
-        v-model="selectedItem"
-        :items="getSearchableList"
-        :loading="isLoading"
-        color="white"
-        hide-no-data
-        hide-selected
-        placeholder="Search for a Gym"
-        return-object
-        @change="selectSubitemPrefetch(null, selectedItem)"
-      />
+      <v-card class="pa-3">
+        <v-autocomplete
+          v-model="selectedGymItem"
+          :items="gymItems"
+          :loading="gymSearchIsLoading"
+          :search-input.sync="gymSearch"
+          item-text="name"
+          color="white"
+          placeholder="Search for a Gym"
+          return-object
+          no-filter
+        />
+      </v-card>
     </v-col>
     <v-col>
-      <v-autocomplete
-        v-model="selectedItem"
-        :items="getSearchableList"
-        :loading="isLoading"
-        color="white"
-        hide-no-data
-        hide-selected
-        placeholder="Search for a location"
-        return-object
-        @change="selectSubitemPrefetch(null, selectedItem)"
-      />
+      <v-card class="pa-3">
+        <v-autocomplete
+          v-model="selectedLocationItem"
+          :items="locationItems"
+          :loading="locationSearchIsLoading"
+          :search-input.sync="locationSearch"
+          color="white"
+          placeholder="Search for a location"
+          return-object
+          no-filter
+        />
+      </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import apiLibrary from "~/store/apiLibrary.js"
+
 export default {
   name: "GeographySearchBar",
   props: {
@@ -49,7 +54,14 @@ export default {
   },
   data() {
     return {
-      selectedItem: undefined,
+      locationSearchIsLoading: false,
+      gymSearchIsLoading: false,
+      locationItemsResponse: [],
+      gymItemsResponse: [],
+      locationSearch: null,
+      gymSearch: null,
+      selectedLocationItem: null,
+      selectedGymItem: null,
     }
   },
   computed: {
@@ -63,8 +75,58 @@ export default {
         this.itemList === undefined || Object.values(this.itemList).length === 0
       )
     },
+    locationItems() {
+      return this.locationItemsResponse
+    },
+    gymItems() {
+      return this.gymItemsResponse
+    },
+  },
+  watch: {
+    gymSearch(searchText) {
+      if (!searchText) return
+
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        this.fetchGyms(searchText)
+      }, 600)
+    },
+    locationSearch(searchText) {
+      if (!searchText) return
+
+      clearTimeout(this._timerId)
+      this._timerId = setTimeout(() => {
+        this.fetchLocations(searchText)
+      }, 600)
+    },
   },
   methods: {
+    fetchGyms(searchText) {
+      this.gymSearchIsLoading = true
+      const url = `${process.env.BACKEND_URL}/gyms/?search=${searchText}`
+      apiLibrary
+        .retrieveGyms(url)
+        .then((response) => {
+          this.gymItemsResponse = response
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        .finally(() => (this.gymSearchIsLoading = false))
+    },
+    fetchLocations(searchText) {
+      this.locationSearchIsLoading = true
+      const url = `${process.env.BACKEND_URL}/gyms/search_locations/?search_text=${searchText}`
+      apiLibrary
+        .searchLocations(url)
+        .then((response) => {
+          this.locationItemsResponse = response
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        .finally(() => (this.locationSearchIsLoading = false))
+    },
     flat(input, depth = 1, stack) {
       const validStack = stack || []
       for (let item of input) {
