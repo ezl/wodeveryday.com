@@ -6,7 +6,6 @@
     <v-divider />
     <v-btn
       v-show="$store.state.gym_object.website"
-      itemprop="id"
       large
       class="ma-2"
       :href="$store.state.gym_object.website"
@@ -18,6 +17,7 @@
       <template v-slot:activator="{ on }">
         <v-btn
           large
+          itemprop="telephone"
           class="ml-2 d-block"
           :loading="gymPhoneNumber === undefined"
           v-on="on"
