@@ -104,20 +104,6 @@ export default {
         })
         .finally(() => (this.gymSearchIsLoading = false))
     },
-    flat(input, depth = 1, stack) {
-      const validStack = stack || []
-      for (let item of input) {
-        if (item instanceof Array && depth > 0) {
-          this.flat(item, depth - 1, validStack)
-        } else {
-          // TODO: remove this tech debt
-          if (item && typeof item !== "string") item = item[0]
-          validStack.push(item)
-        }
-      }
-
-      return validStack
-    },
   },
 }
 </script>
