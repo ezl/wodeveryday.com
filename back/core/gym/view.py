@@ -1,5 +1,9 @@
+import math
+import operator
+from functools import reduce
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from core.gym.model import Gym
@@ -14,7 +18,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
     queryset = Gym.objects.all()
     serializer_class = GymSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['name']
     filterset_fields = {
             'country': ['iexact'],
             'full_state': ['iexact'],
@@ -22,6 +27,93 @@ class GymViewSet(mixins.RetrieveModelMixin,
             'name': ['iexact'],
             'name_slug': ['iexact']
         }
+
+    @action(detail=False, methods=['get'], url_path='search_locations')
+    def listSearchedLocation(self, request, *args):
+
+        queryset = self.get_queryset()
+        page_size=6
+        page = request.query_params.get('page', 1)
+        offset = (int(page) - 1) * page_size
+        limit_plus_offset = offset + page_size
+
+        search_text = request.query_params.get('search_text')
+        search_text = search_text.split(" ")
+        search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector('full_state') + SearchVector('city')
+
+        # tokenize search text and create search query
+        search_queries = []
+        for token in search_text:
+            search_queries.append(Q(search=token))
+
+        search_queries = reduce(operator.and_, search_queries)
+
+        search_results = queryset.annotate(search=search_vectors).filter(search_queries).values('name', 'continent', 'country', 'full_state', 'city', 'name_slug')
+
+        total = search_results.count()
+
+        search_results = search_results[offset:limit_plus_offset]
+
+        assembled_search_results = self.assembleSearchResults(search_results)
+
+        total_pages = 0
+        if total > 0:
+            total_pages = math.ceil(total / page_size)
+
+        response = {
+            "meta": {
+                "total_pages": total_pages
+            },
+            "data": assembled_search_results
+        }
+
+        return Response(response)
+
+    def assembleSearchResults(self, search_results):
+        assembled_search_results = []
+        for result in search_results:
+            continent = result['continent']
+            country = result['country']
+            city = result['city']
+            gym_name = result['name']
+            gym_name_slug = result['name_slug']
+
+            assembled_search_results.append({
+                "location_name": continent,
+                "location_path": "find/" + continent.lower().replace(" ", "-")
+            })
+
+            assembled_search_results.append({
+                "location_name": country + ", " + continent,
+                "location_path": assembled_search_results[-1]['location_path'] + "/" + country.lower().replace(" ", "-")
+            })
+
+            if country in COUNTRIES_WITH_STATE:
+                state = result['full_state']
+                assembled_search_results.append({
+                    "location_name": state + ", " + country,
+                    "location_path": assembled_search_results[-1]['location_path'] + "/" + state.lower().replace(" ", "-")
+                })
+
+                assembled_search_results.append({
+                    "location_name": city + ", " + state,
+                    "location_path": assembled_search_results[-1]['location_path'] + "/" + city.lower().replace(" ", "-")
+                })
+            else:
+                assembled_search_results.append({
+                    "location_name": city + ", " + country,
+                    "location_path": assembled_search_results[-1]['location_path'] + "/" + city.lower().replace(" ", "-")
+                })
+
+            assembled_search_results.insert(0, {
+                "location_name": gym_name + ", " + city,
+                "location_path": "gym/" + gym_name_slug
+            })
+
+        # remove duplicates from the array
+        assembled_search_results = {frozenset(item.items()): item for item in assembled_search_results}.values()
+
+        return assembled_search_results
 
     @action(detail=False, methods=['get'], url_path='slugs')
     def listGymSlugs(self, request, *args):

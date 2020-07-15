@@ -40,6 +40,11 @@ export default {
     return data
   },
 
+  async searchLocations(url) {
+    const data = await apiService.get(url)
+    return data
+  },
+
   async retrieveGymSlugs(url) {
     const data = await apiService.get(url)
     return data

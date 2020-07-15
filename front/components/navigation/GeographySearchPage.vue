@@ -6,21 +6,7 @@
       <h1 class="ma-4">
         Find a Gym Anywhere
       </h1>
-      <v-col cols="12" sm="8" md="4">
-        <v-card class="pa-4 elevation-12">
-          <v-autocomplete
-            v-model="selectedItem"
-            :items="getSearchableList"
-            :loading="isLoading()"
-            color="white"
-            hide-no-data
-            hide-selected
-            placeholder="Start typing to Search"
-            return-object
-            @change="selectSubitemPrefetch(null, selectedItem)"
-          />
-        </v-card>
-      </v-col>
+      <geography-search-bar :item-list="itemList" />
       <h1 v-if="itemTitle" class="mt-4 text-capitalize">
         {{ $route.params[itemTitle] }}
       </h1>
@@ -68,12 +54,14 @@
 import Navbar from "~/components/global/Navbar.vue"
 import Breadcrumb from "~/components/global/Breadcrumb.vue"
 import _ from "lodash"
+import GeographySearchBar from "~/components/navigation/GeographySearchBar.vue"
 
 export default {
   name: "GeographySearchPage",
   components: {
     Navbar,
     Breadcrumb,
+    GeographySearchBar,
   },
   props: {
     itemTitle: {
@@ -104,13 +92,6 @@ export default {
       breadcrumbNames: undefined,
     }
   },
-  computed: {
-    getSearchableList: function () {
-      if (!this.itemList) return []
-      let searchableList = this.flat(Object.values(this.itemList))
-      return searchableList
-    },
-  },
   watch: {
     itemList: function () {
       this.listOfItemLists = this.divideObjectIntoListOfObjects(this.itemList)
@@ -127,22 +108,6 @@ export default {
     if (process.client) window.removeEventListener("resize", this.handleResize)
   },
   methods: {
-    // TODO: remove this tech debt
-    findParentAndSubItem(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentAndSubItem = undefined
-      for (let registryList of registryObject) {
-        parentAndSubItem = registryList[1].find(
-          (parent) => parent[0].indexOf(name) !== -1
-        )
-        if (parentAndSubItem !== undefined) {
-          parentAndSubItem = [registryList[0], parentAndSubItem[1]]
-          break
-        }
-      }
-
-      return parentAndSubItem
-    },
     findParent(registryObject, name) {
       registryObject = Object.entries(registryObject)
       const parentName = registryObject.find(
@@ -152,24 +117,10 @@ export default {
     },
     selectSubitemPrefetch(item = null, subItem) {
       if (typeof subItem !== "string") subItem = subItem[1]
-      if (
-        !item &&
-        Object.entries(this.itemList)[0] &&
-        typeof Object.entries(this.itemList)[0][1][0] !== "string"
-      ) {
-        // TODO: remove this tech debt
-        let itemAndSubItem = this.findParentAndSubItem(this.itemList, subItem)
-        item = itemAndSubItem[0]
-        subItem = itemAndSubItem[1]
-      } else if (!item) {
+      if (!item) {
         item = this.findParent(this.itemList, subItem)
       }
       this.selectSubitem(item, subItem)
-    },
-    isLoading() {
-      return (
-        this.itemList === undefined || Object.values(this.itemList).length === 0
-      )
     },
     handleResize() {
       if (process.client) this.windowInnerWidth = window.innerWidth
@@ -200,20 +151,6 @@ export default {
         }
       }
       return listOfObjects
-    },
-    flat(input, depth = 1, stack) {
-      const validStack = stack || []
-      for (let item of input) {
-        if (item instanceof Array && depth > 0) {
-          this.flat(item, depth - 1, validStack)
-        } else {
-          // TODO: remove this tech debt
-          if (item && typeof item !== "string") item = item[0]
-          validStack.push(item)
-        }
-      }
-
-      return validStack
     },
   },
 }
