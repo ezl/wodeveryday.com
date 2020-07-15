@@ -4,35 +4,32 @@
     justify="center"
     style="flex-direction: row; width: 80%;"
   >
-    <v-col cols="8">
-      <v-card class="pa-3">
-        <v-autocomplete
-          v-model="selectedGymItem"
-          :items="gymItems"
-          :loading="gymSearchIsLoading"
-          :search-input.sync="gymSearch"
-          item-text="name"
-          color="white"
-          placeholder="Search for a Gym"
-          return-object
-          no-filter
-        />
-      </v-card>
-    </v-col>
-    <v-col>
-      <v-card class="pa-3">
-        <v-autocomplete
-          v-model="selectedLocationItem"
-          :items="locationItems"
-          :loading="locationSearchIsLoading"
-          :search-input.sync="locationSearch"
-          color="white"
-          placeholder="Search for a location"
-          return-object
-          no-filter
-        />
-      </v-card>
-    </v-col>
+    <v-card class="pa-3" style="width: 100%;">
+      <v-autocomplete
+        v-model="selectedGymItem"
+        :items="gymItems"
+        :loading="gymSearchIsLoading"
+        :search-input.sync="gymSearch"
+        item-text="location_name"
+        color="white"
+        hide-selected
+        placeholder="Search for a Gym or Location"
+        return-object
+        no-filter
+        @change="goToLocation()"
+      >
+        <template v-slot:append-item>
+          <div v-if="resultsPageCount > 0" class="text-center">
+            <v-pagination
+              v-model="resultsPage"
+              :total-visible="5"
+              :length="resultsPageCount"
+              circle
+            />
+          </div>
+        </template>
+      </v-autocomplete>
+    </v-card>
   </v-row>
 </template>
 
@@ -54,78 +51,58 @@ export default {
   },
   data() {
     return {
-      locationSearchIsLoading: false,
       gymSearchIsLoading: false,
-      locationItemsResponse: [],
       gymItemsResponse: [],
-      locationSearch: null,
       gymSearch: null,
-      selectedLocationItem: null,
       selectedGymItem: null,
+      resultsPage: 1,
+      currentSearchText: null,
+      resultsPageCount: 0,
     }
   },
   computed: {
-    getSearchableList: function () {
-      if (!this.itemList) return []
-      let searchableList = this.flat(Object.values(this.itemList))
-      return searchableList
-    },
-    isLoading: function () {
-      return (
-        this.itemList === undefined || Object.values(this.itemList).length === 0
-      )
-    },
-    locationItems() {
-      return this.locationItemsResponse
-    },
     gymItems() {
       return this.gymItemsResponse
     },
   },
   watch: {
     gymSearch(searchText) {
-      if (!searchText) return
+      if (
+        !searchText ||
+        (searchText && searchText.length < 3) ||
+        (this.selectedGymItem &&
+          searchText === this.selectedGymItem.location_name)
+      )
+        return
 
       clearTimeout(this._timerId)
       this._timerId = setTimeout(() => {
+        this.currentSearchText = searchText
         this.fetchGyms(searchText)
       }, 600)
     },
-    locationSearch(searchText) {
-      if (!searchText) return
-
-      clearTimeout(this._timerId)
-      this._timerId = setTimeout(() => {
-        this.fetchLocations(searchText)
-      }, 600)
+    // eslint-disable-next-line no-unused-vars
+    resultsPage(newValue, oldValue) {
+      this.fetchGyms(this.currentSearchText, newValue)
     },
   },
   methods: {
-    fetchGyms(searchText) {
+    goToLocation() {
+      this.$router.replace({ path: `/${this.selectedGymItem.location_path}` })
+    },
+    fetchGyms(searchText, page = 1) {
       this.gymSearchIsLoading = true
-      const url = `${process.env.BACKEND_URL}/gyms/?search=${searchText}`
+      const url = `${process.env.BACKEND_URL}/gyms/search_locations/?search_text=${searchText}&page=${page}`
       apiLibrary
-        .retrieveGyms(url)
+        .searchLocations(url)
         .then((response) => {
-          this.gymItemsResponse = response
+          this.resultsPageCount = response.meta.total_pages
+          this.gymItemsResponse = response.data
         })
         .catch((error) => {
           console.log(error)
         })
         .finally(() => (this.gymSearchIsLoading = false))
-    },
-    fetchLocations(searchText) {
-      this.locationSearchIsLoading = true
-      const url = `${process.env.BACKEND_URL}/gyms/search_locations/?search_text=${searchText}`
-      apiLibrary
-        .searchLocations(url)
-        .then((response) => {
-          this.locationItemsResponse = response
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => (this.locationSearchIsLoading = false))
     },
     flat(input, depth = 1, stack) {
       const validStack = stack || []
