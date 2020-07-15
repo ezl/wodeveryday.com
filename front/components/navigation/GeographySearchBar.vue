@@ -44,10 +44,6 @@ export default {
       required: false,
       default: Object,
     },
-    selectSubitemPrefetch: {
-      type: Function,
-      default: () => {},
-    },
   },
   data() {
     return {

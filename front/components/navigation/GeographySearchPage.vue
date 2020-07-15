@@ -6,10 +6,7 @@
       <h1 class="ma-4">
         Find a Gym Anywhere
       </h1>
-      <geography-search-bar
-        :item-list="itemList"
-        :select-subitem-prefetch="selectSubitemPrefetch"
-      />
+      <geography-search-bar :item-list="itemList" />
       <h1 v-if="itemTitle" class="mt-4 text-capitalize">
         {{ $route.params[itemTitle] }}
       </h1>
@@ -111,7 +108,7 @@ export default {
     if (process.client) window.removeEventListener("resize", this.handleResize)
   },
   methods: {
-    // TODO: remove this tech debt
+    // TODO: remove this convoluted fetch tech debt
     findParentAndSubItem(registryObject, name) {
       registryObject = Object.entries(registryObject)
       let parentAndSubItem = undefined
@@ -141,7 +138,7 @@ export default {
         Object.entries(this.itemList)[0] &&
         typeof Object.entries(this.itemList)[0][1][0] !== "string"
       ) {
-        // TODO: remove this tech debt
+        // TODO: remove this convoluted fetch tech debt
         let itemAndSubItem = this.findParentAndSubItem(this.itemList, subItem)
         item = itemAndSubItem[0]
         subItem = itemAndSubItem[1]
