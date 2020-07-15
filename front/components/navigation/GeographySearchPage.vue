@@ -108,22 +108,6 @@ export default {
     if (process.client) window.removeEventListener("resize", this.handleResize)
   },
   methods: {
-    // TODO: remove this convoluted fetch tech debt
-    findParentAndSubItem(registryObject, name) {
-      registryObject = Object.entries(registryObject)
-      let parentAndSubItem = undefined
-      for (let registryList of registryObject) {
-        parentAndSubItem = registryList[1].find(
-          (parent) => parent[0].indexOf(name) !== -1
-        )
-        if (parentAndSubItem !== undefined) {
-          parentAndSubItem = [registryList[0], parentAndSubItem[1]]
-          break
-        }
-      }
-
-      return parentAndSubItem
-    },
     findParent(registryObject, name) {
       registryObject = Object.entries(registryObject)
       const parentName = registryObject.find(
@@ -133,16 +117,7 @@ export default {
     },
     selectSubitemPrefetch(item = null, subItem) {
       if (typeof subItem !== "string") subItem = subItem[1]
-      if (
-        !item &&
-        Object.entries(this.itemList)[0] &&
-        typeof Object.entries(this.itemList)[0][1][0] !== "string"
-      ) {
-        // TODO: remove this convoluted fetch tech debt
-        let itemAndSubItem = this.findParentAndSubItem(this.itemList, subItem)
-        item = itemAndSubItem[0]
-        subItem = itemAndSubItem[1]
-      } else if (!item) {
+      if (!item) {
         item = this.findParent(this.itemList, subItem)
       }
       this.selectSubitem(item, subItem)
