@@ -1,3 +1,4 @@
+import itertools
 import math
 import operator
 from functools import reduce
@@ -44,7 +45,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         # tokenize search text and create search query
         search_queries = []
         for token in search_text:
-            search_queries.append(Q(search=token))
+            search_queries.append(Q(search__icontains=token))
 
         search_queries = reduce(operator.and_, search_queries)
 
@@ -69,49 +70,53 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
+    def addToList(self, item_list, location_name, location_path):
+        item = {
+            "location_name": location_name,
+            "location_path": location_path
+        }
+        if item not in item_list:
+            item_list.append(item)
+        return item_list
+
     def assembleSearchResults(self, search_results):
-        assembled_search_results = []
+        continent_list = []
+        country_list = []
+        state_list = []
+        city_list = []
+        gym_list = []
+
         for result in search_results:
             continent = result['continent']
             country = result['country']
             city = result['city']
-            gym_name = result['name']
-            gym_name_slug = result['name_slug']
 
-            assembled_search_results.append({
-                "location_name": continent,
-                "location_path": "find/" + continent.lower().replace(" ", "-")
-            })
+            location_path = "find/" + continent.lower().replace(" ", "-")
+            continent_list = self.addToList(continent_list, continent, location_path)
 
-            assembled_search_results.append({
-                "location_name": country + ", " + continent,
-                "location_path": assembled_search_results[-1]['location_path'] + "/" + country.lower().replace(" ", "-")
-            })
+            location_path = location_path + "/" + country.lower().replace(" ", "-")
+            country_list = self.addToList(country_list, country + ", " + continent, location_path)
 
             if country in COUNTRIES_WITH_STATE:
                 state = result['full_state']
-                assembled_search_results.append({
-                    "location_name": state + ", " + country,
-                    "location_path": assembled_search_results[-1]['location_path'] + "/" + state.lower().replace(" ", "-")
-                })
+                location_path = location_path + "/" + state.lower().replace(" ", "-")
+                state_list = self.addToList(state_list, state + ", " + country, location_path)
 
-                assembled_search_results.append({
-                    "location_name": city + ", " + state,
-                    "location_path": assembled_search_results[-1]['location_path'] + "/" + city.lower().replace(" ", "-")
-                })
+                location_path = location_path + "/" + city.lower().replace(" ", "-")
+                city_list = self.addToList(city_list, city + ", " + state, location_path)
             else:
-                assembled_search_results.append({
-                    "location_name": city + ", " + country,
-                    "location_path": assembled_search_results[-1]['location_path'] + "/" + city.lower().replace(" ", "-")
-                })
+                location_path = location_path + "/" + city.lower().replace(" ", "-")
+                city_list = self.addToList(city_list, city + ", " + country, location_path)
 
-            assembled_search_results.insert(0, {
-                "location_name": gym_name + ", " + city,
-                "location_path": "gym/" + gym_name_slug
-            })
+            gym_list = self.addToList(gym_list, result['name'] + ", " + city, "gym/" + result['name_slug'])
 
-        # remove duplicates from the array
-        assembled_search_results = {frozenset(item.items()): item for item in assembled_search_results}.values()
+        assembled_search_results = list(itertools.chain.from_iterable([
+            continent_list,
+            country_list,
+            state_list,
+            city_list,
+            gym_list
+        ]))
 
         return assembled_search_results
 

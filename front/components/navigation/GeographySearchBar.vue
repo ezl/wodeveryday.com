@@ -73,6 +73,7 @@ export default {
 
       clearTimeout(this._timerId)
       this._timerId = setTimeout(() => {
+        if (searchText !== this.currentSearchText) this.resultsPage = 1
         this.currentSearchText = searchText
         this.fetchGyms(searchText)
       }, 600)
