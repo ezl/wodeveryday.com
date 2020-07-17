@@ -38,9 +38,16 @@ class GymViewSet(mixins.RetrieveModelMixin,
         offset = (int(page) - 1) * page_size
         limit_plus_offset = offset + page_size
 
-        search_text = request.query_params.get('search_text')
-        search_text = search_text.split(" ")
+        search_text = request.query_params.get('search_text', "")
+        # if there's no value, python will return None, which will break. give it a default *string* value
+
+        search_text = [token for token in search_text.split(" ") if token]
+        # wrapping it in a list comprehension that tests for falsiness will remove empty tokens.
+        # as an example of why this is good, try "    foo     bar baz   ".split(" ")
+
         search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector('full_state') + SearchVector('city')
+        # just a recommendation here, but most established dev teams will want to follow some sort
+        # of maximum line length convention. I recommend checking out PEP8, the python style guide
 
         # tokenize search text and create search query
         search_queries = []
@@ -55,7 +62,18 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         search_results = search_results[offset:limit_plus_offset]
 
-        assembled_search_results = self.assembleSearchResults(search_results)
+        assembled_search_results = self.assembleSearchResults(search_results, search_text)
+        # 1. if we add the search_text tokens here, we can use it to filter results in assembleSearchResults
+        #
+        # 2. also a note here -- generally the python style recommendation for methods is
+        # to use assemble_search_results (underscore separated names) for functions
+        # javascript tends to use lowerCaseStartCamelCased
+        # python uses CapitalLetterStartCamelCasing for class names
+        # these are just *conventions* and while the interpreter does not *require*
+        # them, they are broadly accepted and generally a mark of someone who is experienced
+        # in python. I think most developers would consider this a sign of whether or not
+        # you have worked in a team that follows best practices. (Again, not a criticism,
+        # just so you know for the next time you work with a team)
 
         total_pages = 0
         if total > 0:
@@ -70,16 +88,17 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
-    def addToList(self, item_list, location_name, location_path):
+    def addToList(self, item_list, location_name, location_path, location_type):
         item = {
             "location_name": location_name,
             "location_path": location_path
+            "location_type": location_type
         }
         if item not in item_list:
             item_list.append(item)
         return item_list
 
-    def assembleSearchResults(self, search_results):
+    def assembleSearchResults(self, search_results, search_text):
         continent_list = []
         country_list = []
         state_list = []
@@ -91,24 +110,53 @@ class GymViewSet(mixins.RetrieveModelMixin,
             country = result['country']
             city = result['city']
 
-            location_path = "find/" + continent.lower().replace(" ", "-")
-            continent_list = self.addToList(continent_list, continent, location_path)
+            # now that we have search text in here, let's use that as a filter
+            # to decide whether to add this to the list
 
-            location_path = location_path + "/" + country.lower().replace(" ", "-")
-            country_list = self.addToList(country_list, country + ", " + continent, location_path)
+            if any([token in continent] for token in search_text]):
+                location_path = "find/" + continent.lower().replace(" ", "-")
+                location_type = 'region'
+                continent_list = self.addToList(continent_list, continent, location_path, location_type)
+
+
+            if any([token in country] for token in search_text]):
+                location_path = "find/" + continent.lower().replace(" ", "-")
+                # oooooh.... i see that this is doing some sort of cascading thing...
+                # which is broken by me breaking these into explicit blocks
+                # macro, this kind of explicit location path creating is probably not optimal anyways (probably can use
+                # url resolver reverse somehow) -- however will just write something janky to see if it works
+                location_path = location_path + "/" + country.lower().replace(" ", "-")
+                location_type = 'country'
+                country_list = self.addToList(country_list, country + ", " + continent, location_path, location_type)
 
             if country in COUNTRIES_WITH_STATE:
                 state = result['full_state']
+                # there's definitely other ways to do this, but I'm trying to write as minimally invasive
+                # code as possible
+                if any([token in state] for token in search_text]):
+                    location_path = "find/" + continent.lower().replace(" ", "-")
+                    location_path = location_path + "/" + country.lower().replace(" ", "-")
+                    location_path = location_path + "/" + state.lower().replace(" ", "-")
+                    location_type = 'state'
+                    state_list = self.addToList(state_list, state + ", " + country, location_path, location_type)
+
+            # originally this was defaulting to this, but now explicitly checking before we add to the city list
+            # ONLY if the city string matches a search token
+            if any([token in city] for token in search_text]):
+                location_path = "find/" + continent.lower().replace(" ", "-")
+                location_path = location_path + "/" + country.lower().replace(" ", "-")
                 location_path = location_path + "/" + state.lower().replace(" ", "-")
-                state_list = self.addToList(state_list, state + ", " + country, location_path)
-
                 location_path = location_path + "/" + city.lower().replace(" ", "-")
-                city_list = self.addToList(city_list, city + ", " + state, location_path)
-            else:
-                location_path = location_path + "/" + city.lower().replace(" ", "-")
-                city_list = self.addToList(city_list, city + ", " + country, location_path)
+                # :sob: refactor
+                location_type = 'city'
+                city_list = self.addToList(city_list, city + ", " + state, location_path, location_type)
 
-            gym_list = self.addToList(gym_list, result['name'] + ", " + city, "gym/" + result['name_slug'])
+            name = result['name'] # really I'd put this up top, but just keeping similar logic structure
+                                  # to what was originally written
+            if any([token in name] for token in search_text]):
+                location_type = 'gym'
+                location_path = "gym/" + result['name_slug']
+                gym_list = self.addToList(gym_list, result['name'] + ", " + city, location_path, location_type)
 
         assembled_search_results = list(itertools.chain.from_iterable([
             continent_list,
