@@ -88,6 +88,49 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
+    def get_location_path(self, result, location_type):
+        # first check if it's a gym. if so, kick it out and don't do
+        # any of the geography stuff
+        if location_type == "gym":
+            location_path = "gym/" + result['name_slug']
+            return location_path
+
+        continent = result['continent']
+        country = result['country']
+        city = result['city']
+
+        # BTW -- this is a crazy way to build the url -- i do NOT recommend it,
+        # but I'm doing it this way because it is a similar way the original one is
+        # built and I'm trying to not change the logic, just encapsulate it in
+        # one place. Ultimately, I think using a urlresolver is the path, but
+        # this way it can be just replaced more easily
+
+        # basically I am using the same sequential build logic, then just kicking
+        # out the function as soon as I hit the right level of depth
+
+        # continent
+        location_path = "find/" + continent.lower().replace(" ", "-")
+        if location_type == "continent":
+            return location_path
+
+        # country
+        location_path = location_path + "/" + country.lower().replace(" ", "-")
+        if location_type == "country":
+            return location_path
+
+        # state
+        location_path = location_path + "/" + state.lower().replace(" ", "-")
+        if location_type == "state":
+            return location_path
+
+        # city
+        location_path = location_path + "/" + city.lower().replace(" ", "-")
+        if location_type == "city":
+            return location_path
+
+        # should never hit this
+        raise Exception, "wtf, location type didn't match"
+
     def addToList(self, item_list, location_name, location_path, location_type):
         item = {
             "location_name": location_name,
@@ -114,19 +157,14 @@ class GymViewSet(mixins.RetrieveModelMixin,
             # to decide whether to add this to the list
 
             if any([token in continent] for token in search_text]):
-                location_path = "find/" + continent.lower().replace(" ", "-")
-                location_type = 'region'
+                location_type = 'continent'
+                location_path = get_location_path(result, location_type)
                 continent_list = self.addToList(continent_list, continent, location_path, location_type)
 
 
             if any([token in country] for token in search_text]):
-                location_path = "find/" + continent.lower().replace(" ", "-")
-                # oooooh.... i see that this is doing some sort of cascading thing...
-                # which is broken by me breaking these into explicit blocks
-                # macro, this kind of explicit location path creating is probably not optimal anyways (probably can use
-                # url resolver reverse somehow) -- however will just write something janky to see if it works
-                location_path = location_path + "/" + country.lower().replace(" ", "-")
                 location_type = 'country'
+                location_path = get_location_path(result, location_type)
                 country_list = self.addToList(country_list, country + ", " + continent, location_path, location_type)
 
             if country in COUNTRIES_WITH_STATE:
@@ -134,28 +172,23 @@ class GymViewSet(mixins.RetrieveModelMixin,
                 # there's definitely other ways to do this, but I'm trying to write as minimally invasive
                 # code as possible
                 if any([token in state] for token in search_text]):
-                    location_path = "find/" + continent.lower().replace(" ", "-")
-                    location_path = location_path + "/" + country.lower().replace(" ", "-")
-                    location_path = location_path + "/" + state.lower().replace(" ", "-")
                     location_type = 'state'
+                    location_path = get_location_path(result, location_type)
                     state_list = self.addToList(state_list, state + ", " + country, location_path, location_type)
 
             # originally this was defaulting to this, but now explicitly checking before we add to the city list
             # ONLY if the city string matches a search token
             if any([token in city] for token in search_text]):
-                location_path = "find/" + continent.lower().replace(" ", "-")
-                location_path = location_path + "/" + country.lower().replace(" ", "-")
-                location_path = location_path + "/" + state.lower().replace(" ", "-")
-                location_path = location_path + "/" + city.lower().replace(" ", "-")
-                # :sob: refactor
                 location_type = 'city'
+                location_path = get_location_path(result, location_type)
+                # :sob: refactor
                 city_list = self.addToList(city_list, city + ", " + state, location_path, location_type)
 
             name = result['name'] # really I'd put this up top, but just keeping similar logic structure
                                   # to what was originally written
             if any([token in name] for token in search_text]):
                 location_type = 'gym'
-                location_path = "gym/" + result['name_slug']
+                location_path = get_location_path(result, location_type)
                 gym_list = self.addToList(gym_list, result['name'] + ", " + city, location_path, location_type)
 
         assembled_search_results = list(itertools.chain.from_iterable([
@@ -165,6 +198,16 @@ class GymViewSet(mixins.RetrieveModelMixin,
             city_list,
             gym_list
         ]))
+        # BTW -- what's going on here? aren't these already lists?
+        # if so, list1 + list2 + list3 should do this.
+        # for example:
+        # list1 = [1,2,3]
+        # list2 = [4,5,]
+        # list3 = []
+        # list4 = [6,7,8,9,10]
+        # combined = list1 + list2 + list3 + list4
+        # combined will be [1,2,3,4,5,6,7,8,9,10]
+        # (i could be misunderstanding your purpose though, so disregard if i've misunderstood)
 
         return assembled_search_results
 
