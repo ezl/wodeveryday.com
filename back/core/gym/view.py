@@ -30,37 +30,39 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
     @action(detail=False, methods=['get'], url_path='search_locations')
     def list_searched_locations(self, request, *args):
-
         queryset = self.get_queryset()
-        page_size = 6
+
+        # fetch and calculate pagination
+        page_size = 100
         page = request.query_params.get('page', 1)
         offset = (int(page) - 1) * page_size
         limit_plus_offset = offset + page_size
 
+        # fetch, verify, and tokenize search_text
         search_text = request.query_params.get('search_text', None)
         if search_text is None or len(search_text) < 3:
             return self.list_searched_location_response(0, [])
-
         search_text = [token for token in search_text.split(" ") if token]
-        search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector(
-            'full_state') + SearchVector('city')
 
-        search_queries = []
-        for token in search_text:
-            search_queries.append(Q(search__icontains=token))
-
-        search_queries = reduce(operator.and_, search_queries)
-
-        search_results = queryset.annotate(search=search_vectors).filter(search_queries).values('name', 'continent',
-                                                                                                'country', 'full_state',
-                                                                                                'city', 'name_slug')
-
-        total = search_results.count()
-
+        # fetch, count, paginate, and format search results
+        search_results_dictionary = {
+            'continent': ['continent'],
+            'country': ['country', 'continent'],
+            'full_state': ['full_state', 'country', 'continent'],
+            'city': ['city', 'full_state', 'country', 'continent'],
+            'name': ['name', 'city', 'name_slug']
+        }
+        search_results = []
+        for key, value, in search_results_dictionary.items():
+            search_results.append(
+                queryset.filter(self.generate_search_query(search_text, value[0])).values(*value).distinct()
+            )
+        search_results = list(itertools.chain(*search_results))
+        total = len(search_results)
         search_results = search_results[offset:limit_plus_offset]
+        assembled_search_results = self.assemble_search_results(search_results)
 
-        assembled_search_results = self.assemble_search_results(search_results, search_text)
-
+        # build and return response
         total_pages = 0
         if total > 0:
             total_pages = math.ceil(total / page_size)
@@ -79,58 +81,65 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
-    @staticmethod
-    def add_to_list(search_text, item_list, location_path, location_name, location_type):
-        item = {
-            "location_name": f"{location_name} ({location_type})",
-            "location_path": location_path.lower().replace(" ", "-")
-        }
-        if item not in item_list and any(token in location_name.lower() for token in search_text):
-            item_list.append(item)
-        return item_list
-
-    def assemble_search_results(self, search_results, search_text):
-        continent_list = []
-        country_list = []
-        state_list = []
-        city_list = []
-        gym_list = []
-
+    def assemble_search_results(self, search_results):
+        assembled_search_results = []
         for result in search_results:
-            continent = result['continent']
-            country = result['country']
-            city = result['city']
-            gym_name = result['name']
-            gym_slug = result['name_slug']
-
-            location_path = "find/" + continent
-            continent_list = self.add_to_list(search_text, continent_list, location_path, location_name=continent,
-                                              location_type='continent')
-
-            location_path = location_path + "/" + country
-            country_list = self.add_to_list(search_text, country_list, location_path,
-                                            location_name=country + ", " + continent, location_type='country')
-
-            if country in COUNTRIES_WITH_STATE:
-                state = result['full_state']
-                location_path = location_path + "/" + state
-                state_list = self.add_to_list(search_text, state_list, location_path,
-                                              location_name=state + ", " + country, location_type='state')
-
-                location_path = location_path + "/" + city
-                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + state,
-                                             location_type='city')
-            else:
-                location_path = location_path + "/" + city
-                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + country,
-                                             location_type='city')
-
-            gym_list = self.add_to_list(search_text, gym_list, location_path="gym/" + gym_slug,
-                                        location_name=gym_name + ", " + city, location_type='gym')
-
-        assembled_search_results = continent_list + country_list + state_list + city_list + gym_list
+            location_path, location_name, location_type = self.get_location_info(result)
+            assembled_search_results.append(self.add_to_list(location_path, location_name, location_type))
 
         return assembled_search_results
+
+    @staticmethod
+    def get_location_info(location_object):
+        lo = location_object # slim down object name to highlight field names retrieved from it
+        if lo.get('name', False):
+            return (f"gym/{lo['name_slug']}",
+                    f"{lo['name']}, {lo['city']}",
+                    'gym')
+
+        if lo.get('city', False):
+            if lo['country'] in COUNTRIES_WITH_STATE:
+                return (f"find/{lo['continent']}/{lo['country']}/{lo['full_state']}/{lo['city']}",
+                        f"{lo['city']}, {lo['full_state']}",
+                        'city')
+            else:
+                return (f"find/{lo['continent']}/{lo['country']}/{lo['city']}",
+                        f"{lo['city']}, {lo['country']}",
+                        'city')
+
+        if lo.get('full_state', False):
+            return (f"find/{lo['continent']}/{lo['country']}/{lo['full_state']}",
+                    f"{lo['full_state']}, {lo['country']}",
+                    'state')
+
+        if lo.get('country', False):
+            return (f"find/{lo['continent']}/{lo['country']}",
+                    f"{lo['country']}, {lo['continent']}",
+                    'country')
+
+        if lo.get('continent', False):
+            return (f"find/{lo['continent']}",
+                    lo['continent'],
+                    'continent')
+
+    @staticmethod
+    def add_to_list(location_path, location_name, location_type):
+        item = {
+            "location_name": location_name,
+            "location_path": location_path.lower().replace(" ", "-"),
+            "location_type": location_type
+        }
+        return item
+
+    @staticmethod
+    def generate_search_query(search_tokens, search_field):
+        search_queries = []
+        for token in search_tokens:
+            kwargs = {f"{search_field}__icontains": token}
+            search_queries.append(Q(**kwargs))
+
+        search_queries = reduce(operator.and_, search_queries)
+        return search_queries
 
     @action(detail=False, methods=['get'], url_path='slugs')
     def list_gym_slugs(self, request, *args):
@@ -145,12 +154,12 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         queryset = self.get_queryset()
         country_by_continent_dictionary = {
-            "Africa": [],
-            "Asia": [],
-            "Europe": [],
-            "North America": [],
-            "South America": [],
             "Oceania": [],
+            "South America": [],
+            "North America": [],
+            "Europe": [],
+            "Asia": [],
+            "Africa": [],
         }
         for key, value in country_by_continent_dictionary.copy().items():
             country_by_continent_dictionary[key] = queryset.filter(continent__iexact=key) \
@@ -168,7 +177,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         countries_list = queryset.filter(continent__iexact=continent) \
             .values_list('country', flat=True) \
-            .order_by('country') \
+            .order_by('-country') \
             .distinct()
 
         countries_by_continent_dictionary = dict.fromkeys(countries_list, []).items()
@@ -185,7 +194,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         state_list = queryset.filter(country__iexact=country) \
             .values_list('full_state', flat=True) \
-            .order_by('full_state') \
+            .order_by('-full_state') \
             .distinct()
 
         cities_by_state_dictionary = dict.fromkeys(state_list, [])
@@ -211,7 +220,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         city_or_state_list = queryset.filter(query) \
             .values_list('city', flat=True) \
-            .order_by('city') \
+            .order_by('-city') \
             .distinct()
 
         gyms_by_city_or_state_dictionary = dict.fromkeys(city_or_state_list, [])
