@@ -67,7 +67,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return self.list_searched_location_response(total_pages, assembled_search_results)
 
-    def list_searched_location_response(self, total_pages, assembled_search_results):
+    @staticmethod
+    def list_searched_location_response(total_pages, assembled_search_results):
 
         response = {
             "meta": {
@@ -78,7 +79,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
-    def add_to_list(self, search_text, item_list, location_path, location_name, location_type):
+    @staticmethod
+    def add_to_list(search_text, item_list, location_path, location_name, location_type):
         item = {
             "location_name": f"{location_name} ({location_type})",
             "location_path": location_path.lower().replace(" ", "-")
