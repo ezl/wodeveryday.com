@@ -85,13 +85,15 @@ class GymViewSet(mixins.RetrieveModelMixin,
         assembled_search_results = []
         for result in search_results:
             location_path, location_name, location_type = self.get_location_info(result)
+            if location_path is None and location_name is None and location_type is None:
+                continue
             assembled_search_results.append(self.add_to_list(location_path, location_name, location_type))
 
         return assembled_search_results
 
     @staticmethod
     def get_location_info(location_object):
-        lo = location_object # slim down object name to highlight field names retrieved from it
+        lo = location_object  # slim down object name to highlight field names retrieved from it
         if lo.get('name', False):
             return (f"gym/{lo['name_slug']}",
                     f"{lo['name']}, {lo['city']}",
@@ -121,6 +123,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
             return (f"find/{lo['continent']}",
                     lo['continent'],
                     'continent')
+
+        return (None, None, None)
 
     @staticmethod
     def add_to_list(location_path, location_name, location_type):
