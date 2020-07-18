@@ -18,6 +18,16 @@
         no-filter
         @change="goToLocation()"
       >
+        <template v-slot:item="data">
+          <v-list-item-content v-text="data.item.location_name" />
+          <v-list-item-content class="text-right d-block">
+            <v-btn
+              style="pointer-events: none;"
+              color="primary"
+              v-text="data.item.location_type"
+            />
+          </v-list-item-content>
+        </template>
         <template v-slot:append-item>
           <div v-if="resultsPageCount > 0" class="text-center">
             <v-pagination
