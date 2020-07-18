@@ -38,7 +38,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         limit_plus_offset = offset + page_size
 
         search_text = request.query_params.get('search_text', None)
-        if search_text is None:
+        if search_text is None or len(search_text) < 3:
             return self.list_searched_location_response(0, [])
 
         search_text = [token for token in search_text.split(" ") if token]
