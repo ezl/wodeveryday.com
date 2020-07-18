@@ -14,7 +14,7 @@ class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = []
 
     @action(detail=False, methods=['put'], url_path='update_photos')
-    def updatePhotos(self, request, *args):
+    def update_photos(self, request, *args):
         gym_details_api_id = request.data.get('place_id')
         photos = request.data.get('photos')
 
@@ -96,5 +96,3 @@ class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         gym_details_api_id = data.get("candidates")[0].get("place_id")
 
         return gym_details_api_id
-
-
