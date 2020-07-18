@@ -30,19 +30,21 @@ class GymViewSet(mixins.RetrieveModelMixin,
         }
 
     @action(detail=False, methods=['get'], url_path='search_locations')
-    def listSearchedLocation(self, request, *args):
+    def list_searched_locations(self, request, *args):
 
         queryset = self.get_queryset()
-        page_size=6
+        page_size = 6
         page = request.query_params.get('page', 1)
         offset = (int(page) - 1) * page_size
         limit_plus_offset = offset + page_size
 
-        search_text = request.query_params.get('search_text')
-        search_text = search_text.split(" ")
+        search_text = request.query_params.get('search_text', None)
+        if search_text is None:
+            return self.list_searched_location_response(0, [])
+
+        search_text = [token for token in search_text.split(" ") if token]
         search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector('full_state') + SearchVector('city')
 
-        # tokenize search text and create search query
         search_queries = []
         for token in search_text:
             search_queries.append(Q(search__icontains=token))
@@ -55,11 +57,15 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         search_results = search_results[offset:limit_plus_offset]
 
-        assembled_search_results = self.assembleSearchResults(search_results)
+        assembled_search_results = self.assemble_search_results(search_results, search_text)
 
         total_pages = 0
         if total > 0:
             total_pages = math.ceil(total / page_size)
+
+        return self.list_searched_location_response(total_pages, assembled_search_results)
+
+    def list_searched_location_response(self, total_pages, assembled_search_results):
 
         response = {
             "meta": {
@@ -70,16 +76,16 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         return Response(response)
 
-    def addToList(self, item_list, location_name, location_path):
+    def add_to_list(self, search_text, item_list, location_path, location_name, location_type):
         item = {
-            "location_name": location_name,
-            "location_path": location_path
+            "location_name": f"{location_name} ({location_type})",
+            "location_path": location_path.lower().replace(" ", "-")
         }
-        if item not in item_list:
+        if item not in item_list and any(token in location_name.lower() for token in search_text):
             item_list.append(item)
         return item_list
 
-    def assembleSearchResults(self, search_results):
+    def assemble_search_results(self, search_results, search_text):
         continent_list = []
         country_list = []
         state_list = []
@@ -90,25 +96,27 @@ class GymViewSet(mixins.RetrieveModelMixin,
             continent = result['continent']
             country = result['country']
             city = result['city']
+            gym_name = result['name']
+            gym_slug = result['name_slug']
 
-            location_path = "find/" + continent.lower().replace(" ", "-")
-            continent_list = self.addToList(continent_list, continent, location_path)
+            location_path = "find/" + continent
+            continent_list = self.add_to_list(search_text, continent_list, location_path, location_name=continent, location_type='continent')
 
-            location_path = location_path + "/" + country.lower().replace(" ", "-")
-            country_list = self.addToList(country_list, country + ", " + continent, location_path)
+            location_path = location_path + "/" + country
+            country_list = self.add_to_list(search_text, country_list,  location_path, location_name=country + ", " + continent, location_type='country')
 
             if country in COUNTRIES_WITH_STATE:
                 state = result['full_state']
-                location_path = location_path + "/" + state.lower().replace(" ", "-")
-                state_list = self.addToList(state_list, state + ", " + country, location_path)
+                location_path = location_path + "/" + state
+                state_list = self.add_to_list(search_text, state_list, location_path, location_name=state + ", " + country, location_type='state')
 
-                location_path = location_path + "/" + city.lower().replace(" ", "-")
-                city_list = self.addToList(city_list, city + ", " + state, location_path)
+                location_path = location_path + "/" + city
+                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + state, location_type='city')
             else:
-                location_path = location_path + "/" + city.lower().replace(" ", "-")
-                city_list = self.addToList(city_list, city + ", " + country, location_path)
+                location_path = location_path + "/" + city
+                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + country, location_type='city')
 
-            gym_list = self.addToList(gym_list, result['name'] + ", " + city, "gym/" + result['name_slug'])
+            gym_list = self.add_to_list(search_text, gym_list, location_path="gym/" + gym_slug, location_name=gym_name + ", " + city, location_type='gym')
 
         assembled_search_results = list(itertools.chain.from_iterable([
             continent_list,
