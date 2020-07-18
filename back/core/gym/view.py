@@ -128,13 +128,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
             gym_list = self.add_to_list(search_text, gym_list, location_path="gym/" + gym_slug,
                                         location_name=gym_name + ", " + city, location_type='gym')
 
-        assembled_search_results = list(itertools.chain.from_iterable([
-            continent_list,
-            country_list,
-            state_list,
-            city_list,
-            gym_list
-        ]))
+        assembled_search_results = continent_list + country_list + state_list + city_list + gym_list
 
         return assembled_search_results
 
