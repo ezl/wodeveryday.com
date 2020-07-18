@@ -44,7 +44,8 @@ class GymLeaderboardViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         # To maintain a contract with the frontend, both should be returned as an dictionary in a list
         return [gym_leaderboard_data]
 
-    def create_or_update_leaderboard_data(self, gym_has_leaderboard, gym_object, gym_leaderboard_data, leaderboard_api_id):
+    def create_or_update_leaderboard_data(self, gym_has_leaderboard, gym_object, gym_leaderboard_data,
+                                          leaderboard_api_id):
         if gym_has_leaderboard:
             gym_leaderboard_object = GymLeaderboard.objects.get(leaderboard_api_id=leaderboard_api_id)
             gym_leaderboard_object.data.append(gym_leaderboard_data)

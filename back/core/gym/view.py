@@ -14,20 +14,19 @@ from app.constants import GET_GYM_URL, GET_GYM_LEADERBOARD_URL, COUNTRIES_WITH_S
 
 
 class GymViewSet(mixins.RetrieveModelMixin,
-                       mixins.ListModelMixin,
-                       viewsets.GenericViewSet):
-
+                 mixins.ListModelMixin,
+                 viewsets.GenericViewSet):
     queryset = Gym.objects.all()
     serializer_class = GymSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['name']
     filterset_fields = {
-            'country': ['iexact'],
-            'full_state': ['iexact'],
-            'city': ['iexact'],
-            'name': ['iexact'],
-            'name_slug': ['iexact']
-        }
+        'country': ['iexact'],
+        'full_state': ['iexact'],
+        'city': ['iexact'],
+        'name': ['iexact'],
+        'name_slug': ['iexact']
+    }
 
     @action(detail=False, methods=['get'], url_path='search_locations')
     def list_searched_locations(self, request, *args):
@@ -43,7 +42,8 @@ class GymViewSet(mixins.RetrieveModelMixin,
             return self.list_searched_location_response(0, [])
 
         search_text = [token for token in search_text.split(" ") if token]
-        search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector('full_state') + SearchVector('city')
+        search_vectors = SearchVector('name') + SearchVector('continent') + SearchVector('country') + SearchVector(
+            'full_state') + SearchVector('city')
 
         search_queries = []
         for token in search_text:
@@ -51,7 +51,9 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         search_queries = reduce(operator.and_, search_queries)
 
-        search_results = queryset.annotate(search=search_vectors).filter(search_queries).values('name', 'continent', 'country', 'full_state', 'city', 'name_slug')
+        search_results = queryset.annotate(search=search_vectors).filter(search_queries).values('name', 'continent',
+                                                                                                'country', 'full_state',
+                                                                                                'city', 'name_slug')
 
         total = search_results.count()
 
@@ -100,23 +102,29 @@ class GymViewSet(mixins.RetrieveModelMixin,
             gym_slug = result['name_slug']
 
             location_path = "find/" + continent
-            continent_list = self.add_to_list(search_text, continent_list, location_path, location_name=continent, location_type='continent')
+            continent_list = self.add_to_list(search_text, continent_list, location_path, location_name=continent,
+                                              location_type='continent')
 
             location_path = location_path + "/" + country
-            country_list = self.add_to_list(search_text, country_list,  location_path, location_name=country + ", " + continent, location_type='country')
+            country_list = self.add_to_list(search_text, country_list, location_path,
+                                            location_name=country + ", " + continent, location_type='country')
 
             if country in COUNTRIES_WITH_STATE:
                 state = result['full_state']
                 location_path = location_path + "/" + state
-                state_list = self.add_to_list(search_text, state_list, location_path, location_name=state + ", " + country, location_type='state')
+                state_list = self.add_to_list(search_text, state_list, location_path,
+                                              location_name=state + ", " + country, location_type='state')
 
                 location_path = location_path + "/" + city
-                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + state, location_type='city')
+                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + state,
+                                             location_type='city')
             else:
                 location_path = location_path + "/" + city
-                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + country, location_type='city')
+                city_list = self.add_to_list(search_text, city_list, location_path, location_name=city + ", " + country,
+                                             location_type='city')
 
-            gym_list = self.add_to_list(search_text, gym_list, location_path="gym/" + gym_slug, location_name=gym_name + ", " + city, location_type='gym')
+            gym_list = self.add_to_list(search_text, gym_list, location_path="gym/" + gym_slug,
+                                        location_name=gym_name + ", " + city, location_type='gym')
 
         assembled_search_results = list(itertools.chain.from_iterable([
             continent_list,
@@ -129,7 +137,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         return assembled_search_results
 
     @action(detail=False, methods=['get'], url_path='slugs')
-    def listGymSlugs(self, request, *args):
+    def list_gym_slugs(self, request, *args):
 
         queryset = self.get_queryset()
         gym_slugs_list = queryset.values_list('name_slug', flat=True)
@@ -137,7 +145,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         return Response(gym_slugs_list)
 
     @action(detail=False, methods=['get'], url_path='continents')
-    def listDistinctCountriesByContinent(self, request, *args):
+    def list_distinct_countries_by_continent(self, request, *args):
 
         queryset = self.get_queryset()
         country_by_continent_dictionary = {
@@ -149,15 +157,15 @@ class GymViewSet(mixins.RetrieveModelMixin,
             "Oceania": [],
         }
         for key, value in country_by_continent_dictionary.copy().items():
-            country_by_continent_dictionary[key] = queryset.filter(continent__iexact=key)\
-                                   .values_list('country', flat=True) \
-                                   .order_by('country') \
-                                   .distinct()
+            country_by_continent_dictionary[key] = queryset.filter(continent__iexact=key) \
+                .values_list('country', flat=True) \
+                .order_by('country') \
+                .distinct()
 
         return Response(country_by_continent_dictionary)
 
     @action(detail=False, methods=['get'], url_path='countries')
-    def listDistinctCountriesAndTheirCitiesByContinent(self, request, *args):
+    def list_distinct_countries_and_their_cities_by_continent(self, request, *args):
 
         continent = request.query_params.get('continent', '')
         queryset = self.get_queryset()
@@ -174,7 +182,7 @@ class GymViewSet(mixins.RetrieveModelMixin,
         return Response(countries_by_continent_dictionary)
 
     @action(detail=False, methods=['get'], url_path='states')
-    def listDistinctStatesAndTheirCitiesByCountry(self, request, *args):
+    def list_distinct_states_and_their_cities_by_country(self, request, *args):
 
         country = request.query_params.get('country', '')
         queryset = self.get_queryset()
@@ -188,14 +196,14 @@ class GymViewSet(mixins.RetrieveModelMixin,
 
         for key, value in cities_by_state_dictionary.copy().items():
             cities_by_state_dictionary[key] = queryset.filter(full_state__iexact=key) \
-                                                    .values_list('city', flat=True) \
-                                                    .order_by('city') \
-                                                    .distinct()
+                .values_list('city', flat=True) \
+                .order_by('city') \
+                .distinct()
 
         return Response(cities_by_state_dictionary)
 
     @action(detail=False, methods=['get'], url_path='gyms')
-    def listDistinctCitiesAndTheirGymsByCountryOrState(self, request, *args):
+    def list_distinct_cities_and_their_gyms_by_country_or_state(self, request, *args):
 
         country = request.query_params.get('country', '')
         if not country:
