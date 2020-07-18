@@ -70,49 +70,52 @@ class GymViewTestCases(APITestCase):
         Gym.objects.create(**self.TEST_GYM_OBJECT_WITH_STATE)
         Gym.objects.create(**self.TEST_GYM_OBJECT_WITHOUT_STATE)
 
-    def testListContinentsAndCountries(self):
+    def test_list_continents_and_countries(self):
         response = self.client.get(self.CONTINENTS_URL)
 
         expected_response_body = {
-          'Africa': [],
-          'Asia': [],
-          'Europe': [
-            self.TEST_GYM_OBJECT_WITHOUT_STATE['country']
-          ],
-          'North America': [
-            self.TEST_GYM_OBJECT_WITH_STATE['country']
-          ],
-          'South America': [],
-          'Oceania': []
+            'Africa': [],
+            'Asia': [],
+            'Europe': [
+                self.TEST_GYM_OBJECT_WITHOUT_STATE['country']
+            ],
+            'North America': [
+                self.TEST_GYM_OBJECT_WITH_STATE['country']
+            ],
+            'South America': [],
+            'Oceania': []
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListCountriesAndStatesByContinent(self):
+    def test_list_countries_and_states_by_continent(self):
         response = self.client.get(self.COUNTRIES_URL, {"continent": self.TEST_GYM_OBJECT_WITH_STATE['continent']})
 
-        expected_response_body = {self.TEST_GYM_OBJECT_WITH_STATE['country']: [self.TEST_GYM_OBJECT_WITH_STATE['full_state']]}
+        expected_response_body = {
+            self.TEST_GYM_OBJECT_WITH_STATE['country']: [self.TEST_GYM_OBJECT_WITH_STATE['full_state']]}
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListCountriesAndCitiesByContinent(self):
+    def test_list_countries_and_cities_by_continent(self):
         response = self.client.get(self.COUNTRIES_URL, {"continent": self.TEST_GYM_OBJECT_WITHOUT_STATE['continent']})
 
-        expected_response_body = {self.TEST_GYM_OBJECT_WITHOUT_STATE['country']: [self.TEST_GYM_OBJECT_WITHOUT_STATE['city']]}
+        expected_response_body = {
+            self.TEST_GYM_OBJECT_WITHOUT_STATE['country']: [self.TEST_GYM_OBJECT_WITHOUT_STATE['city']]}
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListStatesAndCitiesByCountry(self):
+    def test_list_states_and_cities_by_country(self):
         response = self.client.get(self.STATES_URL, {"country": self.TEST_GYM_OBJECT_WITH_STATE['country']})
 
-        expected_response_body = {self.TEST_GYM_OBJECT_WITH_STATE['full_state']: [self.TEST_GYM_OBJECT_WITH_STATE['city']]}
+        expected_response_body = {
+            self.TEST_GYM_OBJECT_WITH_STATE['full_state']: [self.TEST_GYM_OBJECT_WITH_STATE['city']]}
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListCitiesAndGymsByState(self):
+    def test_list_cities_and_gyms_by_state(self):
         response = self.client.get(self.GYMS_URL, {"state": self.TEST_GYM_OBJECT_WITH_STATE['full_state']})
 
         expected_response_body = {self.TEST_GYM_OBJECT_WITH_STATE['city']: [self.TEST_GYM_OBJECT_WITH_STATE['name']]}
@@ -120,52 +123,56 @@ class GymViewTestCases(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListGymsByCityAndCountry(self):
-        response = self.client.get(self.BASE_URL, {"city__iexact": self.TEST_GYM_OBJECT_WITHOUT_STATE['city'], "country__iexact": self.TEST_GYM_OBJECT_WITHOUT_STATE['country']})
+    def test_list_gyms_by_city_and_country(self):
+        response = self.client.get(self.BASE_URL, {"city__iexact": self.TEST_GYM_OBJECT_WITHOUT_STATE['city'],
+                                                   "country__iexact": self.TEST_GYM_OBJECT_WITHOUT_STATE['country']})
 
         expected_result_object = self.TEST_GYM_OBJECT_WITHOUT_STATE
         expected_result_object['id'] = 2
         expected_response_body = {
-          'count': 1,
-          'next': None,
-          'previous': None,
-          'results': [
-              expected_result_object
-          ]
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': [
+                expected_result_object
+            ]
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListGymsByCityCountryAndState(self):
-        response = self.client.get(self.BASE_URL, {"city__iexact": self.TEST_GYM_OBJECT_WITH_STATE['city'], "country__iexact": self.TEST_GYM_OBJECT_WITH_STATE['country'], "state__iexact": self.TEST_GYM_OBJECT_WITH_STATE['full_state']})
+    def test_list_gyms_by_city_country_and_state(self):
+        response = self.client.get(self.BASE_URL, {"city__iexact": self.TEST_GYM_OBJECT_WITH_STATE['city'],
+                                                   "country__iexact": self.TEST_GYM_OBJECT_WITH_STATE['country'],
+                                                   "state__iexact": self.TEST_GYM_OBJECT_WITH_STATE['full_state']})
 
         expected_result_object = self.TEST_GYM_OBJECT_WITH_STATE
         expected_result_object['id'] = 1
         expected_response_body = {
-          'count': 1,
-          'next': None,
-          'previous': None,
-          'results': [
-              expected_result_object
-          ]
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': [
+                expected_result_object
+            ]
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected_response_body)
 
-    def testListGymsByCityAndName(self):
-        response = self.client.get(self.BASE_URL, {"name__iexact": self.TEST_GYM_OBJECT_WITH_STATE['name'], "city__iexact": self.TEST_GYM_OBJECT_WITH_STATE['city']})
+    def test_list_gyms_by_city_and_name(self):
+        response = self.client.get(self.BASE_URL, {"name__iexact": self.TEST_GYM_OBJECT_WITH_STATE['name'],
+                                                   "city__iexact": self.TEST_GYM_OBJECT_WITH_STATE['city']})
 
         expected_result_object = self.TEST_GYM_OBJECT_WITH_STATE
         expected_result_object['id'] = 1
         expected_response_body = {
-          'count': 1,
-          'next': None,
-          'previous': None,
-          'results': [
-              expected_result_object
-          ]
+            'count': 1,
+            'next': None,
+            'previous': None,
+            'results': [
+                expected_result_object
+            ]
         }
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
