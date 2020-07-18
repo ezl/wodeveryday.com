@@ -1,4 +1,6 @@
 import colors from "vuetify/es5/util/colors"
+import redirectSSL from "redirect-ssl"
+
 require("dotenv").config()
 // import routes from "./utils/getRoutes.js"
 
@@ -20,6 +22,12 @@ export default {
       },
     ],
   },
+  serverMiddleware: [
+    redirectSSL.create({
+      exclude: ["localhost"],
+      enabled: process.env.NODE_ENV === "production",
+    }),
+  ],
   /*
    ** Customize the progress-bar color
    */
