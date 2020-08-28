@@ -36,7 +36,6 @@ CORS_ORIGIN_WHITELIST = (
 # Application definition
 
 INSTALLED_APPS = [
-    'core.apps.CoreConfig',
     'rest_framework',
     'django_filters',
     'corsheaders',
@@ -46,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'core.gym',
 ]
 
 MIDDLEWARE = [
