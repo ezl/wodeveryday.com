@@ -5,7 +5,15 @@ To setup, clone the repository with `git clone https://github.com/ezl/wodeveryda
 
 
 ### Backend
-- Copy the .env file into the `back` folder in the repository
+- Copy the `.env` file into the `back` folder in the repository. If you need this, ask Eric.
+- Create a postgres db, user, and give the user permissions to access it. Something like:
+```
+createdb wodeveryday_db
+psql wodeveryday_db
+CREATE USER wodeveryday_user WITH PASSWORD 'wodeveryday_password';
+GRANT ALL ON DATABASE wodeveryday_db TO wodeveryday_user;
+```
+- Update the `.env` file to reflect the `DB_NAME`, `DB_USER`, `DB_PASSWORD`, etc to reflect the db user/password etc you created
 - Create a `local_settings.py` file in the `back` folder and add in this script 
 ```
 DEBUG = True
@@ -20,9 +28,10 @@ CORS_ORIGIN_WHITELIST = (
 - Ensure that you have python 3.7+ installed by running `python --version`
 - Ensure that you have pip installed by running `pip --version`
 - From that folder run the command `pip install -r requirements.txt`
-- Then from the same folder run the command `python manage.py runserver 127.0.0.1:8000` (or `python3 manage.py runserver 127.0.0.1:8000` if you have an earlier version of python)
-- If your system has something else running at the `127.0.0.1:8000` address then you can run it at a different address; however, you will need to change the `BACKEND_URL` variable on the frontends copy of the `.env` file to match that different address
-- This should start the development server
+- run `python manage.py migrate`
+- run `python manage.py loaddata fixtures` As Eric if you need the `fixtures.yaml` file.
+- Then from the same folder run the command `python manage.py runserver 127.0.0.1:8000`
+- This should start the development server so that it can be accessed by the frontend, which you'll build and run in the next step.
 
 
 
