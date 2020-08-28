@@ -3,8 +3,8 @@ import requests
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from app.constants import GET_GYM_URL, GET_GYM_LEADERBOARD_URL, COUNTRIES_WITH_STATE
-from core.gym_leaderboard.model import GymLeaderboard
-from core.gym.model import Gym
+from core.gym_leaderboard.models import GymLeaderboard
+from core.gym.models import Gym
 
 
 class GymLeaderboardViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

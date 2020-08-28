@@ -7,7 +7,7 @@ from django.db.models import Q
 from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from core.gym.model import Gym
+from core.gym.models import Gym
 from core.gym.serializer import GymSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from app.constants import GET_GYM_URL, GET_GYM_LEADERBOARD_URL, COUNTRIES_WITH_STATE

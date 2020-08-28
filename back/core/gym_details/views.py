@@ -3,8 +3,8 @@ import requests
 
 from app.constants import GET_GYM_ID_SEARCH_URL, GET_DETAILS_API_KEY, GET_GYM_DETAILS_SEARCH_URL, \
     GET_GYM_PHOTO_SEARCH_URL
-from core.gym.model import Gym
-from core.gym_details.model import GymDetails
+from core.gym.models import Gym
+from core.gym_details.models import GymDetails
 from rest_framework.decorators import action
 from rest_framework.response import Response
 

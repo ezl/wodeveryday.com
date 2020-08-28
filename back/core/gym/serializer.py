@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.gym.model import Gym
+from core.gym.models import Gym
 
 
 class GymSerializer(serializers.HyperlinkedModelSerializer):
