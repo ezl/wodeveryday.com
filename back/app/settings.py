@@ -36,7 +36,6 @@ CORS_ORIGIN_WHITELIST = (
 # Application definition
 
 INSTALLED_APPS = [
-    'core.apps.CoreConfig',
     'rest_framework',
     'django_filters',
     'corsheaders',
