@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 
 class Gym(models.Model):
@@ -34,3 +35,38 @@ class Gym(models.Model):
 
     class Meta:
         db_table = 'core_gym'
+
+
+class GymDetails(models.Model):
+    gym = models.OneToOneField(
+        Gym,
+        on_delete=models.PROTECT,
+        primary_key=True,
+    )
+    gym_details_api_id = models.TextField()
+    data = JSONField()
+
+    def __str__(self):
+        return ""
+
+    class Meta:
+        db_table = 'core_gymdetails'
+
+
+class GymLeaderboard(models.Model):
+    leaderboard_api_id = models.IntegerField(blank=True, null=True)
+    gym = models.OneToOneField(
+        Gym,
+        on_delete=models.PROTECT,
+        primary_key=True,
+    )
+    data = ArrayField(
+        JSONField()
+    )
+
+    def __str__(self):
+        return ""
+
+    class Meta:
+        db_table = 'core_gymleaderboard'
+

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.gym.models import Gym
+from core.gym.models import Gym, GymDetails, GymLeaderboard
 
 
 class GymSerializer(serializers.HyperlinkedModelSerializer):
@@ -33,4 +33,23 @@ class GymSerializer(serializers.HyperlinkedModelSerializer):
             'full_state',
             'continent',
             'name_slug'
+        ]
+
+class GymDetailsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = GymDetails
+        fields = [
+            'id',
+            'gym_details_api_id',
+            'data'
+        ]
+
+
+class GymLeaderboardSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = GymLeaderboard
+        fields = [
+            'id',
+            'leaderboard_api_id',
+            'data'
         ]

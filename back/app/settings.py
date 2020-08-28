@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'core.gym',
-    'core.gym_details',
-    'core.gym_leaderboard',
 ]
 
 MIDDLEWARE = [

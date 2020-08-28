@@ -1,16 +1,29 @@
+from datetime import datetime
 import itertools
 import math
 import operator
 from functools import reduce
+
+import requests
 from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
+
 from rest_framework import viewsets, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from core.gym.models import Gym
-from core.gym.serializer import GymSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from app.constants import GET_GYM_URL, GET_GYM_LEADERBOARD_URL, COUNTRIES_WITH_STATE
+
+from core.gym.models import Gym, GymDetails, GymLeaderboard
+from core.gym.serializer import GymSerializer
+from app.constants import (
+    GET_GYM_URL,
+    GET_GYM_ID_SEARCH_URL,
+    GET_DETAILS_API_KEY,
+    GET_GYM_DETAILS_SEARCH_URL,
+    GET_GYM_PHOTO_SEARCH_URL,
+    GET_GYM_LEADERBOARD_URL,
+    COUNTRIES_WITH_STATE
+)
 
 
 class GymViewSet(mixins.RetrieveModelMixin,
@@ -253,3 +266,179 @@ class GymViewSet(mixins.RetrieveModelMixin,
                     .distinct()
 
         return new_dictionary
+
+
+class GymDetailsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = GymDetails.objects.all()
+    serializer_class = []
+
+    @action(detail=False, methods=['put'], url_path='update_photos')
+    def update_photos(self, request, *args):
+        gym_details_api_id = request.data.get('place_id')
+        photos = request.data.get('photos')
+
+        gym_details_object = GymDetails.objects.get(gym_details_api_id=gym_details_api_id)
+        gym_details_object.data[0]['photos'] = photos
+        gym_details_object.save()
+
+        return Response(gym_details_object.data)
+
+    def list(self, request, *args, **kwargs):
+        gym_search_query = request.query_params.get('gym_search_query')
+        gym_id = request.query_params.get('gym_id')
+
+        gym_details = self.process_gym_details_request(gym_search_query, gym_id)
+
+        return Response(gym_details)
+
+    def process_gym_details_request(self, gym_search_query, gym_id):
+        gym_object = Gym.objects.get(id=gym_id)
+        gym_has_details = hasattr(gym_object, 'gymdetails')
+
+        if gym_has_details:
+            gym_details = gym_object.gymdetails.data
+            gym_details[0]["place_id"] = gym_object.gymdetails.gym_details_api_id
+            return gym_details
+        else:
+            gym_details_api_id = self.get_gym_details_api_id(gym_search_query)
+
+        gym_details = self.get_gym_details(gym_details_api_id)
+        gym_details["place_id"] = gym_details_api_id
+
+        self.create_details_data(gym_object, gym_details, gym_details_api_id)
+
+        # gym_details is an dictionary in a list when returned from the database.
+        # gym_details is an dictionary when it is fetched from the api.
+        # To maintain a contract with the frontend, both should be returned as an dictionary in a list
+        return [gym_details]
+
+    def create_details_data(self, gym_object, gym_details, gym_details_api_id):
+        gym_details_object = GymDetails(gym=gym_object, gym_details_api_id=gym_details_api_id, data=[gym_details])
+        gym_details_object.save()
+
+    def get_gym_details(self, gym_details_api_id):
+        parameters = {
+            "place_id": gym_details_api_id,
+            "fields": "international_phone_number,rating,review,opening_hours",
+            "key": GET_DETAILS_API_KEY
+        }
+
+        url = GET_GYM_DETAILS_SEARCH_URL
+        r = requests.get(url=url, params=parameters)
+
+        if r.status_code != 200:
+            raise Exception("failed to locate gym")
+
+        data = r.json()
+        gym_details = data.get("result")
+
+        return gym_details
+
+    def get_gym_details_api_id(self, gym_search_query):
+        parameters = {
+            "input": gym_search_query,
+            "inputtype": "textquery",
+            "fields": "place_id",
+            "key": GET_DETAILS_API_KEY
+        }
+
+        url = GET_GYM_ID_SEARCH_URL
+        r = requests.get(url=url, params=parameters)
+
+        if r.status_code != 200:
+            raise Exception("failed to locate gym")
+
+        data = r.json()
+        if len(data) == 0 or len(data.get("candidates")) == 0:
+            raise Exception("failed to locate gym")
+
+        gym_details_api_id = data.get("candidates")[0].get("place_id")
+
+        return gym_details_api_id
+
+
+class GymLeaderboardViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = GymLeaderboard.objects.all()
+    serializer_class = []
+
+    def list(self, request, *args, **kwargs):
+        gym_name = request.query_params.get('gym_name')
+        gym_id = request.query_params.get('gym_id')
+        page = request.query_params.get('page', 1)
+
+        gym_leaderboard = self.process_gym_leaderboard_request(gym_name, gym_id, page)
+
+        return Response(gym_leaderboard)
+
+    def process_gym_leaderboard_request(self, gym_name, gym_id, page):
+
+        gym_object = Gym.objects.get(id=gym_id)
+        gym_has_leaderboard = hasattr(gym_object, 'gymleaderboard')
+
+        if gym_has_leaderboard:
+            try:
+                gym_leaderboard_data = gym_object.gymleaderboard.data
+                return gym_leaderboard_data
+            except Exception as e:
+                leaderboard_api_id = gym_object.gymleaderboard.leaderboard_api_id
+        else:
+            leaderboard_api_id = self.get_leaderboard_api_id(gym_name)
+
+        gym_leaderboard_data = self.get_gym_leaderboard_data(leaderboard_api_id, page)
+
+        self.create_or_update_leaderboard_data(gym_has_leaderboard, gym_object, gym_leaderboard_data,
+                                               leaderboard_api_id)
+
+        # gym_leaderboard_data is an dictionary in a list when returned from the database.
+        # gym_leaderboard_data is an dictionary when it is fetched from the api.
+        # To maintain a contract with the frontend, both should be returned as an dictionary in a list
+        return [gym_leaderboard_data]
+
+    def create_or_update_leaderboard_data(self, gym_has_leaderboard, gym_object, gym_leaderboard_data,
+                                          leaderboard_api_id):
+        if gym_has_leaderboard:
+            gym_leaderboard_object = GymLeaderboard.objects.get(leaderboard_api_id=leaderboard_api_id)
+            gym_leaderboard_object.data.append(gym_leaderboard_data)
+            gym_leaderboard_object.save()
+        else:
+            gym_leaderboard_object = GymLeaderboard(gym=gym_object, leaderboard_api_id=leaderboard_api_id,
+                                                    data=[gym_leaderboard_data])
+            gym_leaderboard_object.save()
+
+    def get_gym_leaderboard_data(self, leaderboard_api_id, page):
+
+        parameters = {
+            "affiliate": leaderboard_api_id,
+            "division": 1,
+            "scaled": 0,
+            "page": page
+        }
+
+        url = GET_GYM_URL.format(datetime.utcnow().year)
+        r = requests.get(url=url, params=parameters)
+
+        if r.status_code != 200:
+            raise Exception("failed to find gym leaderboard data")
+
+        gym_leaderboard_data = r.json()
+
+        return gym_leaderboard_data
+
+    def get_leaderboard_api_id(self, gym_name):
+        parameters = {
+            "term": gym_name,
+        }
+
+        url = GET_GYM_LEADERBOARD_URL.format(datetime.utcnow().year)
+        r = requests.get(url=url, params=parameters)
+
+        if r.status_code != 200:
+            raise Exception("failed to locate gym")
+
+        data = r.json()
+        if len(data) == 0:
+            raise Exception("failed to locate gym")
+
+        leaderboard_api_id = data[0].get('id')
+
+        return leaderboard_api_id
