@@ -25,9 +25,11 @@ CORS_ORIGIN_WHITELIST = (
 )
 ```
 - Open the `back` folder in the command line
-- Ensure that you have python 3.7+ installed by running `python --version`
-- Ensure that you have pip installed by running `pip --version`
-- From that folder run the command `pip install -r requirements.txt`
+
+Requirements - use python 3.7+
+Create a virtual env (something like virtualenv `env_name` or however you want to do it)
+- Enter that virtual env
+- pip install requirements.txt into that virtualenv (`pip install -r requirements.txt`)
 - run `python manage.py migrate`
 - run `python manage.py loaddata fixtures` As Eric if you need the `fixtures.yaml` file.
 - Then from the same folder run the command `python manage.py runserver 127.0.0.1:8000`
