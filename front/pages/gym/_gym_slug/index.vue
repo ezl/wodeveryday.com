@@ -134,12 +134,11 @@ export default {
     },
     checkIfPlaceDetailsHasPhotos: function () {
       return (
-        (this.$store.state.place_details.photos &&
-          this.$store.state.place_details.photos[0] &&
-          this.$store.state.place_details.photos[0].photo_url === undefined) ||
-        this.$store.state.place_details.photos === undefined ||
-        (this.$store.state.place_details.photos &&
-          this.$store.state.place_details.photos.length === 0)
+        this.$store.state.place_details &&
+        this.$store.state.place_details.photos &&
+        this.$store.state.place_details.photos.length > 0 &&
+        this.$store.state.place_details.photos[0] &&
+        this.$store.state.place_details.photos[0].photo_url != undefined
       )
     },
   },
@@ -195,7 +194,7 @@ export default {
           this.$store.state.gym_object.lon
         )
         .then((map) => {
-          if (this.checkIfPlaceDetailsHasPhotos) this.getPlacePhotos(map)
+          if (!this.checkIfPlaceDetailsHasPhotos) this.getPlacePhotos(map)
         })
     },
     getPlacePhotos(map) {
