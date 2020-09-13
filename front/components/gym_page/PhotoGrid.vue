@@ -10,13 +10,53 @@
       />
     </v-card-text>
     <template v-if="gymPhotos && gymPhotos.length > 0">
+      <div class="text-center">
+        <v-dialog
+          v-model="dialog"
+          fullscreen
+          transition="dialog-bottom-transition"
+        >
+          <v-card>
+            <v-card-title class="headline grey lighten-2">
+              {{ fetchPhotoAltTag }}
+            </v-card-title>
+
+            <v-card-text>
+              <v-img
+                v-if="d_data"
+                :src="d_data.photo_url"
+                aspect-ratio="1.7"
+                max-height="85vh"
+                contain
+                :alt="fetchPhotoAltTag"
+              />
+            </v-card-text>
+
+            <v-divider />
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn color="primary" text @click="dialog = false">
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
       <v-row>
         <v-col v-for="(photo, index) in gymPhotos" :key="index" cols="4">
           <v-img
+            :id="'btn_img_' + index"
             :src="photo.photo_url"
             class="mb-3"
             aspect-ratio="1.7"
+            contain
+            max-height="300"
             :alt="fetchPhotoAltTag"
+            @click="
+              dialog = true
+              d_data = photo
+            "
           />
         </v-col>
       </v-row>
@@ -27,6 +67,12 @@
 <script>
 export default {
   name: "PhotoGrid",
+  data: function () {
+    return {
+      dialog: false,
+      d_data: null,
+    }
+  },
   computed: {
     gymPhotos: function () {
       if (this.$store.state.place_details.photos) {
