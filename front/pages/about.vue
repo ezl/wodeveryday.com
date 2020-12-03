@@ -1,12 +1,12 @@
 <template>
+  <div>
+    <h1>About</h1>
+  </div>
 </template>
 
 <script>
   export default {
-    name: "index",
-    mounted() {
-      this.$router.push({name: 'index'})
-    }
+    name: "about"
   }
 </script>
 

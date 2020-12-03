@@ -1,0 +1,23 @@
+
+/* @font-face {
+    font-family: 'TGT-DIN-Condensed-Light';
+    src: url('../fonts/TGT-DIN-Condensed.ttf');  
+  }
+html{
+    font-family: 'TGT-DIN-Condensed-Light' !important;
+}
+body{
+    font-family: 'TGT-DIN-Condensed-Light' !important;
+} */
+
+
+:root {
+    --brand-color: #F49519;
+    --brand-color-two: #343a40 ;
+  }
+
+
+body{
+    background: var(--brand-color-two);
+    color: #fff;
+}

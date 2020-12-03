@@ -1,36 +1,30 @@
 {
-  "name": "affiliatesearch-fe",
+  "name": "vue-frontend-ukraine",
   "version": "1.0.0",
-  "description": "",
-  "author": "cb0806151",
   "private": true,
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore ."
+    "generate": "nuxt generate"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.9.5",
-    "@nuxtjs/gtm": "^2.2.3",
-    "@nuxtjs/sitemap": "^2.4.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-loader": "^3.0.3",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "masonry-layout": "^4.2.2",
-    "nuxt": "^2.0.0",
-    "nuxt-leaflet": "^0.0.21",
-    "prettier": "^2.0.2",
-    "redirect-ssl": "^2.0.0"
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^2.0.0",
+    "@nuxtjs/axios": "^5.12.3",
+    "bootstrap": "^4.5.0",
+    "bootstrap-vue": "^2.20.1",
+    "nuxt": "^2.14.0",
+    "nuxt-fontawesome": "^0.4.0",
+    "sass": "^1.26.10"
   },
   "devDependencies": {
-    "@nuxt/typescript-build": "^0.6.0",
-    "@nuxtjs/dotenv": "^1.4.1",
-    "@nuxtjs/vuetify": "^1.0.0"
+    "sass-loader": "^10.0.1"
+  },
+  "engines": {
+    "node": "12.x",
+    "npm": "6.0.0"
   }
 }
