@@ -24,7 +24,7 @@
         states: {}
       }
     },
-    created() {
+    mounted() {
       this.$nextTick(() => {
         this.$nuxt.$loading.start()
         this.$store.dispatch('getStates', {country: String(this.$route.params.country).replace(/-/gi, ' ')}).then(response => {

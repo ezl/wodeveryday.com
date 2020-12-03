@@ -31,7 +31,7 @@
         return this.$store.getters.countries_with_countries.indexOf(this.$route.params.country) !== -1
       }
     },
-    created() {
+    mounted() {
       this.$nextTick(() => {
         this.$nuxt.$loading.start()
         var params = {}

@@ -1,7 +1,5 @@
 <template>
   <div>
-<!--    <search></search>-->
-
     <cities-list v-if="countryHasStates" current_place="state"></cities-list>
     <gyms-list :city_name="$route.params.state" v-else></gyms-list>
   </div>
@@ -10,14 +8,25 @@
 <script>
   import CitiesList from "~/components/CitiesList";
   import GymsList from "~/components/GymsList";
-  import search from "../../../../../components/search";
 
   export default {
     name: "index",
     components: {
       CitiesList,
-      search,
       GymsList,
+    },
+    head() {
+      return {
+        title: 'wodeveryday',
+        meta: [
+          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+          // {
+          //   hid: 'description',
+          //   name: 'description',
+          //   content: 'My custom description'
+          // }
+        ]
+      }
     },
     computed: {
       countryHasStates() {

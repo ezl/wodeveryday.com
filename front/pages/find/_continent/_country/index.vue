@@ -1,6 +1,5 @@
 <template>
   <div>
-<!--    <search></search>-->
     <states-list current_place="country" v-if="countryHasStates"></states-list>
     <cities-list v-else current_place="country"></cities-list>
   </div>
@@ -9,14 +8,25 @@
 <script>
   import StatesList from "~/components/StatesList";
   import CitiesList from "~/components/CitiesList";
-  import search from "../../../../components/search";
 
   export default {
     name: "index",
     components: {
       CitiesList,
-      search,
       StatesList
+    },
+    head() {
+      return {
+        title: 'wodeveryday',
+        meta: [
+          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+          // {
+          //   hid: 'description',
+          //   name: 'description',
+          //   content: 'My custom description'
+          // }
+        ]
+      }
     },
     computed: {
       countryHasStates() {

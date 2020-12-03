@@ -1,6 +1,5 @@
 <template>
   <div>
-<!--    <search></search>-->
     <h1 class="text-capitalize text-center m-4" >
       {{$route.params.continent}}
     </h1>
@@ -10,20 +9,31 @@
 
 <script>
   import cards from "../../../components/cards";
-  import search from "../../../components/search";
 
   export default {
     name: "index",
     components: {
       cards,
-      search
+    },
+    head() {
+      return {
+        title: 'wodeveryday',
+        meta: [
+          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+          // {
+          //   hid: 'description',
+          //   name: 'description',
+          //   content: 'My custom description'
+          // }
+        ]
+      }
     },
     data() {
       return {
         countries: {}
       }
     },
-    created() {
+    mounted() {
       this.$nextTick(() => {
         this.$nuxt.$loading.start()
         this.$store.dispatch('getCountries', {continent: String(this.$route.params.continent).replace(/-/gi, ' ')}).then(response => {
