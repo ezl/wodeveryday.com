@@ -38,6 +38,7 @@ CORS_ORIGIN_WHITELIST = (
 INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
+    'django_extensions',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -141,6 +142,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+SHELL_PLUS = "ipython"
 
 try:
     from local_settings import *
