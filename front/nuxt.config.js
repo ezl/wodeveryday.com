@@ -53,6 +53,9 @@ export default {
     id: process.env.GTM_ID,
     pageTracking: true,
   },
+  env: {
+    BACKEND_URL: process.env.BACKEND_URL,
+  },
   /*
    ** generate sitemap
    */
