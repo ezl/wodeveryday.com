@@ -1,69 +1,56 @@
 <template>
-  <geography-search-page
-    :item-list="$store.state.countries"
-    :select-item="selectCountry"
-    :select-subitem="selectCityOrState"
-    :item-title="itemTitle"
-  />
+  <div>
+    <h1 class="text-capitalize text-center m-4" >
+      {{$route.params.continent}}
+    </h1>
+    <cards :items_object="countries"></cards>
+  </div>
 </template>
 
 <script>
-import GeographySearchPage from "~/components/navigation/GeographySearchPage.vue"
-import apiLibrary from "~/store/apiLibrary.js"
-import _ from "lodash"
-import reusableFunctionsLibrary from "~/store/reusableFunctionsLibrary.js"
+  import cards from "../../../components/cards";
 
-export default {
-  components: {
-    GeographySearchPage,
-  },
-  async asyncData({ store, route }) {
-    const continent = _.capitalize(route.params["continent"]).replace(
-      /-/gi,
-      " "
-    )
-    const url = `${process.env.BACKEND_URL}/gyms/countries/?continent=${continent}`
-    await apiLibrary.retrieveCountries(url, store)
+  export default {
+    name: "index",
+    components: {
+      cards,
+    },
+    head() {
+      return {
+        title: 'wodeveryday',
+        meta: [
+          // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+          // {
+          //   hid: 'description',
+          //   name: 'description',
+          //   content: 'My custom description'
+          // }
+        ]
+      }
+    },
+    data() {
+      return {
+        countries: {}
+      }
+    },
+    mounted() {
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start()
+        this.$store.dispatch('getCountries', {continent: String(this.$route.params.continent).replace(/-/gi, ' ')}).then(response => {
+          this.countries = response
+          this.$nuxt.$loading.finish()
+        })
 
-    const pageTitle = store.state.constants.GEO_PAGE_TITLE.replace(
-      "{}",
-      continent
-    )
-    let metaTags = reusableFunctionsLibrary.generateMetaTags(
-      store,
-      pageTitle,
-      store.state.constants.DEFAULT_META_DESCRIPTION,
-      store.state.constants.DEFAULT_GYM_THUMBNAIL,
-      route.fullPath
-    )
-    return {
-      metaTags: metaTags,
-      pageTitle: pageTitle,
+      })
     }
-  },
-  data() {
-    return {
-      itemTitle: "continent",
-      metaTags: [],
-      pageTitle: "",
-    }
-  },
-  methods: {
-    selectCountry(countryName) {
-      reusableFunctionsLibrary.pushCleanedRoute(this.$router, `${countryName}/`)
-    },
-    selectCityOrState(countryName, cityOrStateName) {
-      reusableFunctionsLibrary.pushCleanedRoute(
-        this.$router,
-        `${countryName}/${cityOrStateName}/`
-      )
-    },
-  },
-  head() {
-    return {
-      title: this.pageTitle,
-      meta: this.metaTags,
-    }
-  },
-}
+  }
 </script>
+
+<style scoped>
+  h1{
+    color: var(--brand-color);
+  }
+  .card-header {
+    color: black;
+  }
+</style>

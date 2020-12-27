@@ -1,9 +1,10 @@
 <template>
+  <h1>Contact</h1>
 </template>
 
 <script>
   export default {
-    name: "index",
+    name: "contact",
     head() {
       return {
         title: 'wodeveryday',
@@ -17,9 +18,6 @@
         ]
       }
     },
-    mounted() {
-      this.$router.push({name: 'index'})
-    }
   }
 </script>
 

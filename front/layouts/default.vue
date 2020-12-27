@@ -1,18 +1,18 @@
 <template>
-  <v-app dark>
-    <v-content>
-      <nuxt />
-    </v-content>
-    <gym-footer />
-  </v-app>
+<div>
+    <Header />
+    <Nuxt />
+    <Footer />
+</div>
 </template>
 
 <script>
-import GymFooter from "~/components/global/GymFooter.vue"
-
+import Header from './header';
+import Footer from './footer';
 export default {
-  components: {
-    GymFooter,
-  },
+    components: {
+        Header,
+        Footer,
+    }
 }
 </script>

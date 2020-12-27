@@ -1,9 +1,12 @@
 <template>
+  <div>
+    <h1>About</h1>
+  </div>
 </template>
 
 <script>
   export default {
-    name: "index",
+    name: "about",
     head() {
       return {
         title: 'wodeveryday',
@@ -17,9 +20,6 @@
         ]
       }
     },
-    mounted() {
-      this.$router.push({name: 'index'})
-    }
   }
 </script>
 
