@@ -10,6 +10,6 @@ django-filter==2.2.0
 python-dotenv==0.14.0
 Pillow==7.2.0
 psycopg2-binary==2.8.5
-PyYAML==5.3.1
+PyYAML==5.4
 ipython
 django-extensions
